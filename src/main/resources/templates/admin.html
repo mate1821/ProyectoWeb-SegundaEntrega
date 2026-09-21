@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Administración</title>
+</head>
+<body>
+    <h1>Panel de Administración</h1>
+
+    <h2>Citas por especialidad</h2>
+    <table border="1">
+        <thead><tr><th>Especialidad</th><th>Cantidad de citas</th></tr></thead>
+        <tbody>
+            <tr th:each="fila : ${citasPorEspecialidad}">
+                <td th:text="${fila[0]}"></td>
+                <td th:text="${fila[1]}"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Médicos más cotizados</h2>
+    <table border="1">
+        <thead><tr><th>Médico</th><th>Especialidad</th><th>Cantidad de citas</th></tr></thead>
+        <tbody>
+            <tr th:each="fila : ${medicosMasCotizados}">
+                <td th:text="${fila[0]}"></td>
+                <td th:text="${fila[1]}"></td>
+                <td th:text="${fila[2]}"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Servicios más solicitados</h2>
+    <table border="1">
+        <thead><tr><th>Servicio</th><th>Cantidad</th></tr></thead>
+        <tbody>
+            <tr th:each="fila : ${serviciosEnOrden}">
+                <td th:text="${fila[0]}"></td>
+                <td th:text="${fila[1]}"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Pacientes de tercera edad</h2>
+    <p th:text="${pacientesTerceraEdad}"></p>
+</body>
+<a th:href="@{/usuarios}">Visualizar Usuarios</a>
+<a th:href="@{/admin/verReservasGlobales}">Visualizar reservas del hospital</a>
+<a th:href="@{/}">Cerrar sesión</a>
+</html>

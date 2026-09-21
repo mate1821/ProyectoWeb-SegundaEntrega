@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Inicio Médico</title>
+</head>
+<body>
+    <h1>Bienvenido, Doctor</h1>
+    <p>¿Qué deseas hacer?</p>
+
+    <a th:href="@{/reservas/mostrarReservasMedico/{id}(id=${medicoId})}">
+        <button type="button">Ver mis reservas</button>
+    </a>
+
+    <a th:href="@{/}">Cerrar sesión</a>
+</body>
+</html>

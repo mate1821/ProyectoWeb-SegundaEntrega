@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Reservas</title>
+    <link rel="stylesheet" href="/usuario.css" th:href="@{/usuario.css}">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Mostrar reservas</h1>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Espacio</th>
+                    <th>Fecha</th>
+                    <th>Hora Inicio</th>
+                    <th>Hora Fin</th>
+                    <th>Costo $</th>
+                    <th>Medico</th>
+                    <th>Estado</th>
+                    <th>Editar Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="reserva : ${reservas}">
+                    <td th:text="${reserva.idReserva}"></td>
+                    <td th:text="${reserva.usuario.nombre}"></td>
+                    <td th:text="${reserva.medico.espacio.nombre}"></td>
+                    <td th:text="${reserva.fecha}"></td>
+                    <td th:text="${reserva.horaInicio}"></td>
+                    <td th:text="${reserva.horaFin}"></td>
+                    <td th:text="${reserva.total}"></td>
+                    <td th:text="${reserva.medico.nombre}"></td>
+                    <td>
+                        <span class="estado" th:text="${reserva.estado.nombre}"></span>
+                    </td>
+                    <td>
+                        <!-- RESTAURADO: Formulario de cambio de estado -->
+                        <form th:action="@{/reservas/cambiarEstado}" method="post">
+                            <input type="hidden" name="idReserva" th:value="${reserva.idReserva}">
+                            <select name="idEstado" onchange="this.form.submit()">
+                                <option th:each="e : ${estados}"
+                                        th:value="${e.id}"
+                                        th:text="${e.nombre}"
+                                        th:selected="${reserva.estado != null and e.id == reserva.estado.id}"></option>
+                            </select>
+                        </form>
+                    </td>
+                    <td>
+                        <a th:href="@{/reservas/Editar/{id}(id=${reserva.usuario.id}, reservaId=${reserva.idReserva})}">Editar</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <a th:href="@{/}">Cerrar sesión</a>
+    </div>
+    
+
+</body>
+</html>

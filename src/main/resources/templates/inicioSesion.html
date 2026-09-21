@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesión - Salud</title>
+</head>
+
+<body>
+
+    <h1>Iniciar sesión</h1>
+
+    <form th:action="@{/inicio-sesion}" method="post">
+
+        <label for="correo">Correo:</label>
+        <input type="email"
+         id="correo"
+           name="correo"
+           required
+           maxlength="120">
+
+        <br><br>    
+
+        <label for="contrasena">Contraseña:</label>
+        <input type="password"
+           id="contrasena"
+           name="contrasena"
+            required
+            minlength="6"
+            maxlength="120">
+            
+        <button type="submit">Iniciar sesión</button>
+
+    </form>
+
+    <p th:if="${error}" th:text="${error}"></p>
+
+    <br>
+
+    <a th:href="@{/}">
+        <button type="button">Volver</button>
+    </a>
+
+</body>
+
+</html>

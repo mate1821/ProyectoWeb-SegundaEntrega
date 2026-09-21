@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Inicio</title>
+
+
+</head>
+
+<body>
+
+<h1>Bienvenido</h1>
+
+<p>¿Qué deseas hacer?</p>
+
+<a th:href="@{/reservas/Crear/{id}(id=${usuarioId})}">
+    <button type="button">Reservar cita</button>
+</a>
+
+
+</body>
+
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Reserva - Salud</title>
+</head>
+
+<body>
+    <h1 th:text="${reserva.idReserva == null ? 'Nueva reserva' : 'Editar reserva'}"></h1>
+
+    <form th:action="${reserva.idReserva == null ? '/reservas/Crear/' + paciente.id : '/reservas/Editar/' + paciente.id}" method="get">
+        <input type="hidden" name="reservaId" th:value="${reserva.idReserva}" th:if="${reserva.idReserva != null}">
+        
+        <label for="especialidad">Seleccione la especialidad:</label>
+        <br>
+        <select id="especialidad" name="especialidadId" onchange="this.form.submit()" required>
+            <option value="">Seleccione una especialidad</option>
+            <option th:each="e : ${especialidades}"
+                    th:value="${e.id}"
+                    th:text="${e.nombreEspecialidad}"
+                    th:selected="${e.id == especialidadId}"></option>
+        </select>
+    </form>
+    <br>
+
+    <form th:action="@{/reservas/guardar}" th:object="${reserva}" method="post">
+        <input type="hidden" th:field="*{idReserva}"><!--Siguiendo lo que habia en usuario, es para sobrescribir y no crear-->
+        <input type="hidden" name="pacienteId" th:value="${paciente.id}">
+
+        <label for="medico">Seleccione el médico:</label>
+        <br>
+        <select id="medico" name="medicoId" required>
+            <option value="">Seleccione un médico</option>
+            <option th:each="m : ${medicos}"
+                    th:value="${m.id}"
+                    th:text="${m.nombre}"
+                    th:selected="${reserva.medico != null and m.id == reserva.medico.id}"></option>
+        </select>
+        <br><br>
+
+        <label for="fecha">Fecha de la reserva</label>
+        <input type="date" id="fecha" th:field="*{fecha}" th:min="${fechaMinima}" required>
+        <br><br>
+
+        <label for="fecha_inicio">Ingrese la hora inicio</label>
+        <input type="time" id="fecha_inicio" th:field="*{horaInicio}" required>
+        <br><br>
+
+        <label for="observaciones">Ingrese observaciones de la cita</label>
+        <input type="text" id="observaciones" th:field="*{observaciones}" required minlength="5" maxlength="255">
+        <br><br>
+
+        <div th:each="e : ${servicios}">
+            <input type="checkbox"
+                   name="servicioIds"
+                   th:value="${e.id}"
+                   th:checked="${reserva.servicios != null and reserva.servicios.contains(e)}"><!--Marca nuevamente los que ya estaban-->
+            <span th:text="${e.nombre + ' - ' + e.costo}"></span>
+        </div>
+        <br>
+        <button type="submit">Guardar</button>
+    </form>
+
+</body>
+</html>

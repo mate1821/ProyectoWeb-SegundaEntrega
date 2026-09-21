@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Inicio - Salud</title>
+</head>
+
+<body>
+
+    <h1>Sistema de Salud</h1>
+
+    <p>Bienvenido al sistema de reservas médicas.</p>
+
+    <p>Seleccione una opción:</p>
+
+    <a th:href="@{/inicio-sesion}">
+        <button type="button">Iniciar sesión</button>
+    </a>
+
+    <a th:href="@{/usuarios/nuevo}">
+        <button type="button">Registrarse</button>
+    </a>
+
+</body>
+
+</html>
