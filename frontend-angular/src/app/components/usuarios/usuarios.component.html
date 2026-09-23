@@ -1,0 +1,26 @@
+<h1>Usuarios</h1>
+
+<table border="1">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Correo</th>
+      <th>Rol</th>
+      <th>Teléfono</th>
+      <th>Estado</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (usuario of usuarios; track usuario.id) {
+      <tr>
+        <td>{{ usuario.id }}</td>
+        <td>{{ usuario.nombre }}</td>
+        <td>{{ usuario.correo }}</td>
+        <td>{{ usuario.rol.nombre }}</td>
+        <td>{{ usuario.telefono }}</td>
+        <td>{{ usuario.activo ? 'Activo' : 'Inactivo' }}</td>
+      </tr>
+    }
+  </tbody>
+</table>
