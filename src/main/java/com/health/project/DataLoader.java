@@ -68,6 +68,11 @@ public class DataLoader implements CommandLineRunner {
         @Override
         public void run(String... args) throws Exception {
 
+
+                if (rolRepo.count() > 0) {
+                        return; // ya hay datos, no volver a sembrar
+                }
+
                 Random random = new Random(42);
 
                 // Rol
