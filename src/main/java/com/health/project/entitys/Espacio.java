@@ -2,6 +2,8 @@ package com.health.project.entitys;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -40,7 +42,7 @@ public class Espacio {
 
     @Column(nullable = false)
     private boolean abierto;
-
+    @JsonIgnore
     @OneToMany (mappedBy = "espacio")
     List<Medico> medicos;
 

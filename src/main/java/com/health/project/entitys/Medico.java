@@ -9,6 +9,8 @@ import lombok.Setter;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 @Getter
@@ -25,6 +27,7 @@ public class Medico extends Usuario {
     private Espacio espacio;
 
     @OneToMany (mappedBy = "medico")
+    @JsonIgnore
     List<Reserva> reservas;
 
     public Medico(Long cedula, String nombre, Date fecha_nacimiento ,String antecedentes , String telefono, String correo, String contrasena, boolean activo) {

@@ -2,6 +2,8 @@ package com.health.project.entitys;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.annotation.Generated;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,6 +26,7 @@ public class Servicio {
     private Double costo;
 
     @ManyToMany(mappedBy = "servicios")
+    @JsonIgnore
     List<Reserva> reservas;
 
     public Servicio(String nombre, Double costo) {

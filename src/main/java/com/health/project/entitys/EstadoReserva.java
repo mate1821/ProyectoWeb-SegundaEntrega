@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.hibernate.mapping.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -27,6 +29,7 @@ public class EstadoReserva {
     private String nombre;
 
     @OneToMany (mappedBy = "estado")
+    @JsonIgnore
     List<Reserva> reservas;
 
 

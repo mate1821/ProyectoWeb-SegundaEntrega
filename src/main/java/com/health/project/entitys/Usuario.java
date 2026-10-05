@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Getter 
 @Setter
 @AllArgsConstructor
@@ -55,6 +57,7 @@ public class Usuario {
     private LocalDateTime fechaRegistro;
 
     @OneToMany (mappedBy="usuario")
+    @JsonIgnore
     List<Reserva> reservas;
 
 

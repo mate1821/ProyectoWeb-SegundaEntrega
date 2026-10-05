@@ -11,6 +11,8 @@ import lombok.Setter;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 
@@ -33,6 +35,7 @@ public class Especialidad {
     private Double costo;
 
     @OneToMany (mappedBy="especialidad")
+    @JsonIgnore
     List<Medico> medicos;
 
     public Especialidad(String nombre, Double costo){
