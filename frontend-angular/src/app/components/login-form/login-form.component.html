@@ -1,0 +1,11 @@
+<h2>{{ titulo() }}</h2>
+
+<form (ngSubmit)="enviarLogin()">
+
+  <input type="text" [(ngModel)]="correo" name="correo">
+
+  <input type="password" [(ngModel)]="contrasena" name="contrasena">
+
+  <button type="submit">Ingresar</button>
+
+</form>

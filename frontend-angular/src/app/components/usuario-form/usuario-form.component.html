@@ -1,0 +1,85 @@
+<h2>Formulario de Usuario</h2>
+
+<form (ngSubmit)="guardar()">
+
+  <label for="cedula">Cédula</label>
+  <input type="number" id="cedula" [(ngModel)]="cedula" name="cedula" required>
+  <br><br>
+
+  <label for="nombre">Nombre</label>
+  <input type="text" id="nombre" [(ngModel)]="nombre" name="nombre" required>
+
+  <br><br>
+  <label for="fecha_nacimiento">Fecha de nacimiento</label>
+  <input type="date" id="fecha_nacimiento" [(ngModel)]="fecha_nacimiento" name="fecha_nacimiento" required>
+  <br><br>
+
+  <label for="telefono">Teléfono</label>
+  <input type="text" id="telefono" [(ngModel)]="telefono" name="telefono" required>
+  <br><br>
+
+  <label for="correo">Correo</label>
+  <input type="email" id="correo" [(ngModel)]="correo" name="correo" required>
+  <br><br>
+
+  <label for="contrasena">Contraseña</label>
+  <input type="password" id="contrasena" [(ngModel)]="contrasena" name="contrasena" required>
+  <br><br>
+
+  <label>Rol:</label>
+  <div> <input type="radio" id="rol-medico" [value]="1" [(ngModel)]="rolId" name="rolId">
+    <label for="rol-medico">Médico</label>
+
+    <input type="radio" id="rol-paciente" [value]="2" [(ngModel)]="rolId" name="rolId">
+    <label for="rol-paciente">Paciente</label>
+
+    <input type="radio" id="rol-admin" [value]="3" [(ngModel)]="rolId" name="rolId">
+    <label for="rol-admin">Administrador</label>
+  </div>
+
+  <br>
+
+  <!-- Usamos el if, para mostrar los campos adicionales. Ese es nuestro uso de if dentro del taller
+   
+  @if (rolId == 1) {
+    <div>
+      <div>
+        <label for="especialidad">Especialidad:</label>
+        <select id="especialidad" [(ngModel)]="especialidadId" name="especialidadId">
+          <option value="">-- Seleccione una especialidad --</option>
+          @for (e of especialidades; track e.id) {
+            <option [value]="e.id">{{ e.nombreEspecialidad }}</option>
+          }
+        </select>
+      </div>
+      <br>
+
+      <div>
+        <label for="espacio">Espacio:</label>
+        <select id="espacio" [(ngModel)]="espacioId" name="espacioId">
+          <option value="">-- Seleccione un espacio --</option>
+          @for (e of espacios; track e.id) {
+            <option [value]="e.id">{{ e.ubicacion }}</option>
+          }
+        </select>
+      </div>
+    </div>
+    <br>
+  }
+--> 
+
+  @if (rolId == 2) {
+    <div>
+      <label for="antecedentes">Antecedentes:</label><br>
+      <textarea 
+        id="antecedentes" 
+        [(ngModel)]="antecedentes" 
+        name="antecedentes" 
+        rows="4">
+      </textarea>
+    </div>
+    <br>
+  }
+
+  <button type="submit">Guardar usuario</button>
+</form>
