@@ -2,6 +2,10 @@
 <a routerLink="/registro">Nuevo usuario</a>
 <p>{{usuarios.length}}</p>
 
+@if (error) {
+  <p style="color: red;" role="alert">{{ error }}</p>
+}
+
 <table border="1">
   <thead>
     <tr>
@@ -28,6 +32,13 @@
         <a (click)="desactivarUsuario(usuario.id!)" style="cursor: pointer; color: blue;">Desactivar</a>
         } @else {
         <a (click)="activarUsuario(usuario?.id!)" style="cursor: pointer; color: blue;">Activar</a>
+        }
+        @if (idPorEliminar === usuario.id) {
+        <span role="alert">¿Eliminar a {{ usuario.nombre }}?</span>
+        <button type="button" (click)="eliminarUsuario(usuario.id)">Sí, eliminar</button>
+        <button type="button" (click)="cancelarEliminacion()">No</button>
+        } @else {
+        <button type="button" (click)="pedirConfirmacion(usuario.id)">Eliminar</button>
         }
       </td>
     </tr>

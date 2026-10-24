@@ -1,5 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 import { UsuarioService } from '../../services/usuario.service';
 import { Usuario } from '../../models/usuario.model';
@@ -14,6 +15,8 @@ import { ChangeDetectorRef } from '@angular/core';
 })
 export class UsuariosComponent implements OnInit {
   usuarios: Usuario[] = [];
+  idPorEliminar: number | null = null; // usuario que espera confirmación para eliminarse
+  error = '';
 
   usuarioService=inject(UsuarioService);
   private cdr = inject(ChangeDetectorRef);
@@ -47,5 +50,40 @@ export class UsuariosComponent implements OnInit {
       error: (err) => {console.error('Error al desactivar:', err)}
 
     });
+  }
+
+  pedirConfirmacion(id: number | undefined): void {
+    if (!id) return;
+    this.error = '';
+    this.idPorEliminar = id;
+  }
+
+  cancelarEliminacion(): void {
+    this.idPorEliminar = null;
+  }
+
+  // Llama a DELETE /api/usuarios/{id} y vuelve a cargar la lista
+  eliminarUsuario(id: number | undefined): void {
+    if (!id) return;
+    this.usuarioService.eliminarUsuario(id).subscribe({
+      next: () => {
+        this.idPorEliminar = null;
+        this.cargarUsuarios();
+      },
+      error: (err: HttpErrorResponse) => {
+        this.idPorEliminar = null;
+        this.error = this.mensajeDeError(err);
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  // El backend responde {"error": "mensaje"}; si no viene, se muestra uno genérico
+  private mensajeDeError(err: HttpErrorResponse): string {
+    const cuerpo: unknown = err.error;
+    if (typeof cuerpo === 'object' && cuerpo !== null && 'error' in cuerpo && typeof cuerpo.error === 'string') {
+      return cuerpo.error;
+    }
+    return 'No se pudo eliminar el usuario.';
   }
 }

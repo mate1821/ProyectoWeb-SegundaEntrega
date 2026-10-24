@@ -1,10 +1,13 @@
 package com.health.project.controllers;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.health.project.entitys.Usuario;
+import com.health.project.errors.UsuarioConReservasException;
 
 import com.health.project.service.UsuarioService;
 
@@ -65,5 +68,19 @@ public Usuario actualizar(
         }
     }
 
-}
+    // DELETE /api/usuarios/{id} -> elimina el usuario (204). 404 si no existe, 409 si tiene reservas.
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminar(@PathVariable Long id) {
+        if (usuarioService.buscarPorId(id) == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "No existe el usuario con id " + id));
+        }
+        try {
+            usuarioService.eliminar(id);
+            return ResponseEntity.noContent().build();
+        } catch (UsuarioConReservasException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", e.getMessage()));
+        }
+    }
 
+}

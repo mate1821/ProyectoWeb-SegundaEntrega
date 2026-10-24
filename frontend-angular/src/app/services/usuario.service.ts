@@ -12,7 +12,6 @@ export class UsuarioService {
 
   constructor(private http: HttpClient) {}
 
-  //MENSAJE PARA RAFAEL: FALTA SOLO UN METODO DELETE AQUI.
   obtenerUsuarios(): Observable<Usuario[]> {
     return this.http.get<Usuario[]>(this.apiUrl);
   }
@@ -27,6 +26,11 @@ export class UsuarioService {
 
   desactivar(id: number): Observable<Usuario> {
     return this.http.put<Usuario>(`${this.apiUrl}/desactivar/${id}`, {});
+  }
+
+  // DELETE /api/usuarios/{id}
+  eliminarUsuario(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
   login(credenciales: Credenciales): Observable<any> {

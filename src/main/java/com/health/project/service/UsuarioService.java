@@ -10,6 +10,7 @@ public interface UsuarioService {
     void guardar(Usuario usuario);
     void desactivar(Long id);
     void activar (Long id);
+    void eliminar(Long id);
     Long consultarId (Usuario usuario);
     Long pacientesTerceraEdad();
     Usuario validarCredenciales(String correo, String contrasena);

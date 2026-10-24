@@ -6,13 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.health.project.entitys.Usuario;
+import com.health.project.errors.UsuarioConReservasException;
 import com.health.project.errors.UsuarioDuplicado;
+import com.health.project.repository.ReservaRepository;
 import com.health.project.repository.UsuarioRepository;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
     @Autowired
     private UsuarioRepository repo;
+    @Autowired
+    private ReservaRepository reservaRepo;
 
     @Override
     public List<Usuario> buscarTodos(){
@@ -60,6 +64,16 @@ public class UsuarioServiceImpl implements UsuarioService {
             usuario.setActivo(true);
             repo.save(usuario);
         }
+    }
+
+    // Borra el usuario de la base de datos. Si es paciente o médico con reservas no se puede
+    // (la reserva lo referencia): en ese caso se lanza UsuarioConReservasException.
+    @Override
+    public void eliminar(Long id) {
+        if (!reservaRepo.findMisReservas(id).isEmpty() || !reservaRepo.findByMedicoId(id).isEmpty()) {
+            throw new UsuarioConReservasException(id);
+        }
+        repo.deleteById(id);
     }
 
     public Long pacientesTerceraEdad() {
