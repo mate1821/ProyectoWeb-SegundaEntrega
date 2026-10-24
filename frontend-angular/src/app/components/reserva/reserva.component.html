@@ -1,0 +1,104 @@
+<h1>Reservas</h1>
+
+@if (mensaje()) {
+  <p style="color: green;" role="status">{{ mensaje() }}</p>
+}
+@if (error()) {
+  <p style="color: red;" role="alert">{{ error() }}</p>
+}
+
+<h2>{{ idEditando() === null ? 'Nueva reserva' : 'Editar reserva #' + idEditando() }}</h2>
+
+<form [formRoot]="formulario">
+  <label for="paciente">Paciente</label>
+  <select id="paciente" [formField]="formulario.pacienteId">
+    <option value="">-- Seleccione un paciente --</option>
+    @for (p of pacientes(); track p.id) {
+      <option [value]="p.id">{{ p.nombre }}</option>
+    }
+  </select>
+  @if (formulario.pacienteId().touched() && formulario.pacienteId().invalid()) {
+    <span style="color: red;" role="alert">{{ formulario.pacienteId().errors()[0]?.message }}</span>
+  }
+  <br><br>
+
+  <label for="medico">Médico</label>
+  <select id="medico" [formField]="formulario.medicoId">
+    <option value="">-- Seleccione un médico --</option>
+    @for (m of medicos(); track m.id) {
+      <option [value]="m.id">{{ m.nombre }}</option>
+    }
+  </select>
+  @if (formulario.medicoId().touched() && formulario.medicoId().invalid()) {
+    <span style="color: red;" role="alert">{{ formulario.medicoId().errors()[0]?.message }}</span>
+  }
+  <br><br>
+
+  <label for="fecha">Fecha</label>
+  <input type="date" id="fecha" [formField]="formulario.fecha">
+  @if (formulario.fecha().touched() && formulario.fecha().invalid()) {
+    <span style="color: red;" role="alert">{{ formulario.fecha().errors()[0]?.message }}</span>
+  }
+  <br><br>
+
+  <label for="horaInicio">Hora de inicio</label>
+  <input type="time" id="horaInicio" [formField]="formulario.horaInicio">
+  @if (formulario.horaInicio().touched() && formulario.horaInicio().invalid()) {
+    <span style="color: red;" role="alert">{{ formulario.horaInicio().errors()[0]?.message }}</span>
+  }
+  <br><br>
+
+  <label for="observaciones">Observaciones</label>
+  <input type="text" id="observaciones" [formField]="formulario.observaciones">
+  @if (formulario.observaciones().touched() && formulario.observaciones().invalid()) {
+    <span style="color: red;" role="alert">{{ formulario.observaciones().errors()[0]?.message }}</span>
+  }
+  <br><br>
+
+  <button type="submit">{{ idEditando() === null ? 'Crear reserva' : 'Guardar cambios' }}</button>
+  @if (idEditando() !== null) {
+    <button type="button" (click)="limpiarFormulario()">Cancelar edición</button>
+  }
+</form>
+
+<hr>
+
+<h2>Lista de reservas</h2>
+
+<table border="1">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Paciente</th>
+      <th>Médico</th>
+      <th>Fecha</th>
+      <th>Hora inicio</th>
+      <th>Hora fin</th>
+      <th>Estado</th>
+      <th>Total $</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (r of reservas(); track r.idReserva) {
+      <tr>
+        <td>{{ r.idReserva }}</td>
+        <td>{{ r.usuario?.nombre }}</td>
+        <td>{{ r.medico?.nombre }}</td>
+        <td>{{ r.fecha }}</td>
+        <td>{{ r.horaInicio }}</td>
+        <td>{{ r.horaFin }}</td>
+        <td>{{ r.estado?.nombre }}</td>
+        <td>{{ r.total }}</td>
+        <td>
+          <button type="button" (click)="editar(r)">Editar</button>
+          <button type="button" (click)="cancelar(r)" [disabled]="r.estado?.nombre === 'Cancelada'">Cancelar</button>
+        </td>
+      </tr>
+    } @empty {
+      <tr>
+        <td colspan="9">No hay reservas registradas.</td>
+      </tr>
+    }
+  </tbody>
+</table>
