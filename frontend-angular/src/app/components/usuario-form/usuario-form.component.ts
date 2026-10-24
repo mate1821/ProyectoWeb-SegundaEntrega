@@ -11,7 +11,7 @@ import { FormsModule } from '@angular/forms';
 export class UsuarioForm {
   
   id: number | null=null;
-  cedula: number= 0;
+  cedula: number | null=null;
   nombre: string = '';
   fecha_nacimiento: string = '';
   telefono: string = '';

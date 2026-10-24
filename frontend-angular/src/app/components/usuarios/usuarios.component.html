@@ -1,4 +1,6 @@
 <h1>Usuarios</h1>
+<a routerLink="/registro">Nuevo usuario</a>
+<p>{{usuarios.length}}</p>
 
 <table border="1">
   <thead>
@@ -9,18 +11,27 @@
       <th>Rol</th>
       <th>Teléfono</th>
       <th>Estado</th>
+      <th>Acciones</th>
     </tr>
   </thead>
   <tbody>
     @for (usuario of usuarios; track usuario.id) {
-      <tr>
-        <td>{{ usuario.id }}</td>
-        <td>{{ usuario.nombre }}</td>
-        <td>{{ usuario.correo }}</td>
-        <td>{{ usuario.rol.nombre }}</td>
-        <td>{{ usuario.telefono }}</td>
-        <td>{{ usuario.activo ? 'Activo' : 'Inactivo' }}</td>
-      </tr>
+    <tr>
+      <td>{{ usuario.id }}</td>
+      <td>{{ usuario.nombre }}</td>
+      <td>{{ usuario.correo }}</td>
+      <td>{{ usuario.rol?.nombre }}</td>
+      <td>{{ usuario.telefono }}</td>
+      <td>{{ usuario.activo ? 'Activo' : 'Inactivo' }}</td>
+      <td>
+        @if (usuario.activo) {
+        <a (click)="desactivarUsuario(usuario.id!)" style="cursor: pointer; color: blue;">Desactivar</a>
+        } @else {
+        <a (click)="activarUsuario(usuario?.id!)" style="cursor: pointer; color: blue;">Activar</a>
+        }
+      </td>
+    </tr>
     }
+    
   </tbody>
 </table>

@@ -1,5 +1,7 @@
 package com.health.project.controllers;
 import java.util.List;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.health.project.entitys.Usuario;
@@ -7,6 +9,7 @@ import com.health.project.entitys.Usuario;
 import com.health.project.service.UsuarioService;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/usuarios")
 public class UsuarioRestController {
 
@@ -15,6 +18,7 @@ public class UsuarioRestController {
 public UsuarioRestController(UsuarioService usuarioService) {
     this.usuarioService = usuarioService;
 }
+
 @GetMapping
 public List<Usuario> listar() {
     return usuarioService.buscarTodos();
@@ -41,11 +45,25 @@ public Usuario actualizar(
     return usuario;
     
 }
+@PutMapping("/activar/{id}")
+    public ResponseEntity<?> activarUsuario(@PathVariable Long id) {
+        try {
+            usuarioService.activar(id); 
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al activar el usuario: " + e.getMessage());
+        }
+    }
 
-@DeleteMapping("/{id}")
-public void eliminar(@PathVariable Long id) {
-    usuarioService.desactivar(id);
-}
+    @PutMapping("/desactivar/{id}")
+    public ResponseEntity<?> desactivarUsuario(@PathVariable Long id) {
+        try {
+            usuarioService.desactivar(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al desactivar el usuario: " + e.getMessage());
+        }
+    }
 
 }
 

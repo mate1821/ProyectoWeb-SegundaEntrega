@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { LoginForm } from '../login-form/login-form.component';
 import { Credenciales } from '../../models/credencial.model';
+import { UsuarioService } from '../../services/usuario.service';
+import { Router } from '@angular/router';
 
 @Component({
   imports: [LoginForm],
@@ -9,10 +11,20 @@ import { Credenciales } from '../../models/credencial.model';
   templateUrl: './inicio-sesion.component.html',
 })
 export class InicioSesion {
+  private usuarioService = inject(UsuarioService);
+  private router = inject(Router);
+
   procesarLogin(credenciales: Credenciales) {
-    console.log('Credenciales recibidas en el padre:', credenciales);
-  // AQUI DEBERIA IR LA VALIDACIÓN QUE TENEMOS AUNQUE POSTERIORMENTE DEBERIAMOS MEJORARLA
+    console.log('Enviando credenciales al backend:', credenciales);
 
-}
-
+    this.usuarioService.login(credenciales).subscribe({
+      next: (usuario) => {
+        console.log('¡Inicio de sesión exitoso!', usuario);
+        this.router.navigate(['/inicio']);
+      },
+      error: (error) => {
+        console.error('Error de autenticación:', error);
+      }
+    });
+  }
 }

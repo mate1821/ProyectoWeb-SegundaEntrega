@@ -11,6 +11,8 @@ import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Transient;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -74,6 +76,7 @@ public class Reserva {
         joinColumns = @JoinColumn(name = "reserva_id"),
         inverseJoinColumns = @JoinColumn(name = "servicio_id")
     )
+    @JsonIgnore
     List<Servicio> servicios;
 
 
