@@ -26,7 +26,7 @@ export class Registro {
       error: (err) => console.error('Error al cargar usuarios:', err)
     });
   }
- 
+  
   guardarUsuario(usuario: Usuario) {
   console.log('--- EVENTO RECIBIDO EN EL PADRE ---');
   this.usuarioService.agregarUsuario(usuario).subscribe({

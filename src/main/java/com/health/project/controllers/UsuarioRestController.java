@@ -5,18 +5,17 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import com.health.project.entitys.Usuario;
 import com.health.project.errors.UsuarioConReservasException;
-
 import com.health.project.service.UsuarioService;
+import jakarta.servlet.http.HttpSession;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 @RequestMapping("/api/usuarios")
 public class UsuarioRestController {
 
-    private final UsuarioService usuarioService;
+private final UsuarioService usuarioService;
 
 public UsuarioRestController(UsuarioService usuarioService) {
     this.usuarioService = usuarioService;

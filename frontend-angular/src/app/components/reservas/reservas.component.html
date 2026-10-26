@@ -1,0 +1,7 @@
+<h1>Nueva reserva</h1>
+
+<app-reserva-form [especialidades]="especialidades()" [medicos]="medicos()" [servicios]="servicios()"
+    (especialidadCambiada)="cargarMedicos($event)" (reservaGuardada)="guardarReserva($event)">
+</app-reserva-form>
+
+

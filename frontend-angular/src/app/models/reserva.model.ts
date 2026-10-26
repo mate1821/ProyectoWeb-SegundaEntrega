@@ -1,3 +1,5 @@
+import { Usuario } from "./usuario.model";
+
 // Referencia mínima a otra entidad: al crear/editar una reserva solo hace falta enviar el id.
 export interface Referencia {
   id: number;
@@ -8,16 +10,21 @@ export interface ServicioReserva extends Referencia {
   costo?: number;
 }
 
+export interface MedicoReserva extends Referencia {
+  espacio?: { id: number; nombre: string };
+  especialidad?: { id: number; nombreEspecialidad: string };
+}
+
 export interface Reserva {
   idReserva?: number;
-  usuario?: Referencia;          // paciente
-  medico?: Referencia;
-  fecha: string;                 // "2026-11-05"
-  horaInicio: string;            // "09:00"
-  horaFin?: string;              // la calcula el backend (horaInicio + 1 hora)
-  estado?: Referencia;           // el backend la crea "Confirmada"
+  usuario?: Usuario;          
+  medico?: MedicoReserva;
+  fecha: string;                
+  horaInicio: string;            
+  horaFin?: string;             
+  estado?: Referencia;           
   fechaSolicitud?: string;
   observaciones?: string;
-  total?: number;                // lo calcula el backend (especialidad + servicios)
+  total?: number;                
   servicios?: ServicioReserva[];
 }

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { ReservaComponent } from './reserva.component';
+import { ReservaComponent } from './reserva-form.component';
 import { Reserva } from '../../models/reserva.model';
 
 /**
@@ -20,7 +20,7 @@ describe('ReservaComponent', () => {
 
   const reservaExistente: Reserva = {
     idReserva: 5,
-    usuario: { id: 2, nombre: 'Ana Torres' },
+    usuario: { id: 2, nombre: 'Ana Torres',cedula:11,fecha_nacimiento:"121212", correo:"cualquera xd",contrasena : "skmlaskas"  },
     medico: { id: 8, nombre: 'Laura Gómez' },
     fecha: '2026-11-05',
     horaInicio: '09:00:00',

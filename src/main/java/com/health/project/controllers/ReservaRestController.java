@@ -34,16 +34,12 @@ import com.health.project.service.ReservaService;
 import com.health.project.service.ServicioService;
 import com.health.project.service.UsuarioService;
 
-/**
- * API REST de reservas. Tiene un requestMapping por cada método HTTP:
- * GET (listar), POST (crear), PUT (actualizar) y DELETE (cancelar).
- *
- * Todos los errores de este controlador responden JSON con la forma {"error": "mensaje"},
- * para que Angular pueda mostrarlos (el GlobalHandlerException devuelve vistas Thymeleaf).
- */
+
+import jakarta.servlet.http.HttpSession;
+
 @RestController
 @RequestMapping("/api/reservas")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class ReservaRestController {
 
     // Mismo id de estado "Confirmada" que usa ReservaController al crear una reserva
@@ -73,15 +69,51 @@ public class ReservaRestController {
         return reservaService.buscarReservas();
     }
 
+    
+    @GetMapping("/mias")
+    public List<Reserva> misReservas(HttpSession session) {
+        Long usuarioId = (Long) session.getAttribute("usuarioId");
+        if (usuarioId == null) {
+            throw error(HttpStatus.UNAUTHORIZED, "Debe primero iniciar sesión");
+        }
+        return reservaService.misReservas(usuarioId);
+    }
+
+    @PutMapping("/{id}/estado")
+    public Reserva cambiarEstado(@PathVariable Long id, @RequestBody ReservaRequest.Referencia estado) {
+        if (estado == null || estado.id() == null) {
+            throw error(HttpStatus.BAD_REQUEST, "Debe indicar el estado (id)");
+        }
+        if (estadoService.buscarPorId(estado.id()) == null) {
+            throw error(HttpStatus.BAD_REQUEST, "No existe el estado con id " + estado.id());
+        }
+        reservaService.cambiarEstado(id, estado.id());
+        return reservaService.buscarPorId(id);
+    }
+
+
     // 2. POST /api/reservas -> crea una reserva (siempre queda "Confirmada")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Reserva crear(@RequestBody ReservaRequest datos) {
+    public Reserva crear(@RequestBody ReservaRequest datos, HttpSession session) {
+
+        Long pacienteId = (Long) session.getAttribute("usuarioId");
+        System.out.println(pacienteId);
+        if (pacienteId == null) {
+            pacienteId = 5L;  // TEMPORAL: mientras el login no este listo 
+        }
+
+        Usuario paciente = usuarioService.buscarPorId(pacienteId);
+        if (paciente == null) {
+            throw error(HttpStatus.UNAUTHORIZED, "Debe Primero Iniciar Session " + pacienteId);
+        }
         Reserva reserva = new Reserva(); // Reserva nueva: idReserva queda null
         reserva.setFechaSolicitud(LocalDateTime.now());
         reserva.setEstado(estadoService.buscarPorId(ID_CONFIRMADA));
+        reserva.setUsuario(paciente);
         completarReserva(reserva, datos, new ArrayList<>());
         reservaService.guardar(reserva);
+        
         return reserva;
     }
 
@@ -111,6 +143,7 @@ public class ReservaRestController {
                 : new ArrayList<>(existente.getServicios());
 
         completarReserva(reserva, datos, serviciosActuales);
+        reserva.setUsuario(existente.getUsuario());
         reservaService.guardar(reserva);
         return reserva;
     }
@@ -136,17 +169,11 @@ public class ReservaRestController {
         if (datos.fecha() == null || datos.horaInicio() == null) {
             throw error(HttpStatus.BAD_REQUEST, "La fecha y la hora de inicio son obligatorias");
         }
-        if (datos.usuario() == null || datos.usuario().id() == null) {
-            throw error(HttpStatus.BAD_REQUEST, "Debe indicar el paciente (usuario.id)");
-        }
+
         if (datos.medico() == null || datos.medico().id() == null) {
             throw error(HttpStatus.BAD_REQUEST, "Debe indicar el médico (medico.id)");
         }
 
-        Usuario paciente = usuarioService.buscarPorId(datos.usuario().id());
-        if (paciente == null) {
-            throw error(HttpStatus.NOT_FOUND, "No existe el paciente con id " + datos.usuario().id());
-        }
         Medico medico = medicoService.buscarPorId(datos.medico().id());
         if (medico == null) {
             throw error(HttpStatus.NOT_FOUND, "No existe el médico con id " + datos.medico().id());
@@ -178,7 +205,6 @@ public class ReservaRestController {
             }
         }
 
-        reserva.setUsuario(paciente);
         reserva.setMedico(medico);
         reserva.setFecha(datos.fecha());
         reserva.setHoraInicio(datos.horaInicio());
