@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.health.project.entitys.Rol;
 import com.health.project.entitys.Usuario;
+import java.util.List;
+
 
 public interface UsuarioRepository 
 extends JpaRepository<Usuario, Long>{
@@ -21,5 +23,8 @@ extends JpaRepository<Usuario, Long>{
     boolean existsByCorreoAndRol(String correo, Rol rol);
 
     Usuario findFirstByCorreoAndContrasena(String correo, String contrasena);
+
+    @Query("SELECT u FROM Usuario u ORDER BY u.id ASC")
+    List<Usuario> findAllOrderById();
 
 }

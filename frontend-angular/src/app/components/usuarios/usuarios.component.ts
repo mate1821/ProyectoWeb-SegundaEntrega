@@ -30,7 +30,7 @@ export class UsuariosComponent implements OnInit {
     this.usuarioService.obtenerUsuarios().subscribe({
       next: (data) => { console.log("esta llegando esto:", data);
         this.usuarios = data;
-      this.cdr.detectChanges();},
+      this.cdr.detectChanges();}, // Esta cosa es un parche temporal porque no supe como hacer que refrescara
       error: (err) => {console.error('Error al cargar usuarios:', err);}
     });
   }
@@ -86,4 +86,32 @@ export class UsuariosComponent implements OnInit {
     }
     return 'No se pudo eliminar el usuario.';
   }
+
+
+  paginaActual=1;
+  usuariosPorPagina=5;
+
+  //Funciones de paginación - Las intenté hacer idénticas a las que están en el documento
+  get usuariosPagina() {
+    const inicio = (this.paginaActual - 1) * this.usuariosPorPagina;
+    const fin = inicio + this.usuariosPorPagina;
+    return this.usuarios.slice(inicio, fin);
+  }
+
+  get totalPaginas() {
+    return Math.ceil(this.usuarios.length / this.usuariosPorPagina);
+  }
+
+  siguiente() {
+    if (this.paginaActual < this.totalPaginas) {
+      this.paginaActual++;
+    }
+  }
+
+  anterior() {
+    if (this.paginaActual > 1) {
+      this.paginaActual--;
+    }
+  }
+
 }

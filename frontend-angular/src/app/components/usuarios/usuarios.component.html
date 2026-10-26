@@ -1,6 +1,10 @@
 <h1>Usuarios</h1>
 <a routerLink="/registro">Nuevo usuario</a>
-<p>{{usuarios.length}}</p>
+
+@if(usuarios.length===0){
+  <p>Cargando usuarios...</p>
+}
+
 
 @if (error) {
   <p style="color: red;" role="alert">{{ error }}</p>
@@ -19,7 +23,7 @@
     </tr>
   </thead>
   <tbody>
-    @for (usuario of usuarios; track usuario.id) {
+    @for (usuario of usuariosPagina; track usuario.id) {
     <tr>
       <td>{{ usuario.id }}</td>
       <td>{{ usuario.nombre }}</td>
@@ -43,6 +47,16 @@
       </td>
     </tr>
     }
-    
   </tbody>
 </table>
+<div>
+  <button (click)="anterior()" [disabled]="paginaActual === 1">
+    Anterior
+  </button>
+  <span>
+    Página {{ paginaActual }} de {{ totalPaginas }}
+  </span>
+  <button (click)="siguiente()" [disabled]="paginaActual === totalPaginas">
+    Siguiente
+  </button>
+  </div>
