@@ -16,19 +16,36 @@ export class ReservaService {
   private apiUrl = 'http://localhost:8090/api/reservas';
 
   obtenerReservas(): Observable<Reserva[]> {
-    return this.http.get<Reserva[]>(this.apiUrl);
+    return this.http.get<Reserva[]>(this.apiUrl,{ withCredentials: true });
   }
 
   crearReserva(reserva: Reserva): Observable<Reserva> {
-    return this.http.post<Reserva>(this.apiUrl, reserva);
+    return this.http.post<Reserva>(this.apiUrl, reserva,{ withCredentials: true });
   }
 
   actualizarReserva(id: number, reserva: Reserva): Observable<Reserva> {
-    return this.http.put<Reserva>(`${this.apiUrl}/${id}`, reserva);
+    return this.http.put<Reserva>(`${this.apiUrl}/${id}`, reserva,{ withCredentials: true });
   }
 
   // El backend no borra la reserva: la deja en estado "Cancelada"
   cancelarReserva(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`,{ withCredentials: true });
   }
+
+  cambiarEstado(idReserva: number, idEstado: number): Observable<Reserva> {
+    return this.http.put<Reserva>(`${this.apiUrl}/${idReserva}/estado`, { id: idEstado }, { withCredentials: true });
+  }
+
+  obtenerMisReservas(): Observable<Reserva[]> {
+    return this.http.get<Reserva[]>(`${this.apiUrl}/mias`, { withCredentials: true });
+  }
+
+  obtenerReserva(id: number): Observable<Reserva> {
+    return this.http.get<Reserva>(`${this.apiUrl}/${id}`, { withCredentials: true });
+  }
+
+
+
+
+
 }

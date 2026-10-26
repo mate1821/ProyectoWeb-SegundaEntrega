@@ -34,6 +34,6 @@ export class UsuarioService {
   }
 
   login(credenciales: Credenciales): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/login`, credenciales);
+  return this.http.post<any>(`${this.apiUrl}/login`, credenciales, { withCredentials: true });
   }
 }
