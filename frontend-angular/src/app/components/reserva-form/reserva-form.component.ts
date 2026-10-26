@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal,input,output } from '@angular/core';;
+import { Component, effect, inject, OnInit, signal,input,output } from '@angular/core';
 import { Reserva } from '../../models/reserva.model';
 import { Medico } from '../../models/medico.model';
 import { Especialidad } from '../../models/especialidad.model';
@@ -26,6 +26,7 @@ export class ReservaComponent {
   especialidades = input<Especialidad[]>([]); 
   medicos = input<Medico[]>([]);             
   servicios = input<Servicio[]>([]); 
+  reservaEditando = input<Reserva | null>(null); // si viene, el formulario se llena con sus datos
   mensaje = signal('');
   error = signal('');
   
@@ -42,6 +43,24 @@ export class ReservaComponent {
   servicioIds: number[] = [];
 
   fechaMinima: string = fechaDeHoy(); 
+
+  constructor() {
+    effect(() => {
+      const reserva = this.reservaEditando();
+      if (reserva) {
+        this.cargarReserva(reserva);
+      }
+    });
+  }
+
+  private cargarReserva(reserva: Reserva): void {
+    this.especialidadId = reserva.medico?.especialidad ? String(reserva.medico.especialidad.id) : '';
+    this.medicoId = reserva.medico ? String(reserva.medico.id) : '';
+    this.fecha = reserva.fecha;
+    this.horaInicio = reserva.horaInicio.substring(0, 5); // "09:00:00" -> "09:00"
+    this.observaciones = reserva.observaciones ?? '';
+    this.servicioIds = (reserva.servicios ?? []).map((s) => s.id);
+  }
 
 
   cambiarEspecialidad(valor: string): void {

@@ -1,7 +1,14 @@
+@if (reservaEditando(); as reserva) {
+<h1>Editar reserva #{{ reserva.idReserva }}</h1>
+} @else {
 <h1>Nueva reserva</h1>
+}
+
+@if (reservaEditando() && error()) {
+<p style="color: red;" role="alert">{{ error() }}</p>
+}
 
 <app-reserva-form [especialidades]="especialidades()" [medicos]="medicos()" [servicios]="servicios()"
+    [reservaEditando]="reservaEditando()"
     (especialidadCambiada)="cargarMedicos($event)" (reservaGuardada)="guardarReserva($event)">
 </app-reserva-form>
-
-

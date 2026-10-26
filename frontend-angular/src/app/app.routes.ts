@@ -9,6 +9,7 @@ import { MostrarReservas } from './components/mostrar-reservas/mostrar-reservas.
 export const routes: Routes = [
   { path: 'inicio', component: Inicio },
   { path: 'reservas', component: Reservas },
+  { path: 'reservas/editar/:id', component: Reservas },
   { path: 'usuarios', component: UsuariosComponent },
   { path: 'registro', component: Registro },
   { path: 'inicio-sesion', component: InicioSesion },

@@ -45,7 +45,7 @@
   }
   <br>
 
-  <button type="submit" [disabled]="formulario.invalid">Guardar</button>
+  <button type="submit" [disabled]="formulario.invalid">{{ reservaEditando() ? 'Guardar cambios' : 'Guardar' }}</button>
 </form>
 
 <br>
