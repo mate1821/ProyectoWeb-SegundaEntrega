@@ -1,41 +1,95 @@
 import { Component, output } from '@angular/core';
 import { Usuario } from '../../models/usuario.model';
-import { FormsModule } from '@angular/forms';
+import {FormsModule,ReactiveFormsModule,FormGroup,FormControl,Validators} from '@angular/forms';
 
 @Component({
-  imports: [FormsModule],
+  imports: [FormsModule, ReactiveFormsModule],
   selector: 'app-usuario-form',
   styleUrl: './usuario-form.component.css',
   templateUrl: './usuario-form.component.html',
 })
 export class UsuarioForm {
-  
-  id: number | null=null;
-  cedula: number | null=null;
-  nombre: string = '';
-  fecha_nacimiento: string = '';
-  telefono: string = '';
-  correo: string = '';
-  contrasena: string = '';
-  activo: boolean = true;
-  rolId: number = 2;
-  antecedentes: string = '';
-  especialidadId: number | string = '';
-  espacioId: number | string = '';
+formularioUsuario = new FormGroup({
+
+  cedula: new FormControl('', {
+    nonNullable: true,
+    validators: [
+      Validators.required,
+      Validators.pattern(/^[0-9]{6,10}$/)
+    ]
+  }),
+
+  nombre: new FormControl('', {
+    nonNullable: true,
+    validators: [
+      Validators.required,
+      Validators.minLength(2),
+      Validators.maxLength(100)
+    ]
+  }),
+
+  fecha_nacimiento: new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required]
+  }),
+
+  telefono: new FormControl('', {
+    nonNullable: true,
+    validators: [
+      Validators.required,
+      Validators.pattern(/^[0-9]{10}$/)
+    ]
+  }),
+
+  correo: new FormControl('', {
+    nonNullable: true,
+    validators: [
+      Validators.required,
+      Validators.email,
+      Validators.maxLength(120)
+    ]
+  }),
+
+  contrasena: new FormControl('', {
+    nonNullable: true,
+    validators: [
+      Validators.required,
+      Validators.minLength(6),
+      Validators.maxLength(120)
+    ]
+  }),
+
+  rolId: new FormControl(2, {
+    nonNullable: true,
+    validators: [Validators.required]
+  }),
+
+  antecedentes: new FormControl('', {
+    nonNullable: true
+  })
+
+});
+
 
   usuarioGuardado = output<Usuario>()
 
   guardar() {
-    const nuevoUsuario: Usuario = {
-      cedula: Number(this.cedula),
-      nombre: this.nombre,
-      fecha_nacimiento: this.fecha_nacimiento,
-      telefono: this.telefono,
-      correo: this.correo,
-      contrasena: this.contrasena,
-      activo: this.activo,
-      rol: { id: Number(this.rolId) },
-      antecedentes: this.rolId == 2 ? this.antecedentes : ''
+
+  this.formularioUsuario.markAllAsTouched();
+  if (this.formularioUsuario.invalid) {
+    return;
+  }
+  const datos = this.formularioUsuario.getRawValue();
+  const nuevoUsuario: Usuario = {
+      cedula: Number(datos.cedula),
+      nombre: datos.nombre,
+      fecha_nacimiento: datos.fecha_nacimiento,
+      telefono: datos.telefono,
+      correo: datos.correo,
+      contrasena: datos.contrasena,
+      activo: true,
+      rol: { id: datos.rolId },
+      antecedentes: datos.rolId === 2 ? datos.antecedentes : ''
     };
 
     /* ESTO ESTÁ TEMPORALMENTE COMENTADO PORQUE NO HEMOS TRAIDO LA CLASE MEDICO
