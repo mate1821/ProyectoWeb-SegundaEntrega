@@ -1,16 +1,22 @@
 <h1>Usuarios</h1>
 <a routerLink="/registro">Nuevo usuario</a>
 
+<div>
+  <label for="filtroRol">Filtrar por rol: </label>
+  <select id="filtroRol" [formControl]="filtroRol">
+    <option value="">Todos</option>
+    <option value="1">Médico</option>
+    <option value="2">Paciente</option>
+    <option value="3">Administrador</option>
+  </select>
+</div>
+
 @if(usuarios.length===0){
   <p>Cargando usuarios...</p>
 }
+@else{
 
-
-@if (error) {
-  <p style="color: red;" role="alert">{{ error }}</p>
-}
-
-<table border="4">
+<table border="1">
   <thead>
     <tr>
       <th>ID</th>
@@ -37,19 +43,12 @@
         } @else {
         <a (click)="activarUsuario(usuario?.id!)" style="cursor: pointer; color: blue;">Activar</a>
         }
-        @if (idPorEliminar === usuario.id) {
-        <span role="alert">¿Eliminar a {{ usuario.nombre }}?</span>
-        <button type="button" (click)="eliminarUsuario(usuario.id)">Sí, eliminar</button>
-        <button type="button" (click)="cancelarEliminacion()">No</button>
-        } @else {
-        <button type="button" (click)="pedirConfirmacion(usuario.id)">Eliminar</button>
-        }
       </td>
     </tr>
     }
-    
   </tbody>
 </table>
+
 <div>
   <button (click)="anterior()" [disabled]="paginaActual === 1">
     Anterior
@@ -60,4 +59,5 @@
   <button (click)="siguiente()" [disabled]="paginaActual === totalPaginas">
     Siguiente
   </button>
-  </div>
+</div>
+}

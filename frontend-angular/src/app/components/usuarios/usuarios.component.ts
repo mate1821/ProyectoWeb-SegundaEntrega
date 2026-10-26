@@ -5,11 +5,13 @@ import { RouterLink } from '@angular/router';
 import { UsuarioService } from '../../services/usuario.service';
 import { Usuario } from '../../models/usuario.model';
 import { ChangeDetectorRef } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-usuarios',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule],
   templateUrl: './usuarios.component.html',
   styleUrls: ['./usuarios.component.css']
 })
@@ -18,11 +20,16 @@ export class UsuariosComponent implements OnInit {
   idPorEliminar: number | null = null; // usuario que espera confirmación para eliminarse
   error = '';
 
+  usuariosOriginales: Usuario[] = [];
+
   usuarioService=inject(UsuarioService);
   private cdr = inject(ChangeDetectorRef);
 
+  filtroRol = new FormControl('');
+
   ngOnInit(): void {
     this.cargarUsuarios();
+    this.configurarFiltro();
     console.log("HOLA SE SUPONE QUE CARGUE LOS USUARIOS")
   }
 
@@ -30,6 +37,7 @@ export class UsuariosComponent implements OnInit {
     this.usuarioService.obtenerUsuarios().subscribe({
       next: (data) => { console.log("esta llegando esto:", data);
         this.usuarios = data;
+        this.usuariosOriginales = data;
       this.cdr.detectChanges();}, // Esta cosa es un parche temporal porque no supe como hacer que refrescara
       error: (err) => {console.error('Error al cargar usuarios:', err);}
     });
@@ -114,4 +122,25 @@ export class UsuariosComponent implements OnInit {
     }
   }
 
+  //Para implementar la pipe, hago un filtro por rol:
+  configurarFiltro(): void {
+    this.filtroRol.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      map(rolId => {
+        if (!rolId) {
+          return this.usuariosOriginales; //Si no se le pone ID, se muestran todos
+        }
+        return this.usuariosOriginales.filter(u => { //Si hay id, entonces filtre todos los ussuarios y retorne el id usuario donde el id de rol sea el buscado
+          return u.rol?.id == Number(rolId);
+        });
+      })
+    ).subscribe({
+      next: (filtrados) => {
+        this.usuarios = filtrados;
+        this.paginaActual = 1;
+        this.cdr.detectChanges();
+      }
+    });
+  }
 }
