@@ -1,11 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Location } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
-  imports: [],
+  imports: [RouterLink],
   selector: 'app-inicio',
   styleUrl: './inicio.component.css',
   templateUrl: './inicio.component.html',
 })
 export class Inicio {
-  //LE CREE ESTO A JUANMA PARA DARLE ALGO DE SENTIDO AL FLUJO
+
+  private location = inject(Location);
+
+  nombreUsuario: string =
+    (this.location.getState() as { nombre?: string } | null)?.nombre?.trim() || 'Usuario';
+
 }
