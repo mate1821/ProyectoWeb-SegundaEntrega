@@ -1,12 +1,22 @@
 package com.health.project.controllers;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.health.project.entitys.Rol;
 import com.health.project.entitys.Usuario;
 import com.health.project.errors.UsuarioConReservasException;
+import com.health.project.errors.UsuarioDuplicado;
+import com.health.project.service.EspacioService;
+import com.health.project.service.EspecialidadService;
+import com.health.project.service.MedicoService;
+import com.health.project.service.RolService;
 import com.health.project.service.UsuarioService;
 import jakarta.servlet.http.HttpSession;
 
@@ -15,42 +25,70 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/api/usuarios")
 public class UsuarioRestController {
 
-private final UsuarioService usuarioService;
+    @Autowired
+    private UsuarioService usuarioService;
 
-public UsuarioRestController(UsuarioService usuarioService) {
-    this.usuarioService = usuarioService;
-}
+    @Autowired
+    private RolService rolService;
 
-@GetMapping
-public List<Usuario> listar() {
-    return usuarioService.buscarTodos();
-}
+    @Autowired
+    private EspecialidadService espService;
 
-@GetMapping("/{id}")
-public Usuario buscarPorId(@PathVariable Long id) {
-    return usuarioService.buscarPorId(id);
-}
+    @Autowired
+    private MedicoService medicoService;
 
-@PostMapping
-public Usuario crear(@RequestBody Usuario usuario) {
-    usuarioService.guardar(usuario);
-    return usuario;
-}
+    @Autowired
+    private EspacioService espacioService;
 
-@PutMapping("/{id}")
-public Usuario actualizar(
-        @PathVariable Long id,
-        @RequestBody Usuario usuario) {
+    @GetMapping
+    public List<Usuario> listar() {
+        return usuarioService.buscarTodos();
+    }
 
-    usuario.setId(id);
-    usuarioService.guardar(usuario);
-    return usuario;
+    @GetMapping("/{id}")
+    public Usuario buscarPorId(@PathVariable Long id) {
+        return usuarioService.buscarPorId(id);
+    }
+
+    @PostMapping
+    public ResponseEntity<?> crear(@RequestBody Usuario usuario,
+            @RequestParam(required = false) Long especialidadId,
+            @RequestParam(required = false) Long espacioId) {
+
+        if (usuario.getRol() == null || usuario.getRol().getId() == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Debe seleccionar un rol"));
+        }
+        Rol rol = rolService.searchById(usuario.getRol().getId());
+        if (rol == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "El rol no existe"));
+        }
+        usuario.setRol(rol);
+        usuario.setFechaRegistro(LocalDateTime.now());
+
     
-}
-@PutMapping("/activar/{id}")
+            if ("Medico".equalsIgnoreCase(rol.getNombre())) {
+                medicoService.guardarMedicoDesdeUsuario(usuario, especialidadId, espacioId);
+            } else {
+                usuarioService.guardar(usuario);
+            }
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        }
+
+    @PutMapping("/{id}")
+    public Usuario actualizar(
+            @PathVariable Long id,
+            @RequestBody Usuario usuario) {
+
+        usuario.setId(id);
+        usuarioService.guardar(usuario);
+        return usuario;
+
+    }
+
+    @PutMapping("/activar/{id}")
     public ResponseEntity<?> activarUsuario(@PathVariable Long id) {
         try {
-            usuarioService.activar(id); 
+            usuarioService.activar(id);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al activar el usuario: " + e.getMessage());
@@ -67,7 +105,8 @@ public Usuario actualizar(
         }
     }
 
-    // DELETE /api/usuarios/{id} -> elimina el usuario (204). 404 si no existe, 409 si tiene reservas.
+    // DELETE /api/usuarios/{id} -> elimina el usuario (204). 404 si no existe, 409
+    // si tiene reservas.
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable Long id) {
         if (usuarioService.buscarPorId(id) == null) {

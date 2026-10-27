@@ -1,6 +1,11 @@
-import { Component, output } from '@angular/core';
+import { Component, inject, output } from '@angular/core';
 import { Usuario } from '../../models/usuario.model';
 import {FormsModule,ReactiveFormsModule,FormGroup,FormControl,Validators} from '@angular/forms';
+import { Espacio } from '../../models/espacio.model';
+import { Especialidad } from '../../models/especialidad.model';
+import { ActivatedRoute, Router } from '@angular/router';
+import { EspacioService } from '../../services/espacio.service';
+import { EspecialidadService } from '../../services/especialidades.service';
 
 @Component({
   imports: [FormsModule, ReactiveFormsModule],
@@ -9,6 +14,27 @@ import {FormsModule,ReactiveFormsModule,FormGroup,FormControl,Validators} from '
   templateUrl: './usuario-form.component.html',
 })
 export class UsuarioForm {
+
+  router = inject(Router)
+  route = inject(ActivatedRoute)
+  espacioService = inject(EspacioService)
+  especialidadService = inject(EspecialidadService)
+
+
+  listaEspecialidades: Especialidad[] = [];
+  listaEspacios: Espacio[] = [];
+
+
+   ngOnInit(): void {
+    this.especialidadService.obtenerEspecialidades().subscribe({
+      next: (d) => this.listaEspecialidades = d,
+      error: (e) => console.error('Error al cargar especialidades', e)
+    });
+    this.espacioService.obtenerEspacios().subscribe({
+      next: (d) => this.listaEspacios = d,
+      error: (e) => console.error('Error al cargar espacios', e)
+    });
+  }
 formularioUsuario = new FormGroup({
 
   cedula: new FormControl('', {
@@ -66,7 +92,11 @@ formularioUsuario = new FormGroup({
 
   antecedentes: new FormControl('', {
     nonNullable: true
-  })
+  }),
+
+  especialidadId: new FormControl<number | null>(null),
+  
+  espacioId: new FormControl<number | null>(null)
 
 });
 
@@ -79,6 +109,7 @@ formularioUsuario = new FormGroup({
   if (this.formularioUsuario.invalid) {
     return;
   }
+
   const datos = this.formularioUsuario.getRawValue();
   const nuevoUsuario: Usuario = {
       cedula: Number(datos.cedula),
@@ -92,12 +123,10 @@ formularioUsuario = new FormGroup({
       antecedentes: datos.rolId === 2 ? datos.antecedentes : ''
     };
 
-    /* ESTO ESTÁ TEMPORALMENTE COMENTADO PORQUE NO HEMOS TRAIDO LA CLASE MEDICO
-    if (this.rolId == 1) {
-      console.log('Especialidad seleccionada:', this.especialidadId);
-      console.log('Espacio seleccionado:', this.espacioId);
+    if (Number(datos.rolId) === 1) {
+      nuevoUsuario.especialidadId = datos.especialidadId ? Number(datos.especialidadId) : null;
+      nuevoUsuario.espacioId = datos.espacioId ? Number(datos.espacioId) : null;
     }
-    */
     this.usuarioGuardado.emit(nuevoUsuario);
   }
 }

@@ -72,11 +72,28 @@
 @switch (formularioUsuario.controls.rolId.value) {
 
   @case (1) {
-    <div>
-      <p>Has seleccionado el rol de Médico.</p>
-    </div>
-  }
+  <div>
+    <p>Has seleccionado el rol de Médico.</p>
 
+    <label for="especialidadId">Especialidad:</label>
+    <select id="especialidadId" formControlName="especialidadId">
+      <option [ngValue]="null" disabled>-- Seleccione una especialidad --</option>
+      @for (esp of listaEspecialidades; track esp.id) {
+        <option [ngValue]="esp.id">{{ esp.nombreEspecialidad }}</option>
+      }
+    </select>
+    <br><br>
+
+    <label for="espacioId">Espacio:</label>
+    <select id="espacioId" formControlName="espacioId">
+      <option [ngValue]="null" disabled>-- Seleccione un espacio --</option>
+      @for (espacio of listaEspacios; track espacio.id) {
+        <option [ngValue]="espacio.id">{{ espacio.ubicacion }}</option>
+      }
+    </select>
+    <br><br>
+  </div>
+}
   @case (2) {
     <div>
       <p>Has seleccionado el rol de Paciente.</p>
