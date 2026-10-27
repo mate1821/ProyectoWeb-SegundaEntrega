@@ -1,0 +1,159 @@
+<section class="admin-panel">
+
+  <!-- ENCABEZADO -->
+  <header class="admin-header">
+
+    <h1>Panel de administración</h1>
+
+    <!-- Interpolación del nombre del administrador -->
+    <h2>Bienvenido, {{ nombreAdmin() }}</h2>
+
+    <p>
+      Desde aquí puedes consultar y modificar
+      el estado de las reservas.
+    </p>
+
+  </header>
+
+
+  <!-- CONTADOR DE MODIFICACIONES -->
+  <div class="contador-card">
+
+    <h3>Consultas modificadas en esta sesión</h3>
+
+    <p class="contador-numero">
+      {{ contadorModificaciones() }}
+    </p>
+
+    <p class="contador-descripcion">
+      Modificaciones realizadas durante tu sesión actual.
+    </p>
+
+  </div>
+
+
+  <!-- MENSAJES -->
+  @if (mensaje()) {
+
+    <div class="mensaje-exito" role="status">
+      {{ mensaje() }}
+    </div>
+
+  }
+
+  @if (error()) {
+
+    <div class="mensaje-error" role="alert">
+      {{ error() }}
+    </div>
+
+  }
+
+
+  <!-- LISTADO DE CONSULTAS -->
+  <div class="consultas-section">
+
+    <h3>Consultas disponibles</h3>
+
+    <p>
+      Puedes modificar el estado de cada consulta.
+      El contador aumentará únicamente cuando el cambio
+      se guarde correctamente.
+    </p>
+
+    <div class="tabla-contenedor">
+
+      <table class="consultas-tabla">
+
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Paciente</th>
+            <th>Fecha</th>
+            <th>Estado actual</th>
+            <th>Modificar estado</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          @for (reserva of reservas(); track reserva.idReserva) {
+
+            <tr>
+
+              <!-- IDENTIFICADOR -->
+              <td>
+                #{{ reserva.idReserva }}
+              </td>
+
+              <!-- NOMBRE DEL PACIENTE -->
+              <td>
+                {{ reserva.usuario?.nombre || 'Sin nombre' }}
+              </td>
+
+              <!-- FECHA DE LA CONSULTA -->
+              <td>
+                {{ reserva.fecha }}
+              </td>
+
+              <!-- ESTADO ACTUAL -->
+              <td>
+                <span class="estado-actual">
+                  {{ reserva.estado?.nombre || 'Sin estado' }}
+                </span>
+              </td>
+
+              <!-- SELECTOR PARA MODIFICAR EL ESTADO -->
+              <td>
+
+                <select
+                  #selectorEstado
+                  [attr.aria-label]="'Cambiar estado de la consulta ' + reserva.idReserva"
+                  [disabled]="guardandoId() !== null || estados().length === 0"
+                  (change)="cambiarEstado(reserva, selectorEstado)"
+                >
+
+                  @for (estado of estados(); track estado.id) {
+
+                    <option
+                      [value]="estado.id"
+                      [selected]="estado.id === reserva.estado?.id"
+                    >
+                      {{ estado.nombre }}
+                    </option>
+
+                  }
+
+                </select>
+
+                @if (guardandoId() === reserva.idReserva) {
+
+                  <span class="guardando">
+                    Guardando...
+                  </span>
+
+                }
+
+              </td>
+
+            </tr>
+
+          } @empty {
+
+            <tr>
+              <td colspan="5" class="sin-consultas">
+                No hay consultas disponibles.
+              </td>
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
