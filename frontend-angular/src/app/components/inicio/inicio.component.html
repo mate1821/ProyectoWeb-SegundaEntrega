@@ -1,2 +1,48 @@
-<!--esto es temporal, juanma debe ir cambiando esto-->
-<p>inicio works!</p>
+<main class="pagina-inicio">
+
+  <div class="tarjeta-bienvenida">
+
+    <h1>
+      Bienvenido al sistema de reservas médicas
+    </h1>
+
+    <h2>
+      ¡Hola,
+      <span
+        class="nombre-usuario"
+        [textContent]="nombreUsuario">
+      </span>!
+    </h2>
+
+    <p>
+      Nos alegra tenerte aquí.
+    </p>
+
+    <p>
+      En nuestro sistema podrás gestionar tus reservas médicas
+      de manera fácil y rápida.
+    </p>
+
+    <h3>
+      ¿Qué deseas hacer hoy?
+    </h3>
+
+    <nav class="acciones" aria-label="Opciones del usuario">
+
+      <a
+        routerLink="/reservas"
+        class="boton-accion">
+        Crear cita
+      </a>
+
+      <a
+        routerLink="/mostrar-reservas"
+        class="boton-accion boton-secundario">
+        Mis reservas
+      </a>
+
+    </nav>
+
+  </div>
+
+</main>

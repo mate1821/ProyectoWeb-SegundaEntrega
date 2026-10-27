@@ -20,7 +20,9 @@ export class InicioSesion {
     this.usuarioService.login(credenciales).subscribe({
       next: (usuario) => {
         console.log('¡Inicio de sesión exitoso!', usuario);
-        this.router.navigate(['/inicio']);
+        this.router.navigate(['/inicio'], {
+        state: {nombre: usuario.nombre}
+        });
       },
       error: (error) => {
         console.error('Error de autenticación:', error);
