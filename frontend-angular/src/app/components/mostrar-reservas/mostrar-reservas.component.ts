@@ -1,6 +1,6 @@
 
 import { Component, OnInit, inject, signal, } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, ActivatedRoute } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Reserva } from '../../models/reserva.model';
 import { EstadoReserva } from '../../models/estado.model';
@@ -13,7 +13,11 @@ import { EstadoService } from '../../services/estado.service';
   styleUrl: './mostrar-reservas.component.css',
   templateUrl: './mostrar-reservas.component.html',
 })
-export class MostrarReservas implements OnInit  {
+export class MostrarReservas implements OnInit {
+
+  private route = inject(ActivatedRoute);
+  usuarioId = Number(this.route.snapshot.paramMap.get('id'));
+  esMedico = this.route.snapshot.data['rol'] === 'medico';
 
 
   private reservaService = inject(ReservaService);
@@ -33,7 +37,11 @@ export class MostrarReservas implements OnInit  {
   }
 
   cargarReservas(): void {
-    this.reservaService.obtenerMisReservas().subscribe({
+    const peticion = this.esMedico
+      ? this.reservaService.obtenerReservasMedico(this.usuarioId)
+      : this.reservaService.obtenerMisReservas(this.usuarioId);
+
+    peticion.subscribe({
       next: (data) => this.reservas.set(data),
       error: (err: unknown) => this.mostrarError(err),
     });
@@ -43,13 +51,13 @@ export class MostrarReservas implements OnInit  {
     if (reserva.idReserva === undefined) {
       return;
     }
-    
+
     this.mensaje.set('');
     this.error.set('');
     this.reservaService.cambiarEstado(reserva.idReserva, Number(idEstado)).subscribe({
       next: (actualizada) => {
         this.mensaje.set(`Reserva #${reserva.idReserva} ahora está ${actualizada.estado?.nombre}.`);
-        this.cargarReservas(); 
+        this.cargarReservas();
       },
       error: (err: unknown) => this.mostrarError(err),
     });
@@ -67,6 +75,8 @@ export class MostrarReservas implements OnInit  {
       this.error.set('No se pudo completar la operación. Verifica que el backend esté encendido.');
     }
   }
+
+  
 }
 
 

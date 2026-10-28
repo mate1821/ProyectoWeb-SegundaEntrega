@@ -40,7 +40,7 @@ public class UsuarioRestController {
     @Autowired
     private EspacioService espacioService;
 
-    @GetMapping
+    @GetMapping //Si solo dice api usuarios, los lista con paginación: /api/usuarios 
     public List<Usuario> listar() {
         return usuarioService.buscarTodos();
     }
@@ -50,7 +50,7 @@ public class UsuarioRestController {
         return usuarioService.buscarPorId(id);
     }
 
-    @PostMapping
+    @PostMapping//Aqui la URL va a tener los 2 parámetros que se le envían
     public ResponseEntity<?> crear(@RequestBody Usuario usuario,
             @RequestParam(required = false) Long especialidadId,
             @RequestParam(required = false) Long espacioId) {
@@ -74,7 +74,7 @@ public class UsuarioRestController {
             return ResponseEntity.status(HttpStatus.CREATED).build();
         }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}")//api/usuarios/id
     public Usuario actualizar(
             @PathVariable Long id,
             @RequestBody Usuario usuario) {
@@ -85,7 +85,7 @@ public class UsuarioRestController {
 
     }
 
-    @PutMapping("/activar/{id}")
+    @PutMapping("/activar/{id}")//api/usuarios/activar/id
     public ResponseEntity<?> activarUsuario(@PathVariable Long id) {
         try {
             usuarioService.activar(id);
@@ -95,7 +95,7 @@ public class UsuarioRestController {
         }
     }
 
-    @PutMapping("/desactivar/{id}")
+    @PutMapping("/desactivar/{id}")//api/usuarios/desactivar/id
     public ResponseEntity<?> desactivarUsuario(@PathVariable Long id) {
         try {
             usuarioService.desactivar(id);

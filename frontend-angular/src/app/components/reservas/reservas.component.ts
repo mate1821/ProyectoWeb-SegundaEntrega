@@ -29,6 +29,8 @@ export class Reservas implements OnInit {
   error = signal('');
   reservaEditando = signal<Reserva | null>(null); // la reserva que se edita (ruta /reservas/editar/:id)
 
+  private idRuta = Number(this.route.snapshot.paramMap.get('id'));
+  private modoEditar = this.route.snapshot.data['editar'] === true;
 
   especialidades = signal<Especialidad[]>([]);
   medicos = signal<Medico[]>([]);
@@ -47,27 +49,22 @@ export class Reservas implements OnInit {
     });
 
     // En /reservas/editar/:id se busca la reserva para llenar el formulario
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    if (id) {
-      this.cargarReservaAEditar(id);
+    if (this.modoEditar) {
+      this.cargarReservaAEditar(this.idRuta);
     }
   }
 
-  private cargarReservaAEditar(id: number): void {
-    this.reservaService.obtenerMisReservas().subscribe({
-      next: (reservas) => {
-        const reserva = reservas.find((r) => r.idReserva === id);
-        if (!reserva) {
-          this.router.navigate(['/mostrar-reservas']); // no existe o no es del usuario
-          return;
-        }
+
+   private cargarReservaAEditar(id: number): void {
+    this.reservaService.obtenerReserva(id).subscribe({
+      next: (reserva) => {
         this.reservaEditando.set(reserva);
         const especialidadId = reserva.medico?.especialidad?.id;
         if (especialidadId !== undefined) {
-          this.cargarMedicos(especialidadId); // para que el médico actual aparezca en la lista
+          this.cargarMedicos(especialidadId);
         }
       },
-      error: () => this.router.navigate(['/mostrar-reservas']), // ahí se muestra el error (ej. sin sesión)
+      error: (err: unknown) => this.mostrarError(err),
     });
   }
 
@@ -79,30 +76,25 @@ export class Reservas implements OnInit {
     });
   }
 
-    guardarReserva(reserva: Reserva): void {
+   guardarReserva(reserva: Reserva): void {
     this.mensaje.set('');
     this.error.set('');
 
-    // Si se está editando se actualiza la reserva (PUT); si no, se crea una nueva (POST)
     const idEditando = this.reservaEditando()?.idReserva;
     if (idEditando !== undefined) {
       this.reservaService.actualizarReserva(idEditando, reserva).subscribe({
-        next: () => this.router.navigate(['/mostrar-reservas']),
+        next: () => this.router.navigate(['/mostrar-reservas', this.reservaEditando()?.usuario?.id]),
         error: (err: unknown) => this.mostrarError(err),
       });
       return;
     }
 
-    this.reservaService.crearReserva(reserva).subscribe({
-      next: (creada) => {
-        this.mensaje.set(`Reserva #${creada.idReserva} creada. Total: $${creada.total}`);
-        console.log("Si se logro la reserva ")
-        this.router.navigate(['/inicio']);
-
-      },
+    this.reservaService.crearReserva(this.idRuta, reserva).subscribe({
+      next: () => this.router.navigate(['/inicio', this.idRuta]),
       error: (err: unknown) => this.mostrarError(err),
     });
   }
+
 
   private mostrarError(err: unknown): void {
     const cuerpo: unknown = err instanceof HttpErrorResponse ? err.error : null;

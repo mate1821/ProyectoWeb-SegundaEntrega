@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
-import { Location } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { UsuarioService } from '../../services/usuario.service';
 
 @Component({
   imports: [RouterLink],
@@ -8,11 +8,18 @@ import { RouterLink } from '@angular/router';
   styleUrl: './inicio.component.css',
   templateUrl: './inicio.component.html',
 })
-export class Inicio {
+export class Inicio implements OnInit {
 
-  private location = inject(Location);
+  private route = inject(ActivatedRoute);
+  private usuarioService = inject(UsuarioService);
 
-  nombreUsuario: string =
-    (this.location.getState() as { nombre?: string } | null)?.nombre?.trim() || 'Usuario';
+  usuarioId = Number(this.route.snapshot.paramMap.get('id'));
+  nombreUsuario = signal('Usuario');
 
+  ngOnInit(): void {
+    this.usuarioService.buscarPorId(this.usuarioId).subscribe({
+      next: (u) => this.nombreUsuario.set(u.nombre),
+      error: (e) => console.error('No se pudo cargar el usuario', e)
+    });
+  }
 }

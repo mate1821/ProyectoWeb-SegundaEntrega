@@ -16,10 +16,14 @@ export class UsuarioService {
     return this.http.get<Usuario[]>(this.apiUrl);
   }
 
+  buscarPorId(id: number): Observable<Usuario> {
+    return this.http.get<Usuario>(`${this.apiUrl}/${id}`);
+  }
+
   agregarUsuario(usuario: Usuario): Observable<void> {
     const { especialidadId, espacioId, ...datos } = usuario;
     let params = new HttpParams(); //Se usa para mandar los parámetros especiales de médico, fuente: https://angular.dev/api/common/http/HttpParams
-    if (especialidadId != null) params = params.set('especialidadId', especialidadId); 
+    if (especialidadId != null) params = params.set('especialidadId', especialidadId);
     if (espacioId != null) params = params.set('espacioId', espacioId);
     return this.http.post<void>(this.apiUrl, datos, { params });
   }

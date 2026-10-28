@@ -1,13 +1,9 @@
-
-import { Service, inject } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Servicio} from '../models/servicio.model';
+import { Servicio } from '../models/servicio.model';
 
-
-
-
-@Service()
+@Injectable({ providedIn: 'root' })
 export class ServiciosService {
     private http = inject(HttpClient);
     private apiUrl = 'http://localhost:8090/api/servicios';

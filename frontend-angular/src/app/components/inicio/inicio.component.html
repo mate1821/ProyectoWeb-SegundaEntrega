@@ -10,7 +10,7 @@
       ¡Hola,
       <span
         class="nombre-usuario"
-        [textContent]="nombreUsuario">
+        [textContent]="nombreUsuario()">
       </span>!
     </h2>
 
@@ -30,16 +30,18 @@
     <nav class="acciones" aria-label="Opciones del usuario">
 
       <a
-        routerLink="/reservas"
+        [routerLink]="['/reservas', usuarioId]"
         class="boton-accion">
         Crear cita
       </a>
 
       <a
-        routerLink="/mostrar-reservas"
+        [routerLink]="['/mostrar-reservas', usuarioId]"
         class="boton-accion boton-secundario">
         Mis reservas
       </a>
+
+      <a routerLink="/inicio-sesion">Cerrar sesión</a>
 
     </nav>
 

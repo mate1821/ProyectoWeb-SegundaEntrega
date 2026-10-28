@@ -1,13 +1,22 @@
 <div class="container">
     <h1>Mostrar reservas</h1>
 
+    @if (esMedico) {
+    <a [routerLink]="['/inicio-medico', usuarioId]"> Volver al inicio</a>
+    } @else {
+    <a [routerLink]="['/inicio', usuarioId]"> Volver al inicio</a>
+    }
+    <!-- Mensajes de éxito o error -->
     @if (mensaje()) {
     <p class="mensaje-ok">{{ mensaje() }}</p>
     }
+
     @if (error()) {
     <p class="mensaje-error" role="alert">{{ error() }}</p>
     }
-
+    @if (reservas().length === 0) {
+    <p>Cargando reservas...</p>
+    } @else {
     <table border="1">
         <thead>
             <tr>
@@ -31,7 +40,7 @@
                 <td>{{ reserva.usuario?.nombre }}</td>
                 <td>{{ reserva.medico?.espacio?.nombre }}</td>
                 <td>{{ reserva.fecha }}</td>
-                <td>{{ reserva.horaInicio.substring(0, 5) }}</td>
+                <td>{{ reserva.horaInicio?.substring(0, 5) }}</td>
                 <td>{{ reserva.horaFin?.substring(0, 5) }}</td>
                 <td>{{ reserva.total }}</td>
                 <td>{{ reserva.medico?.nombre }}</td>
@@ -46,7 +55,9 @@
                     </select>
                 </td>
                 <td>
+                    @if (!esMedico) {
                     <a [routerLink]="['/reservas/editar', reserva.idReserva]">Editar</a>
+                    }
                 </td>
             </tr>
             } @empty {
@@ -56,4 +67,5 @@
             }
         </tbody>
     </table>
+    }
 </div>

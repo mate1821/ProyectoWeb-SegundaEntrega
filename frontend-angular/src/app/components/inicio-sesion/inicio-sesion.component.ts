@@ -21,19 +21,16 @@ export class InicioSesion {
 
     this.usuarioService.login(credenciales).subscribe({
       next: (usuario) => {
-      console.log('¡Inicio de sesión exitoso!', usuario);
+        const rol = usuario?.rol?.nombre?.trim().toLowerCase();
 
-      const esAdmin =
-        usuario?.rol?.nombre?.trim().toLowerCase() === 'administrador';
+        if (rol === 'administrador') {
+          this.adminService.iniciarSesion(usuario.nombre);
+          this.router.navigate(['/admin']);
+          return;
+        }
 
-      if (esAdmin) {
-        this.adminService.iniciarSesion(usuario.nombre);
-      } else {
         this.adminService.cerrarSesion();
-      }
-      this.router.navigate([esAdmin ? '/admin' : '/inicio'],{
-        state: { nombre: usuario.nombre }
-      });
+        this.router.navigate([rol === 'medico' ? '/inicio-medico' : '/inicio', usuario.id]);
       },
       error: (error) => {
         console.error('Error de autenticación:', error);

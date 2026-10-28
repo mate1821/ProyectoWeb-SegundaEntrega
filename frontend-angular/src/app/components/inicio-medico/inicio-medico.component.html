@@ -1,0 +1,8 @@
+<h1>Bienvenido, Dr(a). <span [textContent]="nombre()"></span></h1>
+<p>¿Qué deseas hacer?</p>
+
+<a [routerLink]="['/reservas-medico', medicoId]">
+  <button type="button">Ver mis reservas</button>
+</a>
+
+<a routerLink="/inicio-sesion">Cerrar sesión</a>
