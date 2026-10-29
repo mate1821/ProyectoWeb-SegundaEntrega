@@ -1,0 +1,115 @@
+.pagina-inicio {
+  min-height: 70vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 24px;
+  background-color: #f0f7fb;
+  box-sizing: border-box;
+}
+
+.tarjeta-bienvenida {
+  width: 100%;
+  max-width: 650px;
+  padding: 40px 30px;
+
+  background-color: white;
+  border-radius: 15px;
+
+  text-align: center;
+
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+h1 {
+  color: #2471a3;
+  font-size: 28px;
+  margin-bottom: 25px;
+}
+
+h2 {
+  color: #34495e;
+  font-size: 23px;
+  margin-bottom: 20px;
+}
+
+.nombre-usuario {
+  color: #2980b9;
+  font-weight: bold;
+}
+
+p {
+  color: #666;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+h3 {
+  color: #34495e;
+  font-size: 19px;
+  margin-top: 30px;
+}
+
+.acciones {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+
+  margin-top: 25px;
+}
+
+.boton-accion {
+  display: inline-block;
+
+  padding: 12px 25px;
+
+  background-color: #2471a3;
+  color: white;
+
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: bold;
+
+  border: 2px solid #2471a3;
+  border-radius: 8px;
+
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.boton-accion:hover {
+  background-color: #1a5276;
+  border-color: #1a5276;
+}
+
+.boton-accion.boton-secundario {
+  background-color: white;
+  color: #2471a3;
+}
+
+.boton-accion.boton-secundario:hover {
+  background-color: #eaf4fb;
+}
+
+.boton-accion:focus-visible {
+  outline: 3px solid #f39c12;
+  outline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+  .tarjeta-bienvenida {
+    padding: 30px 20px;
+  }
+
+  .acciones {
+    flex-direction: column;
+  }
+
+  .boton-accion {
+    text-align: center;
+  }
+}

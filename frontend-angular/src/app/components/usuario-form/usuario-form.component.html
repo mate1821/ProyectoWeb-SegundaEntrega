@@ -1,85 +1,130 @@
 <h2>Formulario de Usuario</h2>
 
-<form (ngSubmit)="guardar()">
+<form [formGroup]="formularioUsuario" (ngSubmit)="guardar()">
 
   <label for="cedula">Cédula</label>
-  <input type="number" id="cedula" [(ngModel)]="cedula" name="cedula" required>
+  <input type="text" inputmode="numeric" id="cedula" formControlName="cedula" required>
+  @if (formularioUsuario.controls.cedula.invalid && formularioUsuario.controls.cedula.touched) {
+  <small style="color: red;">
+    La cédula es obligatoria y debe tener entre 6 y 10 dígitos.
+  </small>
+}
   <br><br>
 
   <label for="nombre">Nombre</label>
-  <input type="text" id="nombre" [(ngModel)]="nombre" name="nombre" required>
+ <input type="text" id="nombre" formControlName="nombre">
+ @if (formularioUsuario.controls.nombre.invalid && formularioUsuario.controls.nombre.touched) {
+  <small style="color: red;">
+    El nombre es obligatorio y debe tener entre 2 y 100 caracteres.
+  </small>
+}
 
   <br><br>
   <label for="fecha_nacimiento">Fecha de nacimiento</label>
-  <input type="date" id="fecha_nacimiento" [(ngModel)]="fecha_nacimiento" name="fecha_nacimiento" required>
+  <input type="date" id="fecha_nacimiento" formControlName="fecha_nacimiento" required>
+  @if (formularioUsuario.controls.fecha_nacimiento.invalid && formularioUsuario.controls.fecha_nacimiento.touched) {
+  <small style="color: red;">
+    La fecha de nacimiento es obligatoria.
+  </small>
+}
   <br><br>
 
   <label for="telefono">Teléfono</label>
-  <input type="text" id="telefono" [(ngModel)]="telefono" name="telefono" required>
+  <input type="text" id="telefono" formControlName="telefono" required>
+  @if (formularioUsuario.controls.telefono.invalid && formularioUsuario.controls.telefono.touched) {
+  <small style="color: red;">
+    El teléfono es obligatorio y debe tener exactamente 10 dígitos.
+  </small>
+}
   <br><br>
 
   <label for="correo">Correo</label>
-  <input type="email" id="correo" [(ngModel)]="correo" name="correo" required>
+  <input type="email" id="correo" formControlName="correo" required>
+  @if (formularioUsuario.controls.correo.invalid && formularioUsuario.controls.correo.touched) {
+  <small style="color: red;">
+    Ingresa un correo electrónico válido, de máximo 120 caracteres.
+  </small>
+}
   <br><br>
 
   <label for="contrasena">Contraseña</label>
-  <input type="password" id="contrasena" [(ngModel)]="contrasena" name="contrasena" required>
+  <input type="password" id="contrasena" formControlName="contrasena" required>
+  @if (formularioUsuario.controls.contrasena.invalid && formularioUsuario.controls.contrasena.touched) {
+  <small style="color: red;">
+    La contraseña es obligatoria y debe tener entre 6 y 120 caracteres.
+  </small>
+}
   <br><br>
 
   <label>Rol:</label>
-  <div> <input type="radio" id="rol-medico" [value]="1" [(ngModel)]="rolId" name="rolId">
+  <div> <input type="radio" id="rol-medico" [value]="1" formControlName="rolId" name="rolId">
     <label for="rol-medico">Médico</label>
 
-    <input type="radio" id="rol-paciente" [value]="2" [(ngModel)]="rolId" name="rolId">
+    <input type="radio" id="rol-paciente" [value]="2" formControlName="rolId" name="rolId">
     <label for="rol-paciente">Paciente</label>
 
-    <input type="radio" id="rol-admin" [value]="3" [(ngModel)]="rolId" name="rolId">
+    <input type="radio" id="rol-admin" [value]="3" formControlName="rolId" name="rolId">
     <label for="rol-admin">Administrador</label>
   </div>
 
   <br>
 
-  <!-- Usamos el if, para mostrar los campos adicionales. Ese es nuestro uso de if dentro del taller
-   
-  @if (rolId == 1) {
+@switch (formularioUsuario.controls.rolId.value) {
+
+  @case (1) {
+  <div>
+    <p>Has seleccionado el rol de Médico.</p>
+
+    <label for="especialidadId">Especialidad:</label>
+    <select id="especialidadId" formControlName="especialidadId">
+      <option [ngValue]="null" disabled>-- Seleccione una especialidad --</option>
+      @for (esp of listaEspecialidades; track esp.id) {
+        <option [ngValue]="esp.id">{{ esp.nombreEspecialidad }}</option>
+      }
+    </select>
+    <br><br>
+
+    <label for="espacioId">Espacio:</label>
+    <select id="espacioId" formControlName="espacioId">
+      <option [ngValue]="null" disabled>-- Seleccione un espacio --</option>
+      @for (espacio of listaEspacios; track espacio.id) {
+        <option [ngValue]="espacio.id">{{ espacio.ubicacion }}</option>
+      }
+    </select>
+    <br><br>
+  </div>
+}
+  @case (2) {
     <div>
-      <div>
-        <label for="especialidad">Especialidad:</label>
-        <select id="especialidad" [(ngModel)]="especialidadId" name="especialidadId">
-          <option value="">-- Seleccione una especialidad --</option>
-          @for (e of especialidades; track e.id) {
-            <option [value]="e.id">{{ e.nombreEspecialidad }}</option>
-          }
-        </select>
-      </div>
+      <p>Has seleccionado el rol de Paciente.</p>
+
+      <label for="antecedentes">Antecedentes:</label>
       <br>
 
-      <div>
-        <label for="espacio">Espacio:</label>
-        <select id="espacio" [(ngModel)]="espacioId" name="espacioId">
-          <option value="">-- Seleccione un espacio --</option>
-          @for (e of espacios; track e.id) {
-            <option [value]="e.id">{{ e.ubicacion }}</option>
-          }
-        </select>
-      </div>
-    </div>
-    <br>
-  }
---> 
-
-  @if (rolId == 2) {
-    <div>
-      <label for="antecedentes">Antecedentes:</label><br>
-      <textarea 
-        id="antecedentes" 
-        [(ngModel)]="antecedentes" 
-        name="antecedentes" 
+      <textarea
+        id="antecedentes"
+        formControlName="antecedentes"
+        name="antecedentes"
         rows="4">
       </textarea>
     </div>
     <br>
   }
 
-  <button type="submit">Guardar usuario</button>
+  @case (3) {
+    <div>
+      <p>Has seleccionado el rol de Administrador.</p>
+    </div>
+  }
+
+  @default {
+    <p>Selecciona un rol válido.</p>
+  }
+
+}
+
+<button type="submit" [disabled]="formularioUsuario.invalid">
+  Guardar usuario
+</button>
+
 </form>

@@ -1,4 +1,22 @@
 <h1>Usuarios</h1>
+<a routerLink="/registro">Nuevo usuario</a>
+<br>
+
+
+<div>
+  <label for="filtroRol">Filtrar por rol: </label>
+  <select id="filtroRol" [formControl]="filtroRol">
+    <option value="">Todos</option>
+    <option value="1">Médico</option>
+    <option value="2">Paciente</option>
+    <option value="3">Administrador</option>
+  </select>
+</div>
+
+@if(usuarios.length===0){
+  <p>Cargando usuarios...</p>
+}
+@else{
 
 <table border="1">
   <thead>
@@ -9,18 +27,40 @@
       <th>Rol</th>
       <th>Teléfono</th>
       <th>Estado</th>
+      <th>Acciones</th>
     </tr>
   </thead>
   <tbody>
-    @for (usuario of usuarios; track usuario.id) {
-      <tr>
-        <td>{{ usuario.id }}</td>
-        <td>{{ usuario.nombre }}</td>
-        <td>{{ usuario.correo }}</td>
-        <td>{{ usuario.rol.nombre }}</td>
-        <td>{{ usuario.telefono }}</td>
-        <td>{{ usuario.activo ? 'Activo' : 'Inactivo' }}</td>
-      </tr>
+    @for (usuario of usuariosPagina; track usuario.id) {
+    <tr>
+      <td>{{ usuario.id }}</td>
+      <td>{{ usuario.nombre }}</td>
+      <td>{{ usuario.correo }}</td>
+      <td>{{ usuario.rol?.nombre }}</td>
+      <td>{{ usuario.telefono }}</td>
+      <td>{{ usuario.activo ? 'Activo' : 'Inactivo' }}</td>
+      <td>
+        @if (usuario.activo) {
+        <a (click)="desactivarUsuario(usuario.id!)" style="cursor: pointer; color: blue;">Desactivar</a>
+        } @else {
+        <a (click)="activarUsuario(usuario?.id!)" style="cursor: pointer; color: blue;">Activar</a>
+        }
+      </td>
+    </tr>
     }
   </tbody>
 </table>
+
+<div>
+  <button (click)="anterior()" [disabled]="paginaActual === 1">
+    Anterior
+  </button>
+  <span>
+    Página {{ paginaActual }} de {{ totalPaginas }}
+  </span>
+  <button (click)="siguiente()" [disabled]="paginaActual === totalPaginas">
+    Siguiente
+  </button>
+</div>
+}
+<a routerLink="/admin">Volver al panel</a>

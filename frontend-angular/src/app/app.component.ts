@@ -1,14 +1,13 @@
 import { Component } from '@angular/core';
-import { Usuarios } from './components/usuarios/usuarios.component'; // Ajusta la ruta si está en otra carpeta
-import { InicioSesion } from './components/inicio-sesion/inicio-sesion.component';
-import { Registro } from './components/registro/registro.component';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [Registro],
+  standalone: true,
+  imports: [RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-
+  title = 'frontend-gestion';
 }

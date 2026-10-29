@@ -11,6 +11,8 @@ import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Transient;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,6 +43,7 @@ public class Reserva {
     public Long idReserva;
     
     @ManyToOne //Se pone sin el mapped porque esta es la clase dominante.
+    @JsonIgnoreProperties("contrasena") // La reserva nunca expone la contraseña del paciente por JSON
     public Usuario usuario;
 
     @Column(nullable = false)
@@ -61,7 +64,8 @@ public class Reserva {
     @Column(length = 255)
     public String observaciones;
     
-    @ManyToOne //Se pone sin el mapped porque esta es la clase dominante. 
+    @ManyToOne //Se pone sin el mapped porque esta es la clase dominante.
+    @JsonIgnoreProperties("contrasena") // La reserva nunca expone la contraseña del médico por JSON
     public Medico medico;
 
 
@@ -74,7 +78,7 @@ public class Reserva {
         joinColumns = @JoinColumn(name = "reserva_id"),
         inverseJoinColumns = @JoinColumn(name = "servicio_id")
     )
-    List<Servicio> servicios;
+    List<Servicio> servicios; // Se expone por JSON para poder enviarlos desde Angular (Servicio.reservas sigue oculto, no hay ciclo)
 
 
 public Reserva(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, LocalDateTime fechaSolicitud, String observaciones, double total) {

@@ -12,4 +12,6 @@ export interface Usuario {
   activo?: boolean;
   contrasena: string;
   fechaRegistro?: string | Date;
+  especialidadId?: number | null;
+  espacioId?: number | null;
 }

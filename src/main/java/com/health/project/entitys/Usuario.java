@@ -21,9 +21,10 @@ import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Getter 
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)//Permite que la clase médico herede de esta llevando sus atributos allá
@@ -55,6 +56,7 @@ public class Usuario {
     private LocalDateTime fechaRegistro;
 
     @OneToMany (mappedBy="usuario")
+    @JsonIgnore
     List<Reserva> reservas;
 
 
@@ -70,7 +72,7 @@ public String toString() {
         this.nombre = nombre;
         this.fecha_nacimiento = fechaNacimiento;
         this.antecedentes = antecedentes;
-        this.telefono = telefono;
+        this.telefono = telefono;         
         this.correo = correo;
         this.activo=activo;
         this.contrasena = contrasena;

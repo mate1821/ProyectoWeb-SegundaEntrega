@@ -1,13 +1,3 @@
 <app-usuario-form (usuarioGuardado)="guardarUsuario($event)"></app-usuario-form>
 
 <hr>
-
-<h3>Lista de Usuarios Registrados</h3>
-
-@for (usuario of usuarios; track usuario.cedula ?? usuario.correo) {
-  <p>
-    <strong>{{ usuario.nombre }}</strong> - {{ usuario.correo }} (Cédula: {{ usuario.cedula }})
-  </p>
-} @empty {
-  <p>No hay usuarios registrados aún.</p>
-}

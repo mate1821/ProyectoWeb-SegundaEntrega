@@ -2,6 +2,8 @@ package com.health.project.entitys;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,7 +25,7 @@ public class Espacio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, length = 150)
+    @Column(nullable = false, length = 151)
     private String nombre;
 
     @ManyToOne 
@@ -42,6 +44,7 @@ public class Espacio {
     private boolean abierto;
 
     @OneToMany (mappedBy = "espacio")
+    @JsonIgnore 
     List<Medico> medicos;
 
     public Espacio(String nombre, String descripcion, String ubicacion, String imagenUrl, boolean abierto){
