@@ -19,6 +19,13 @@ import com.health.project.service.MedicoService;
 import com.health.project.service.RolService;
 import com.health.project.service.UsuarioService;
 import jakarta.servlet.http.HttpSession;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+ 
+@Tag(name = "Usuarios", description = "Operaciones de consulta de usuarios")
+
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
@@ -40,13 +47,18 @@ public class UsuarioRestController {
     @Autowired
     private EspacioService espacioService;
 
+    @Operation(summary = "Listar usuarios",
+               description = "Consulta los usuarios disponibles")
+    @ApiResponse(responseCode = "200",
+                 description = "Consulta exitosa")
     @GetMapping //Si solo dice api usuarios, los lista con paginación: /api/usuarios 
     public List<Usuario> listar() {
         return usuarioService.buscarTodos();
     }
 
+    @Operation(summary = "Consultar usuario por identificador")
     @GetMapping("/{id}")
-    public Usuario buscarPorId(@PathVariable Long id) {
+    public Usuario buscarPorId(@Parameter(description = "ID del usuario", example = "1") @PathVariable Long id) {
         return usuarioService.buscarPorId(id);
     }
 
