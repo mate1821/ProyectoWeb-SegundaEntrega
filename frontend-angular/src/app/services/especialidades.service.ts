@@ -9,6 +9,7 @@ export class EspecialidadService {
   private apiUrl = 'http://localhost:8090/api/especialidades';
 
   obtenerEspecialidades(): Observable<Especialidad[]> {
-    return this.http.get<Especialidad[]>(this.apiUrl);
+    return this.http.get<Especialidad[]>(this.apiUrl,
+        { withCredentials: true });
   }
 }

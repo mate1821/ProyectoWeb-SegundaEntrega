@@ -4,69 +4,79 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import org.springframework.security.crypto.password.PasswordEncoder;
 import com.health.project.entitys.Usuario;
 import com.health.project.errors.UsuarioConReservasException;
 import com.health.project.errors.UsuarioDuplicado;
 import com.health.project.repository.ReservaRepository;
 import com.health.project.repository.UsuarioRepository;
 
-@Service
+@Service("usuarioService")
 public class UsuarioServiceImpl implements UsuarioService {
     @Autowired
     private UsuarioRepository repo;
     @Autowired
     private ReservaRepository reservaRepo;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
-    public List<Usuario> buscarTodos(){
+    public List<Usuario> buscarTodos() {
         return repo.findAllOrderById();
     }
+
     @Override
-    public Usuario buscarPorId(Long id){
+    public Usuario buscarPorId(Long id) {
         return repo.findById(id).orElse(null);
     }
+
     @Override
-    public void guardar(Usuario usuario){
+    public void guardar(Usuario usuario) {
 
-    if (usuario.getId() == null) {
+        if (usuario.getId() == null) {
 
-    if (repo.existsByCedulaAndRol( usuario.getCedula(), usuario.getRol())) {
+            if (repo.existsByCedulaAndRol(usuario.getCedula(), usuario.getRol())) {
 
-        throw new UsuarioDuplicado("Ya existe un usuario de tipo "+ usuario.getRol().getNombre()+ " registrado con la cédula "+ usuario.getCedula());
-    }
+                throw new UsuarioDuplicado("Ya existe un usuario de tipo " + usuario.getRol().getNombre()
+                        + " registrado con la cédula " + usuario.getCedula());
+            }
 
-    if (repo.existsByCorreoAndRol(usuario.getCorreo(),usuario.getRol())) {
+            if (repo.existsByCorreoAndRol(usuario.getCorreo(), usuario.getRol())) {
 
-        throw new UsuarioDuplicado( "Ya existe un usuario de tipo " + usuario.getRol().getNombre()+ " registrado con el correo "+ usuario.getCorreo());
-    }
-}
+                throw new UsuarioDuplicado("Ya existe un usuario de tipo " + usuario.getRol().getNombre()
+                        + " registrado con el correo " + usuario.getCorreo());
+            }
+            usuario.setContrasena(passwordEncoder.encode(usuario.getContrasena()));
+        }
+
         repo.save(usuario);
     }
 
-    @Override 
-    public Long consultarId (Usuario usuario) {
+    @Override
+    public Long consultarId(Usuario usuario) {
         return usuario.getId();
     }
 
     @Override
-    public void desactivar(Long id){
+    public void desactivar(Long id) {
         Usuario usuario = buscarPorId(id);
-        if (usuario!=null){
+        if (usuario != null) {
             usuario.setActivo(false);
             repo.save(usuario);
         }
     }
+
     @Override
-    public void activar(Long id){
+    public void activar(Long id) {
         Usuario usuario = buscarPorId(id);
-        if (usuario!=null){
+        if (usuario != null) {
             usuario.setActivo(true);
             repo.save(usuario);
         }
     }
 
-    // Borra el usuario de la base de datos. Si es paciente o médico con reservas no se puede
+    // Borra el usuario de la base de datos. Si es paciente o médico con reservas no
+    // se puede
     // (la reserva lo referencia): en ese caso se lanza UsuarioConReservasException.
     @Override
     public void eliminar(Long id) {
@@ -80,10 +90,23 @@ public class UsuarioServiceImpl implements UsuarioService {
         return repo.pacientesTerceraEdad();
     }
 
-    @Override
     public Usuario validarCredenciales(String correo, String contrasena) {
-        return repo.findFirstByCorreoAndContrasena(correo, contrasena);
+
+    Usuario usuario = repo.findByCorreo(correo);
+
+    if (usuario == null) {
+        return null;
+    }
+    boolean contrasenaCorrecta = passwordEncoder.matches(contrasena,usuario.getContrasena());
+
+    if (!contrasenaCorrecta) {
+        return null;
+    }
+
+    if (!Boolean.TRUE.equals(usuario.getActivo())) {
+        return null;
+    }
+    return usuario;
 }
 
-    
 }

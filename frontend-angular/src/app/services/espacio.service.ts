@@ -9,6 +9,7 @@ export class EspacioService {
   private apiUrl = 'http://localhost:8090/api/espacios';
 
   obtenerEspacios(): Observable<Espacio[]> {
-    return this.http.get<Espacio[]>(this.apiUrl);
+    return this.http.get<Espacio[]>(this.apiUrl,
+        { withCredentials: true });
   }
 }

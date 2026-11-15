@@ -8,6 +8,6 @@ export class EstadoService {
     private apiUrl = 'http://localhost:8090/api/estados';
 
     obtenerEstados(): Observable<EstadoReserva[]> {
-        return this.http.get<EstadoReserva[]>(this.apiUrl);
+        return this.http.get<EstadoReserva[]>(this.apiUrl, { withCredentials: true });
     }
 }

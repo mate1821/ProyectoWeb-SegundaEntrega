@@ -9,6 +9,7 @@ export class ServiciosService {
     private apiUrl = 'http://localhost:8090/api/servicios';
 
     obtenerServicios(): Observable<Servicio[]> {
-        return this.http.get<Servicio[]>(this.apiUrl);
+        return this.http.get<Servicio[]>(this.apiUrl,
+        { withCredentials: true });
     }
 }

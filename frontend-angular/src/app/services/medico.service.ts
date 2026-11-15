@@ -9,6 +9,6 @@ export class MedicoService {
     private apiUrl = 'http://localhost:8090/api/medicos';
 
     obtenerPorEspecialidad(especialidadId: number): Observable<Medico[]> {
-        return this.http.get<Medico[]>(this.apiUrl, { params: { especialidadId } });
+        return this.http.get<Medico[]>(this.apiUrl, { params: { especialidadId }, withCredentials: true  });
     }
 }

@@ -16,7 +16,7 @@ import com.health.project.errors.HorarioNoDisponibleException;
 import com.health.project.errors.ReservaNoEncontradaException;
 import com.health.project.errors.UsuarioDuplicado;
 
-@Service
+@Service("reservaService")
 public class ReservaServiceImpl implements ReservaService {
 
     private static final Long ID_CANCELADA = 2L;

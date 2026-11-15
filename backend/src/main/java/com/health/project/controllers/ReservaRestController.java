@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -46,6 +48,19 @@ public class ReservaRestController {
     // reserva
     private static final Long ID_CONFIRMADA = 1L;
 
+    // ---- Reglas de acceso (SpEL) ----
+    // El usuario autenticado es el del path ({usuarioId})
+    private static final String ADMIN_O_MISMO_USUARIO = "hasRole('ADMIN') or "
+            + "@usuarioService.buscarPorId(#usuarioId)?.correo == authentication.name";
+
+    // El usuario autenticado es el paciente del path ({pacienteId})
+    private static final String ADMIN_O_MISMO_PACIENTE = "hasRole('ADMIN') or "
+            + "@usuarioService.buscarPorId(#pacienteId)?.correo == authentication.name";
+
+    // La reserva {id} pertenece al usuario autenticado
+    private static final String ADMIN_O_DUENO_RESERVA = "hasRole('ADMIN') or "
+            + "@reservaService.buscarPorId(#id)?.usuario?.correo == authentication.name";
+
     @Autowired
     private ReservaService reservaService;
     @Autowired
@@ -75,11 +90,14 @@ public class ReservaRestController {
      */
 
     @GetMapping("/usuario/{usuarioId}")
+    @PreAuthorize(ADMIN_O_MISMO_USUARIO)
     public List<Reserva> misReservas(@PathVariable Long usuarioId) {
         return reservaService.misReservas(usuarioId);
     }
 
+    // Se valida sobre el resultado para no consultar la reserva dos veces
     @GetMapping("/{id}")
+    @PostAuthorize("hasRole('ADMIN') or returnObject.usuario?.correo == authentication.name")
     public Reserva buscar(@PathVariable Long id) {
         Reserva r = reservaService.buscarPorId(id);
         if (r == null)
@@ -88,6 +106,7 @@ public class ReservaRestController {
     }
 
     @PutMapping("/{id}/estado")
+    @PreAuthorize(ADMIN_O_DUENO_RESERVA)
     public Reserva cambiarEstado(@PathVariable Long id, @RequestBody ReservaRequest.Referencia estado) {
         if (estado == null || estado.id() == null) {
             throw error(HttpStatus.BAD_REQUEST, "Debe indicar el estado (id)");
@@ -101,6 +120,7 @@ public class ReservaRestController {
 
     // 2. POST /api/reservas -> crea una reserva (siempre queda "Confirmada")
     @PostMapping("/usuario/{pacienteId}")
+    @PreAuthorize(ADMIN_O_MISMO_PACIENTE)
     @ResponseStatus(HttpStatus.CREATED)
     public Reserva crear(@PathVariable Long pacienteId, @RequestBody ReservaRequest datos) {
         Usuario paciente = usuarioService.buscarPorId(pacienteId);
@@ -118,6 +138,7 @@ public class ReservaRestController {
 
     // 3. PUT /api/reservas/{id} -> actualiza una reserva existente
     @PutMapping("/{id}")
+    @PreAuthorize(ADMIN_O_DUENO_RESERVA)
     public Reserva actualizar(@PathVariable Long id, @RequestBody ReservaRequest datos) {
         Reserva existente = reservaService.buscarPorId(id);
         if (existente == null) {
@@ -151,6 +172,7 @@ public class ReservaRestController {
     // 4. DELETE /api/reservas/{id} -> cancela la reserva (no se borra: pasa al
     // estado "Cancelada")
     @DeleteMapping("/{id}")
+    @PreAuthorize(ADMIN_O_DUENO_RESERVA)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void cancelar(@PathVariable Long id) {
         if (reservaService.buscarPorId(id) == null) {
@@ -222,7 +244,9 @@ public class ReservaRestController {
         return new ResponseStatusException(status, mensaje);
     }
 
+    // Incluye datos de los pacientes de ese médico: solo ADMIN
     @GetMapping("/medico/{medicoId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<Reserva> reservasDelMedico(@PathVariable Long medicoId) {
         return reservaService.reservasDelMedico(medicoId);
     }

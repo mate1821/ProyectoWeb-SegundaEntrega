@@ -7,6 +7,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import com.health.project.entitys.Rol;
@@ -23,9 +25,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
- 
-@Tag(name = "Usuarios", description = "Operaciones de consulta de usuarios")
 
+@Tag(name = "Usuarios", description = "Operaciones de consulta de usuarios")
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
@@ -47,22 +48,30 @@ public class UsuarioRestController {
     @Autowired
     private EspacioService espacioService;
 
-    @Operation(summary = "Listar usuarios",
-               description = "Consulta los usuarios disponibles")
-    @ApiResponse(responseCode = "200",
-                 description = "Consulta exitosa")
-    @GetMapping //Si solo dice api usuarios, los lista con paginación: /api/usuarios 
+    @Operation(summary = "Listar usuarios", description = "Consulta los usuarios disponibles")
+    @ApiResponse(responseCode = "200", description = "Consulta exitosa")
+    @GetMapping // Si solo dice api usuarios, los lista con paginación: /api/usuarios
     public List<Usuario> listar() {
         return usuarioService.buscarTodos();
     }
 
     @Operation(summary = "Consultar usuario por identificador")
     @GetMapping("/{id}")
-    public Usuario buscarPorId(@Parameter(description = "ID del usuario", example = "1") @PathVariable Long id) {
-        return usuarioService.buscarPorId(id);
+    @PreAuthorize("hasRole('ADMIN') or @usuarioService.buscarPorId(#id)?.correo == authentication.name")
+    public ResponseEntity<?> buscarPorId(
+            @PathVariable Long id,
+            HttpSession session,
+            Authentication authentication) {
+
+        System.out.println("========== ENTRO A BUSCAR POR ID ==========");
+        System.out.println("ID solicitado: " + id);
+        System.out.println("ID de sesión: " + session.getAttribute("usuarioId"));
+        System.out.println("Autenticación: " + authentication);
+
+        return ResponseEntity.ok(usuarioService.buscarPorId(id));
     }
 
-    @PostMapping//Aqui la URL va a tener los 2 parámetros que se le envían
+    @PostMapping // Aqui la URL va a tener los 2 parámetros que se le envían
     public ResponseEntity<?> crear(@RequestBody Usuario usuario,
             @RequestParam(required = false) Long especialidadId,
             @RequestParam(required = false) Long espacioId) {
@@ -77,16 +86,15 @@ public class UsuarioRestController {
         usuario.setRol(rol);
         usuario.setFechaRegistro(LocalDateTime.now());
 
-    
-            if ("Medico".equalsIgnoreCase(rol.getNombre())) {
-                medicoService.guardarMedicoDesdeUsuario(usuario, especialidadId, espacioId);
-            } else {
-                usuarioService.guardar(usuario);
-            }
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+        if ("Medico".equalsIgnoreCase(rol.getNombre())) {
+            medicoService.guardarMedicoDesdeUsuario(usuario, especialidadId, espacioId);
+        } else {
+            usuarioService.guardar(usuario);
         }
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
 
-    @PutMapping("/{id}")//api/usuarios/id
+    @PutMapping("/{id}") // api/usuarios/id
     public Usuario actualizar(
             @PathVariable Long id,
             @RequestBody Usuario usuario) {
@@ -97,7 +105,7 @@ public class UsuarioRestController {
 
     }
 
-    @PutMapping("/activar/{id}")//api/usuarios/activar/id
+    @PutMapping("/activar/{id}") // api/usuarios/activar/id
     public ResponseEntity<?> activarUsuario(@PathVariable Long id) {
         try {
             usuarioService.activar(id);
@@ -107,7 +115,7 @@ public class UsuarioRestController {
         }
     }
 
-    @PutMapping("/desactivar/{id}")//api/usuarios/desactivar/id
+    @PutMapping("/desactivar/{id}") // api/usuarios/desactivar/id
     public ResponseEntity<?> desactivarUsuario(@PathVariable Long id) {
         try {
             usuarioService.desactivar(id);

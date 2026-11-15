@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.health.project.entitys.Espacio;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import com.health.project.entitys.Especialidad;
 import com.health.project.entitys.Medico;
 import com.health.project.entitys.Usuario;
@@ -19,13 +20,14 @@ public class MedicoServiceImpl implements MedicoService {
     @Autowired
     private MedicoRepository medicoRepository;
 
-    @Autowired 
+    @Autowired
     private EspecialidadRepository repoEspecialidad;
 
-    @Autowired 
+    @Autowired
     private EspacioRepository repoEspacio;
 
-
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public List<Medico> buscarTodos() {
@@ -50,6 +52,9 @@ public class MedicoServiceImpl implements MedicoService {
             medico = medicoRepository.findById(usuario.getId()).orElse(new Medico());
         } else {
             medico = new Medico();
+             usuario.setContrasena(
+            passwordEncoder.encode(usuario.getContrasena())//AQUI HASHEAMOS LA CONTRASEÑA
+        );
         }
         medico.setCedula(usuario.getCedula());
         medico.setNombre(usuario.getNombre());
@@ -72,24 +77,21 @@ public class MedicoServiceImpl implements MedicoService {
             medico.setEspacio(espacio);
         }
 
-
-
-
-    medicoRepository.save(medico);
-    return medico;
+        medicoRepository.save(medico);
+        return medico;
     }
+
     public List<Object[]> medicosMasCotizados() {
         return medicoRepository.medicosMasCotizados();
     }
 
     public List<Medico> buscarPorEspecialidad(Long especialidadId) {
-    Especialidad especialidad = repoEspecialidad.findById(especialidadId).orElse(null);
-    List<Medico> medicos = medicoRepository.findByEspecialidadId(especialidadId);
-    if (medicos.isEmpty()) {
-        throw new MedicoNoSeleccionadoException(
-                especialidad.getNombreEspecialidad()
-        );
-    }
-    return medicos;
+        Especialidad especialidad = repoEspecialidad.findById(especialidadId).orElse(null);
+        List<Medico> medicos = medicoRepository.findByEspecialidadId(especialidadId);
+        if (medicos.isEmpty()) {
+            throw new MedicoNoSeleccionadoException(
+                    especialidad.getNombreEspecialidad());
+        }
+        return medicos;
     }
 }

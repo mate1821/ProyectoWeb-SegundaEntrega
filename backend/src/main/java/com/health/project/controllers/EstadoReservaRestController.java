@@ -12,7 +12,7 @@ import com.health.project.service.EstadoResService;
 
 @RestController
 @RequestMapping("/api/estados")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class EstadoReservaRestController {
 
     private final EstadoResService estadoService;

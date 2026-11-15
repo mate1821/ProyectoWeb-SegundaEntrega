@@ -14,7 +14,7 @@ import com.health.project.service.MedicoService;
 
 @RestController
 @RequestMapping("/api/medicos")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class MedicoRestController {
 
     private final MedicoService medicoService;

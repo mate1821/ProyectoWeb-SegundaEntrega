@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -64,6 +65,9 @@ public class DataLoader implements CommandLineRunner {
 
         @Autowired
         private ServicioRepository servicioRepo;
+
+        @Autowired
+        private PasswordEncoder passwordEncoder;
 
         @Override
         public void run(String... args) throws Exception {
@@ -127,29 +131,29 @@ public class DataLoader implements CommandLineRunner {
                 // insercion de usuarios
 
                 usuarioRepo.save(new Usuario(1001L, "Ana Torres", new GregorianCalendar(1995, 3, 12).getTime(),
-                                "Sin antecedentes relevantes", "3001234567", "ana.torres@gmail.com", "clave123", true));
+                                "Sin antecedentes relevantes", "3001234567", "ana.torres@gmail.com", passwordEncoder.encode("clave123"), true));
                 usuarioRepo.save(new Usuario(1002L, "Carlos Ruiz", new GregorianCalendar(1988, 7, 22).getTime(),
-                                "Hipertensión controlada", "3007654321", "carlos.ruiz@gmail.com", "clave123", true));
+                                "Hipertensión controlada", "3007654321", "carlos.ruiz@gmail.com", passwordEncoder.encode("clave123"), true));
                 usuarioRepo.save(new Usuario(1003L, "Laura Gómez", new GregorianCalendar(1992, 11, 5).getTime(), null,
-                                "3009876543", "laura.gomez@gmail.com", "clave123", true));
+                                "3009876543", "laura.gomez@gmail.com", passwordEncoder.encode("clave123"), true));
                 usuarioRepo.save(new Usuario(1004L, "Pedro Sánchez", new GregorianCalendar(1979, 1, 18).getTime(), null,
-                                "3004561234", "mati67@gmail.com", "clave123", true));
+                                "3004561234", "mati67@gmail.com", passwordEncoder.encode("clave123"), true));
                 usuarioRepo.save(new Usuario(1006L, "Valeria", new GregorianCalendar(2000, 5, 30).getTime(),
-                                "Alergia a la penicilina", "3002223344", "valeria@gmail.com", "rey123", false));
+                                "Alergia a la penicilina", "3002223344", "valeria@gmail.com", passwordEncoder.encode("rey123"), false));
                 usuarioRepo.save(new Usuario(1005L, "Sofía Ramírez", new GregorianCalendar(2000, 5, 30).getTime(),
-                                "Alergia a la penicilina", "3002223344", "sofia.ramirez@gmail.com", "clave123", false));
+                                "Alergia a la penicilina", "3002223344", "sofia.ramirez@gmail.com", passwordEncoder.encode("clave123"), false));
 
                 usuarioRepo.save(new Usuario(1005L, "Rey", new GregorianCalendar(2000, 5, 30).getTime(),
-                                "Alergia a la penicilina", "3002223344", "rey@gmail.com", "valeria123", false));
+                                "Alergia a la penicilina", "3002223344", "rey@gmail.com", passwordEncoder.encode("valeria123"), false));
 
 
                 // Insercion de medicos
                 Medico med1 = new Medico(2001L, "Laura Gómez", new GregorianCalendar(1985, 4, 10).getTime(), "Ninguno",
-                                "3011234567", "laura.gomez@gmail.com", "clave123", true);
+                                "3011234567", "laura.gomez@gmail.com", passwordEncoder.encode("clave123"), true);
                 Medico med2 = new Medico(2002L, "Andrés Bermúdez", new GregorianCalendar(1979, 8, 3).getTime(),
-                                "Ninguno", "3017654321", "andres.bermudez@gmail.com", "clave123", true);
+                                "Ninguno", "3017654321", "andres.bermudez@gmail.com", passwordEncoder.encode("clave123"), true);
                 Medico med3 = new Medico(2003L, "Ansu Fati", new GregorianCalendar(1979, 8, 3).getTime(),
-                                "Ninguno", "3017654320", "ansufati@gmail.com", "clave123", true);
+                                "Ninguno", "3017654320", "ansufati@gmail.com", passwordEncoder.encode("clave123"), true);
 
                 medicoRepo.save(med1);
                 medicoRepo.save(med2);

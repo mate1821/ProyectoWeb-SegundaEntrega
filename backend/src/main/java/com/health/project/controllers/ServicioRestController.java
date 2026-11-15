@@ -14,7 +14,7 @@ import com.health.project.entitys.Servicio;
 
 @RestController
 @RequestMapping("/api/servicios")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 
 public class ServicioRestController {
     private final ServicioService servicioService;

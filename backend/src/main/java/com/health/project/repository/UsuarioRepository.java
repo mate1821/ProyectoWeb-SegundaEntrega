@@ -27,4 +27,7 @@ extends JpaRepository<Usuario, Long>{
     @Query("SELECT u FROM Usuario u ORDER BY u.id ASC")
     List<Usuario> findAllOrderById();
 
+    Usuario findByCorreo(String correo);
+    List<Usuario> findAllByCorreo(String correo);
+
 }
