@@ -1,17 +1,25 @@
-@if (reservaEditando(); as reserva) {
-<h1>Editar reserva #{{ reserva.idReserva }}</h1>
-} @else {
-<h1>Nueva reserva</h1>
-}
+<main class="pagina pagina-estrecha">
+  <header class="encabezado">
+    @if (reservaEditando(); as reserva) {
+      <h1>Editar reserva #{{ reserva.idReserva }}</h1>
+    } @else {
+      <h1>Nueva reserva</h1>
+    }
+  </header>
 
-@if (reservaEditando() && error()) {
-<p style="color: red;" role="alert">{{ error() }}</p>
-}
+  @if (reservaEditando() && error()) {
+    <p class="mensaje mensaje-error" role="alert">{{ error() }}</p>
+  }
 
-<app-reserva-form [especialidades]="especialidades()" [medicos]="medicos()" [servicios]="servicios()"
+  <app-reserva-form
+    [especialidades]="especialidades()"
+    [medicos]="medicos()"
+    [servicios]="servicios()"
     [reservaEditando]="reservaEditando()"
     [horasDisponibles]="horasDisponibles()"
     (especialidadCambiada)="cargarMedicos($event)"
-    (diaCambiado)="cargarHoras($event)" 
-    (reservaGuardada)="guardarReserva($event)">
-</app-reserva-form>
+    (diaCambiado)="cargarHoras($event)"
+    (reservaGuardada)="guardarReserva($event)"
+  >
+  </app-reserva-form>
+</main>

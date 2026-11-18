@@ -1,0 +1,301 @@
+:root {
+  color-scheme: light;
+  --fondo: #f5f7fa;
+  --superficie: #fff;
+  --superficie-suave: #f8fafc;
+  --texto: #17283b;
+  --texto-suave: #495c70;
+  --borde: #dce4ee;
+  --borde-control: #8b9bad;
+  --sombra: 0 8px 28px rgb(23 40 59 / 6%);
+  --radio: .875rem;
+  --radio-control: .5rem;
+  --espacio-1: .5rem;
+  --espacio-2: .75rem;
+  --espacio-3: 1rem;
+  --espacio-4: 1.5rem;
+  --espacio-5: 2rem;
+  --espacio-6: 3rem;
+  --ancho: 76rem;
+  --ancho-formulario: 39rem;
+  --exito: #17653e;
+  --fondo-exito: #e9f7ef;
+  --error: #9d292d;
+  --fondo-error: #fceff0;
+  --aviso: #795013;
+  --fondo-aviso: #fff5df;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  line-height: 1.55;
+}
+
+body {
+  margin: 0;
+  color: var(--texto);
+  background: var(--fondo);
+}
+
+.plataforma {
+  --acento: #536980;
+  --acento-fuerte: #384f67;
+  --fondo-acento: #ecf1f6;
+  --margen: clamp(1rem, 4vw, 2.5rem);
+  min-block-size: 100vh;
+}
+
+.plataforma[data-tema='paciente'] {
+  --acento: #168c80;
+  --acento-fuerte: #0c7066;
+  --fondo-acento: #e8f7f4;
+}
+
+.plataforma[data-tema='medico'] {
+  --acento: #3478c0;
+  --acento-fuerte: #255e9b;
+  --fondo-acento: #eaf2fb;
+}
+
+.plataforma[data-tema='administrador'] {
+  --acento: #7055aa;
+  --acento-fuerte: #604491;
+  --fondo-acento: #f0ebf9;
+}
+
+.plataforma *, .plataforma *::before, .plataforma *::after {
+  box-sizing: border-box;
+}
+
+.barra-plataforma {
+  background: var(--superficie);
+  border-block-end: 1px solid var(--borde);
+}
+
+.marca-plataforma {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  max-inline-size: calc(var(--ancho) + 2 * var(--margen));
+  min-block-size: 4.25rem;
+  margin-inline: auto;
+  padding-inline: var(--margen);
+  font-weight: 700;
+}
+
+.marca-icono {
+  display: grid;
+  place-items: center;
+  inline-size: 2.25rem;
+  block-size: 2.25rem;
+  border-radius: var(--radio-control);
+  background: var(--fondo-acento);
+  color: var(--acento-fuerte);
+}
+
+.marca-icono::before {
+  content: '+';
+  font-size: 1.625rem;
+  line-height: 1;
+}
+
+.pagina {
+  display: grid;
+  align-content: start;
+  gap: var(--espacio-4);
+  inline-size: min(var(--ancho), calc(100% - 2 * var(--margen)));
+  margin-inline: auto;
+  padding-block: clamp(1.5rem, 5vw, 3.5rem) var(--espacio-6);
+}
+
+.pagina > *, .tarjeta > *, .formulario > * { min-inline-size: 0; }
+.pagina-estrecha { max-inline-size: var(--ancho-formulario); }
+.pagina-acceso { max-inline-size: 50rem; }
+
+.encabezado, .tarjeta {
+  display: grid;
+  align-content: start;
+  gap: var(--espacio-3);
+  padding: clamp(1rem, 4vw, 2rem);
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+}
+
+.encabezado { border-block-start: .25rem solid var(--acento); }
+.encabezado p { max-inline-size: 60ch; }
+.encabezado h1 { color: var(--acento-fuerte); }
+
+.plataforma :where(h1, h2, h3, p) { margin: 0; }
+.plataforma :where(h1, h2, h3) { line-height: 1.2; overflow-wrap: anywhere; }
+.plataforma h1 { font-size: clamp(1.7rem, 4vw, 2.65rem); letter-spacing: -.035em; }
+.plataforma h2 { font-size: clamp(1.25rem, 2.5vw, 1.55rem); }
+.plataforma h3 { font-size: 1.05rem; }
+.plataforma p { color: var(--texto-suave); }
+.plataforma a { color: var(--acento-fuerte); text-underline-offset: .2em; }
+
+.acciones {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--espacio-2);
+}
+
+.plataforma :is(.boton, button) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-1);
+  min-block-size: 2.75rem;
+  max-inline-size: 100%;
+  padding: .55rem 1rem;
+  border: 1px solid transparent;
+  border-radius: var(--radio-control);
+  background: var(--acento-fuerte);
+  color: #fff;
+  font: inherit;
+  font-weight: 650;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color .15s ease, box-shadow .15s ease;
+}
+
+.plataforma :is(.boton, button):hover:not(:disabled) {
+  box-shadow: inset 0 0 0 3rem rgb(0 0 0 / 9%);
+}
+
+.plataforma .boton-secundario {
+  color: var(--acento-fuerte);
+  background: var(--fondo-acento);
+  border-color: var(--borde);
+}
+
+.plataforma :is(button, input, select, textarea):disabled {
+  color: var(--texto-suave);
+  background: #edf1f5;
+  cursor: not-allowed;
+}
+
+.plataforma :focus-visible {
+  outline: 2px solid var(--acento-fuerte);
+  outline-offset: 3px;
+}
+
+.formulario, .campo {
+  display: grid;
+  gap: var(--espacio-3);
+}
+
+.campo { gap: .375rem; }
+.formulario { gap: var(--espacio-4); }
+.formulario > button { justify-self: start; }
+.plataforma :where(label, legend) { font-weight: 650; }
+
+.plataforma :is(input:not([type='radio'], [type='checkbox']), select, textarea) {
+  inline-size: 100%;
+  min-inline-size: 0;
+  min-block-size: 2.75rem;
+  padding: .5rem .75rem;
+  border: 1px solid var(--borde-control);
+  border-radius: var(--radio-control);
+  background: var(--superficie);
+  color: var(--texto);
+  font: inherit;
+}
+
+.plataforma textarea { resize: vertical; }
+.plataforma :is(input[type='radio'], input[type='checkbox']) {
+  accent-color: var(--acento-fuerte);
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
+  flex: none;
+  margin: 0;
+}
+
+.plataforma .ng-invalid.ng-touched:not(form) { border-color: var(--error); }
+.validacion { color: var(--error); }
+
+.opciones {
+  min-inline-size: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-1) var(--espacio-3);
+  margin: 0;
+  padding: var(--espacio-2);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-control);
+}
+
+.opcion { display: inline-flex; align-items: center; gap: var(--espacio-1); min-block-size: 2.5rem; }
+
+.tabla-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-control);
+}
+
+.tabla-datos {
+  inline-size: 100%;
+  min-inline-size: 37rem;
+  border-collapse: collapse;
+  text-align: start;
+  font-size: .9375rem;
+}
+
+.tabla-amplia { min-inline-size: 67rem; }
+.tabla-datos :is(th, td) { padding: .75rem 1rem; text-align: start; }
+.tabla-datos th { background: var(--superficie-suave); color: var(--texto-suave); }
+.tabla-datos th, .tabla-datos .dato-fecha { white-space: nowrap; }
+.tabla-datos td { border-block-start: 1px solid var(--borde); }
+.tabla-datos tbody tr:hover { background: var(--superficie-suave); }
+.tabla-datos select { min-inline-size: 8.5rem; }
+.tabla-datos td[colspan] { color: var(--texto-suave); }
+
+.estado, .mensaje {
+  --tono: var(--texto-suave);
+  --fondo-tono: var(--superficie-suave);
+  color: var(--tono);
+  background: var(--fondo-tono);
+}
+
+.estado {
+  display: inline-block;
+  padding: .2rem .6rem;
+  border-radius: 1rem;
+  font-size: .875rem;
+  font-weight: 650;
+}
+
+.plataforma .mensaje {
+  padding: var(--espacio-2) var(--espacio-3);
+  color: var(--tono);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-control);
+}
+
+.estado[data-estado='Confirmada'], .estado[data-estado='Completada'], .estado-activo, .mensaje-exito {
+  --tono: var(--exito);
+  --fondo-tono: var(--fondo-exito);
+}
+
+.estado[data-estado='Cancelada'], .mensaje-error {
+  --tono: var(--error);
+  --fondo-tono: var(--fondo-error);
+}
+
+.estado[data-estado='Desactivada'] { border: 1px solid var(--borde); }
+
+.estado[data-estado='Pendiente'], .mensaje-aviso {
+  --tono: var(--aviso);
+  --fondo-tono: var(--fondo-aviso);
+}
+
+.filtro { inline-size: min(100%, 16rem); }
+
+@media (max-width: 32rem) {
+  .acciones > .boton, .encabezado .acciones > a, .formulario > button { inline-size: 100%; }
+  .formulario > button { justify-self: stretch; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plataforma :is(.boton, button) { transition: none; }
+}

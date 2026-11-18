@@ -1,64 +1,73 @@
-<section class="admin-panel">
-
-  <header class="admin-header">
+<main class="pagina">
+  <header class="encabezado">
     <h1>Panel de administración</h1>
     <h2>Bienvenido, <span [textContent]="nombreAdmin()"></span></h2>
     <p>Desde aquí puedes consultar y modificar el estado de las reservas.</p>
 
     <nav class="acciones" aria-label="Opciones del administrador">
-      <a routerLink="/usuarios" class="boton-accion">Ver usuarios</a>
-      <br>
-      <a routerLink="/inicio-sesion">Cerrar sesión</a>
+      <a routerLink="/usuarios" class="boton">Ver usuarios</a>
+      <a routerLink="/inicio-sesion" class="boton boton-secundario">Cerrar sesión</a>
     </nav>
   </header>
 
-  <div class="contador-card">
+  <div class="tarjeta contador-card">
     <h3>Reservas modificadas en esta sesión</h3>
     <p class="contador-numero">{{ contadorModificaciones() }}</p>
   </div>
 
   @if (mensaje()) {
-    <div class="mensaje-exito" role="status">{{ mensaje() }}</div>
+    <div class="mensaje mensaje-exito" role="status">{{ mensaje() }}</div>
   }
   @if (error()) {
-    <div class="mensaje-error" role="alert">{{ error() }}</div>
+    <div class="mensaje mensaje-error" role="alert">{{ error() }}</div>
   }
 
-  <div class="consultas-section">
+  <div class="tarjeta">
     <h3>Reservas disponibles</h3>
 
-    <table class="consultas-tabla">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Paciente</th>
-          <th>Fecha</th>
-          <th>Estado actual</th>
-          <th>Modificar estado</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (reserva of reservas(); track reserva.idReserva) {
+    <div class="tabla-scroll" tabindex="0" role="region" aria-label="Reservas disponibles">
+      <table class="tabla-datos">
+        <thead>
           <tr>
-            <td>#{{ reserva.idReserva }}</td>
-            <td>{{ reserva.usuario?.nombre || 'Sin nombre' }}</td>
-            <td>{{ reserva.fecha }}</td>
-            <td>{{ reserva.estado?.nombre || 'Sin estado' }}</td>
-            <td>
-              <select #selector (change)="cambiarEstado(reserva, selector.value)">
-                @for (e of estados(); track e.id) {
-                  <option [value]="e.id" [selected]="e.id === reserva.estado?.id">{{ e.nombre }}</option>
-                }
-              </select>
-            </td>
+            <th scope="col">ID</th>
+            <th scope="col">Paciente</th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Estado actual</th>
+            <th scope="col">Modificar estado</th>
           </tr>
-        } @empty {
-          <tr>
-            <td colspan="5">No hay reservas disponibles.</td>
-          </tr>
-        }
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          @for (reserva of reservas(); track reserva.idReserva) {
+            <tr>
+              <td>#{{ reserva.idReserva }}</td>
+              <td>{{ reserva.usuario?.nombre || 'Sin nombre' }}</td>
+              <td class="dato-fecha">{{ reserva.fecha }}</td>
+              <td>
+                <span class="estado" [attr.data-estado]="reserva.estado?.nombre">{{
+                  reserva.estado?.nombre || 'Sin estado'
+                }}</span>
+              </td>
+              <td>
+                <select
+                  [attr.aria-label]="'Modificar estado de la reserva ' + reserva.idReserva"
+                  #selector
+                  (change)="cambiarEstado(reserva, selector.value)"
+                >
+                  @for (e of estados(); track e.id) {
+                    <option [value]="e.id" [selected]="e.id === reserva.estado?.id">
+                      {{ e.nombre }}
+                    </option>
+                  }
+                </select>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5">No hay reservas disponibles.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
   </div>
-
-</section>
+</main>

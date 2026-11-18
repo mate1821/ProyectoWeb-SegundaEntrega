@@ -1,71 +1,88 @@
-<div class="container">
-    <h1>Mostrar reservas</h1>
+<main class="pagina">
+  <header class="encabezado">
+    <h1>Mis reservas</h1>
+    <nav class="acciones" aria-label="Navegación de reservas">
+      @if (esMedico) {
+        <a class="boton boton-secundario" [routerLink]="['/inicio-medico', usuarioId]"
+          >Volver al inicio</a
+        >
+      } @else {
+        <a class="boton boton-secundario" [routerLink]="['/inicio', usuarioId]">Volver al inicio</a>
+      }
+    </nav>
+  </header>
+  <!-- Mensajes de éxito o error -->
+  @if (mensaje()) {
+    <p class="mensaje mensaje-exito" role="status">{{ mensaje() }}</p>
+  }
 
-    @if (esMedico) {
-    <a [routerLink]="['/inicio-medico', usuarioId]"> Volver al inicio</a>
-    } @else {
-    <a [routerLink]="['/inicio', usuarioId]"> Volver al inicio</a>
-    }
-    <!-- Mensajes de éxito o error -->
-    @if (mensaje()) {
-    <p class="mensaje-ok">{{ mensaje() }}</p>
-    }
-
-    @if (error()) {
-    <p class="mensaje-error" role="alert">{{ error() }}</p>
-    }
-    @if (reservas().length === 0) {
-    <p>Cargando reservas...</p>
-    } @else {
-    <table border="1">
-        <thead>
+  @if (error()) {
+    <p class="mensaje mensaje-error" role="alert">{{ error() }}</p>
+  }
+  @if (reservas().length === 0) {
+    <p class="mensaje" role="status">Cargando reservas...</p>
+  } @else {
+    <section class="tarjeta" aria-label="Lista de reservas">
+      <div class="tabla-scroll" tabindex="0" role="region" aria-label="Mis reservas">
+        <table class="tabla-datos tabla-amplia">
+          <thead>
             <tr>
-                <th>ID</th>
-                <th>Usuario</th>
-                <th>Espacio</th>
-                <th>Fecha</th>
-                <th>Hora Inicio</th>
-                <th>Hora Fin</th>
-                <th>Costo $</th>
-                <th>Medico</th>
-                <th>Estado</th>
-                <th>Editar Estado</th>
-                <th>Acciones</th>
+              <th scope="col">ID</th>
+              <th scope="col">Usuario</th>
+              <th scope="col">Espacio</th>
+              <th scope="col">Fecha</th>
+              <th scope="col">Hora Inicio</th>
+              <th scope="col">Hora Fin</th>
+              <th scope="col">Costo $</th>
+              <th scope="col">Medico</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Editar Estado</th>
+              <th scope="col">Acciones</th>
             </tr>
-        </thead>
-        <tbody>
+          </thead>
+          <tbody>
             @for (reserva of reservas(); track reserva.idReserva) {
-            <tr>
+              <tr>
                 <td>{{ reserva.idReserva }}</td>
                 <td>{{ reserva.usuario?.nombre }}</td>
                 <td>{{ reserva.medico?.espacio?.nombre }}</td>
-                <td>{{ reserva.fecha }}</td>
+              <td class="dato-fecha">{{ reserva.fecha }}</td>
                 <td>{{ reserva.horaInicio?.substring(0, 5) }}</td>
                 <td>{{ reserva.horaFin?.substring(0, 5) }}</td>
                 <td>{{ reserva.total }}</td>
                 <td>{{ reserva.medico?.nombre }}</td>
                 <td>
-                    <span class="estado">{{ reserva.estado?.nombre }}</span>
+                  <span class="estado" [attr.data-estado]="reserva.estado?.nombre">{{
+                    reserva.estado?.nombre
+                  }}</span>
                 </td>
                 <td>
-                    <select #selectEstado (change)="cambiarEstado(reserva, selectEstado.value)">
-                        @for (e of estados(); track e.id) {
-                        <option [value]="e.id" [selected]="e.id === reserva.estado?.id">{{ e.nombre }}</option>
-                        }
-                    </select>
-                </td>
-                <td>
-                    @if (!esMedico) {
-                    <a [routerLink]="['/reservas/editar', reserva.idReserva]">Editar</a>
+                  <select
+                    [attr.aria-label]="'Editar estado de la reserva ' + reserva.idReserva"
+                    #selectEstado
+                    (change)="cambiarEstado(reserva, selectEstado.value)"
+                  >
+                    @for (e of estados(); track e.id) {
+                      <option [value]="e.id" [selected]="e.id === reserva.estado?.id">
+                        {{ e.nombre }}
+                      </option>
                     }
+                  </select>
                 </td>
-            </tr>
+                <td>
+                  @if (!esMedico) {
+                    <a [routerLink]="['/reservas/editar', reserva.idReserva]">Editar</a>
+                  }
+                </td>
+              </tr>
             } @empty {
-            <tr>
+              <tr>
                 <td colspan="11">No tienes reservas registradas.</td>
-            </tr>
+              </tr>
             }
-        </tbody>
-    </table>
-    }
-</div>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+</main>

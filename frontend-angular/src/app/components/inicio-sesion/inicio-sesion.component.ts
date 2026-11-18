@@ -4,6 +4,7 @@ import { Credenciales } from '../../models/credencial.model';
 import { UsuarioService } from '../../services/usuario.service';
 import { Router } from '@angular/router';
 import { AdminService } from '../../services/admin.service';
+import { TemaService } from '../../services/tema.service';
 
 @Component({
   imports: [LoginForm],
@@ -15,6 +16,7 @@ export class InicioSesion {
   private usuarioService = inject(UsuarioService);
   private router = inject(Router);
   private adminService = inject(AdminService);
+  private temaService = inject(TemaService);
 
   procesarLogin(credenciales: Credenciales) {
     console.log('Enviando credenciales al backend:', credenciales);
@@ -22,6 +24,7 @@ export class InicioSesion {
     this.usuarioService.login(credenciales).subscribe({
       next: (usuario) => {
         const rol = usuario?.rol?.nombre?.trim().toLowerCase();
+        this.temaService.aplicar(rol);
 
         if (rol === 'administrador') {
           this.adminService.iniciarSesion(usuario.nombre);

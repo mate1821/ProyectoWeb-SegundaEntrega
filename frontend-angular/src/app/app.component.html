@@ -1,1 +1,9 @@
-<router-outlet />
+<div class="plataforma" [attr.data-tema]="tema()">
+  <header class="barra-plataforma">
+    <div class="marca-plataforma">
+      <span class="marca-icono" aria-hidden="true"></span>
+      <span>Reservas médicas</span>
+    </div>
+  </header>
+  <router-outlet />
+</div>

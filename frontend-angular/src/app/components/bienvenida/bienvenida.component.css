@@ -1,0 +1,9 @@
+.portada {
+  padding: clamp(1.5rem, 6vw, 3.5rem);
+  gap: var(--espacio-4);
+}
+
+.portada h1 {
+  max-inline-size: 22ch;
+  font-size: clamp(2rem, 6vw, 3.5rem);
+}

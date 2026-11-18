@@ -1,8 +1,11 @@
-<h1>Bienvenido, Dr(a). <span [textContent]="nombre()"></span></h1>
-<p>¿Qué deseas hacer?</p>
+<main class="pagina">
+  <header class="encabezado">
+    <h1>Bienvenido, Dr(a). <span [textContent]="nombre()"></span></h1>
+    <p>Consulta tus reservas y sus estados.</p>
 
-<a [routerLink]="['/reservas-medico', medicoId]">
-  <button type="button">Ver mis reservas</button>
-</a>
-
-<a routerLink="/inicio-sesion">Cerrar sesión</a>
+    <nav class="acciones" aria-label="Opciones del médico">
+      <a [routerLink]="['/reservas-medico', medicoId]" class="boton">Ver mis reservas</a>
+      <a routerLink="/inicio-sesion" class="boton boton-secundario">Cerrar sesión</a>
+    </nav>
+  </header>
+</main>

@@ -1,11 +1,30 @@
-<h2>{{ titulo() }}</h2>
+<section class="encabezado" aria-labelledby="titulo-login">
+  <h1 id="titulo-login">{{ titulo() }}</h1>
 
-<form (ngSubmit)="enviarLogin()">
+  <form class="formulario" (ngSubmit)="enviarLogin()">
+    <div class="campo">
+      <label for="login-correo">Correo electrónico</label>
+      <input
+        type="text"
+        id="login-correo"
+        [(ngModel)]="correo"
+        name="correo"
+        autocomplete="username"
+        inputmode="email"
+      />
+    </div>
 
-  <input type="text" [(ngModel)]="correo" name="correo">
+    <div class="campo">
+      <label for="login-contrasena">Contraseña</label>
+      <input
+        type="password"
+        id="login-contrasena"
+        [(ngModel)]="contrasena"
+        name="contrasena"
+        autocomplete="current-password"
+      />
+    </div>
 
-  <input type="password" [(ngModel)]="contrasena" name="contrasena">
-
-  <button type="submit">Ingresar</button>
-
-</form>
+    <button type="submit">Ingresar</button>
+  </form>
+</section>

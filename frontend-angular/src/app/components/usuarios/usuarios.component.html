@@ -1,66 +1,94 @@
-<h1>Usuarios</h1>
-<a routerLink="/registro">Nuevo usuario</a>
-<br>
+<main class="pagina">
+  <header class="encabezado">
+    <h1>Usuarios</h1>
+    <nav class="acciones" aria-label="Opciones de usuarios">
+      <a routerLink="/registro" class="boton">Nuevo usuario</a>
+      <a routerLink="/admin" class="boton boton-secundario">Volver al panel</a>
+    </nav>
+  </header>
 
+  <div class="campo filtro">
+    <label for="filtroRol">Filtrar por rol: </label>
+    <select id="filtroRol" [formControl]="filtroRol">
+      <option value="">Todos</option>
+      <option value="1">Médico</option>
+      <option value="2">Paciente</option>
+      <option value="3">Administrador</option>
+    </select>
+  </div>
 
-<div>
-  <label for="filtroRol">Filtrar por rol: </label>
-  <select id="filtroRol" [formControl]="filtroRol">
-    <option value="">Todos</option>
-    <option value="1">Médico</option>
-    <option value="2">Paciente</option>
-    <option value="3">Administrador</option>
-  </select>
-</div>
+  @if (usuarios.length === 0) {
+    <p class="mensaje" role="status">Cargando usuarios...</p>
+  } @else {
+    <div class="tabla-scroll" tabindex="0" role="region" aria-label="Lista de usuarios">
+      <table class="tabla-datos">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Correo</th>
+            <th scope="col">Rol</th>
+            <th scope="col">Teléfono</th>
+            <th scope="col">Estado</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (usuario of usuariosPagina; track usuario.id) {
+            <tr>
+              <td>{{ usuario.id }}</td>
+              <td>{{ usuario.nombre }}</td>
+              <td>{{ usuario.correo }}</td>
+              <td>{{ usuario.rol?.nombre }}</td>
+              <td>{{ usuario.telefono }}</td>
+              <td>
+                <span class="estado" [class.estado-activo]="usuario.activo">{{
+                  usuario.activo ? 'Activo' : 'Inactivo'
+                }}</span>
+              </td>
+              <td>
+                @if (usuario.activo) {
+                  <button
+                    type="button"
+                    class="boton-secundario"
+                    (click)="desactivarUsuario(usuario.id!)"
+                  >
+                    Desactivar
+                  </button>
+                } @else {
+                  <button
+                    type="button"
+                    class="boton-secundario"
+                    (click)="activarUsuario(usuario?.id!)"
+                  >
+                    Activar
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
 
-@if(usuarios.length===0){
-  <p>Cargando usuarios...</p>
-}
-@else{
-
-<table border="1">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Nombre</th>
-      <th>Correo</th>
-      <th>Rol</th>
-      <th>Teléfono</th>
-      <th>Estado</th>
-      <th>Acciones</th>
-    </tr>
-  </thead>
-  <tbody>
-    @for (usuario of usuariosPagina; track usuario.id) {
-    <tr>
-      <td>{{ usuario.id }}</td>
-      <td>{{ usuario.nombre }}</td>
-      <td>{{ usuario.correo }}</td>
-      <td>{{ usuario.rol?.nombre }}</td>
-      <td>{{ usuario.telefono }}</td>
-      <td>{{ usuario.activo ? 'Activo' : 'Inactivo' }}</td>
-      <td>
-        @if (usuario.activo) {
-        <a (click)="desactivarUsuario(usuario.id!)" style="cursor: pointer; color: blue;">Desactivar</a>
-        } @else {
-        <a (click)="activarUsuario(usuario?.id!)" style="cursor: pointer; color: blue;">Activar</a>
-        }
-      </td>
-    </tr>
-    }
-  </tbody>
-</table>
-
-<div>
-  <button (click)="anterior()" [disabled]="paginaActual === 1">
-    Anterior
-  </button>
-  <span>
-    Página {{ paginaActual }} de {{ totalPaginas }}
-  </span>
-  <button (click)="siguiente()" [disabled]="paginaActual === totalPaginas">
-    Siguiente
-  </button>
-</div>
-}
-<a routerLink="/admin">Volver al panel</a>
+    <nav class="acciones" aria-label="Paginación de usuarios">
+      <button
+        type="button"
+        class="boton-secundario"
+        (click)="anterior()"
+        [disabled]="paginaActual === 1"
+      >
+        Anterior
+      </button>
+      <span> Página {{ paginaActual }} de {{ totalPaginas }} </span>
+      <button
+        type="button"
+        class="boton-secundario"
+        (click)="siguiente()"
+        [disabled]="paginaActual === totalPaginas"
+      >
+        Siguiente
+      </button>
+    </nav>
+  }
+</main>

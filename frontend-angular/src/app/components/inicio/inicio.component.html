@@ -1,50 +1,26 @@
-<main class="pagina-inicio">
-
-  <div class="tarjeta-bienvenida">
-
-    <h1>
-      Bienvenido al sistema de reservas médicas
-    </h1>
+<main class="pagina">
+  <header class="encabezado">
+    <h1>Bienvenido al sistema de reservas médicas</h1>
 
     <h2>
       ¡Hola,
-      <span
-        class="nombre-usuario"
-        [textContent]="nombreUsuario()">
-      </span>!
+      <span class="nombre-usuario" [textContent]="nombreUsuario()"> </span>!
     </h2>
 
-    <p>
-      Nos alegra tenerte aquí.
-    </p>
+    <p>Nos alegra tenerte aquí.</p>
 
-    <p>
-      En nuestro sistema podrás gestionar tus reservas médicas
-      de manera fácil y rápida.
-    </p>
+    <p>En nuestro sistema podrás gestionar tus reservas médicas de manera fácil y rápida.</p>
 
-    <h3>
-      ¿Qué deseas hacer hoy?
-    </h3>
+    <h3>¿Qué deseas hacer hoy?</h3>
 
     <nav class="acciones" aria-label="Opciones del usuario">
+      <a [routerLink]="['/reservas', usuarioId]" class="boton"> Crear cita </a>
 
-      <a
-        [routerLink]="['/reservas', usuarioId]"
-        class="boton-accion">
-        Crear cita
-      </a>
-
-      <a
-        [routerLink]="['/mostrar-reservas', usuarioId]"
-        class="boton-accion boton-secundario">
+      <a [routerLink]="['/mostrar-reservas', usuarioId]" class="boton boton-secundario">
         Mis reservas
       </a>
 
-      <a routerLink="/inicio-sesion">Cerrar sesión</a>
-
+      <a routerLink="/inicio-sesion" class="boton boton-secundario">Cerrar sesión</a>
     </nav>
-
-  </div>
-
+  </header>
 </main>

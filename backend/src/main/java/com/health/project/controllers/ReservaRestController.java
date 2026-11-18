@@ -110,7 +110,7 @@ public class ReservaRestController {
     }
 
     @PutMapping("/{id}/estado")
-    @PreAuthorize(ADMIN_O_DUENO_RESERVA)
+    @PreAuthorize(ADMIN_O_DUENO_RESERVA + " or @reservaService.buscarPorId(#id)?.medico?.correo == authentication.name")
     public Reserva cambiarEstado(@PathVariable Long id, @RequestBody ReservaRequest.Referencia estado) {
         if (estado == null || estado.id() == null) {
             throw error(HttpStatus.BAD_REQUEST, "Debe indicar el estado (id)");
@@ -248,9 +248,9 @@ public class ReservaRestController {
         return new ResponseStatusException(status, mensaje);
     }
 
-    // Incluye datos de los pacientes de ese médico: solo ADMIN
+    // Solo un administrador o el médico asignado puede consultar este listado.
     @GetMapping("/medico/{medicoId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @medicoServiceImpl.buscarPorId(#medicoId)?.correo == authentication.name")
     public List<Reserva> reservasDelMedico(@PathVariable Long medicoId) {
         return reservaService.reservasDelMedico(medicoId);
     }
