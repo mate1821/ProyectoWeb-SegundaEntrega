@@ -10,5 +10,8 @@
 
 <app-reserva-form [especialidades]="especialidades()" [medicos]="medicos()" [servicios]="servicios()"
     [reservaEditando]="reservaEditando()"
-    (especialidadCambiada)="cargarMedicos($event)" (reservaGuardada)="guardarReserva($event)">
+    [horasDisponibles]="horasDisponibles()"
+    (especialidadCambiada)="cargarMedicos($event)"
+    (diaCambiado)="cargarHoras($event)" 
+    (reservaGuardada)="guardarReserva($event)">
 </app-reserva-form>

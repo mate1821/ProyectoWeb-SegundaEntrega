@@ -1,4 +1,3 @@
-
 package com.health.project.service;
 
 import java.util.Collection;
@@ -15,12 +14,20 @@ import java.util.List;
 import com.health.project.errors.HorarioNoDisponibleException;
 import com.health.project.errors.ReservaNoEncontradaException;
 import com.health.project.errors.UsuarioDuplicado;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service("reservaService")
 public class ReservaServiceImpl implements ReservaService {
 
     private static final Long ID_CANCELADA = 2L;
     private static final Long ID_CONFIRMADA = 1L;
+
+    private static final LocalTime HORA_APERTURA = LocalTime.of(7, 0);
+    private static final LocalTime HORA_CIERRE   = LocalTime.of(18, 0);
     
     @Autowired
     private ReservaRepository repo;
@@ -97,8 +104,32 @@ public class ReservaServiceImpl implements ReservaService {
 }
 
     @Override
-     public List<Reserva> reservasDelMedico(Long medicoId) {
-     return repo.findByMedicoId(medicoId);
+    public List<Reserva> reservasDelMedico(Long medicoId) {
+    return repo.findByMedicoId(medicoId);
 }
 
+@Override
+    public List<LocalTime> horasDisponibles(Long medicoId, LocalDate fecha) {
+
+        Set<LocalTime> ocupadas = new HashSet<>(repo.findHorasInicioOcupadas(medicoId, fecha));
+
+        List<LocalTime> disponibles = new ArrayList<>();
+        LocalTime hora = HORA_APERTURA;
+
+        while (hora.isBefore(HORA_CIERRE)) {       
+            if (!ocupadas.contains(hora)) {         
+                disponibles.add(hora);
+            }
+            hora = hora.plusHours(1);               
+        }
+
+        return disponibles;
+    }
+
 }
+
+
+
+
+
+

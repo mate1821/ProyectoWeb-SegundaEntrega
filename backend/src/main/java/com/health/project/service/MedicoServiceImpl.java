@@ -52,7 +52,7 @@ public class MedicoServiceImpl implements MedicoService {
             medico = medicoRepository.findById(usuario.getId()).orElse(new Medico());
         } else {
             medico = new Medico();
-             usuario.setContrasena(
+            usuario.setContrasena(
             passwordEncoder.encode(usuario.getContrasena())//AQUI HASHEAMOS LA CONTRASEÑA
         );
         }

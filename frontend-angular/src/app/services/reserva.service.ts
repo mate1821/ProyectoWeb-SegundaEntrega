@@ -49,6 +49,12 @@ export class ReservaService {
   obtenerReserva(id: number): Observable<Reserva> {
     return this.http.get<Reserva>(`${this.apiUrl}/${id}`, { withCredentials: true });
   }
+  obtenerHorasDisponibles(medicoId: number, fecha: string): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/disponibles`, {
+      params: { medicoId, fecha },
+      withCredentials: true,
+    });
+  }
 
 
 

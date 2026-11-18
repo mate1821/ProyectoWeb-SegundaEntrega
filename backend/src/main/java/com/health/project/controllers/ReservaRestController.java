@@ -36,6 +36,10 @@ import com.health.project.service.MedicoService;
 import com.health.project.service.ReservaService;
 import com.health.project.service.ServicioService;
 import com.health.project.service.UsuarioService;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -275,5 +279,12 @@ public class ReservaRestController {
     @ExceptionHandler(ReservaNoEncontradaException.class)
     public ResponseEntity<Map<String, String>> manejarReservaNoEncontrada(ReservaNoEncontradaException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
+    }
+
+    @GetMapping("/disponibles")
+    public List<LocalTime> horasDisponibles(
+            @RequestParam Long medicoId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
+        return reservaService.horasDisponibles(medicoId, fecha);
     }
 }

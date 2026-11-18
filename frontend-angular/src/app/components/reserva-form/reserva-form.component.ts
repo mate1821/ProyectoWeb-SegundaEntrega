@@ -27,6 +27,7 @@ export class ReservaComponent {
   medicos = input<Medico[]>([]);             
   servicios = input<Servicio[]>([]); 
   reservaEditando = input<Reserva | null>(null); // si viene, el formulario se llena con sus datos
+  horasDisponibles = input<string[]>([]); 
   mensaje = signal('');
   error = signal('');
   
@@ -34,6 +35,7 @@ export class ReservaComponent {
 
   especialidadCambiada = output<number>();   
   reservaGuardada = output<Reserva>(); 
+  diaCambiado = output<{ medicoId: number; fecha: string }>();  
 
   especialidadId: string = '';
   medicoId: string = '';
@@ -66,8 +68,32 @@ export class ReservaComponent {
   cambiarEspecialidad(valor: string): void {
     this.especialidadId = valor;
     this.medicoId = '';
+    this.horaInicio = ''; 
     this.especialidadCambiada.emit(Number(valor));
   }
+
+  cambiarMedico(valor: string): void {
+    this.medicoId = valor;
+    this.pedirHoras();
+  }
+
+  cambiarFecha(valor: string): void {
+    this.fecha = valor;
+    this.pedirHoras();
+  }
+  pedirHoras(): void {
+    this.horaInicio = '';   
+    if (this.medicoId && this.fecha) {
+      this.diaCambiado.emit({ medicoId: Number(this.medicoId), fecha: this.fecha });
+    }
+  }
+  horaFin(h: string): string {
+    const siguiente = Number(h.substring(0, 2)) + 1;
+    return `${String(siguiente).padStart(2, '0')}:00`;
+  }
+
+
+
 
   alternarServicio(id: number): void {
     if (this.servicioIds.includes(id)) {
@@ -90,12 +116,15 @@ export class ReservaComponent {
 }
 
 
+
 function fechaDeHoy(): string {
   const hoy = new Date();
   const mes = String(hoy.getMonth() + 1).padStart(2, '0');
   const dia = String(hoy.getDate()).padStart(2, '0');
   return `${hoy.getFullYear()}-${mes}-${dia}`;
 }
+
+
 
 
 

@@ -29,12 +29,15 @@ export class Reservas implements OnInit {
   error = signal('');
   reservaEditando = signal<Reserva | null>(null); // la reserva que se edita (ruta /reservas/editar/:id)
 
+
   private idRuta = Number(this.route.snapshot.paramMap.get('id'));
   private modoEditar = this.route.snapshot.data['editar'] === true;
 
   especialidades = signal<Especialidad[]>([]);
   medicos = signal<Medico[]>([]);
   servicios = signal<Servicio[]>([]);
+  horasDisponibles = signal<string[]>([]);   
+
 
 
   ngOnInit(): void {
@@ -52,16 +55,20 @@ export class Reservas implements OnInit {
     if (this.modoEditar) {
       this.cargarReservaAEditar(this.idRuta);
     }
+    
   }
 
 
-   private cargarReservaAEditar(id: number): void {
+  private cargarReservaAEditar(id: number): void {
     this.reservaService.obtenerReserva(id).subscribe({
       next: (reserva) => {
         this.reservaEditando.set(reserva);
         const especialidadId = reserva.medico?.especialidad?.id;
         if (especialidadId !== undefined) {
           this.cargarMedicos(especialidadId);
+        }
+        if (reserva.medico) {
+          this.cargarHoras({ medicoId: reserva.medico.id, fecha: reserva.fecha });
         }
       },
       error: (err: unknown) => this.mostrarError(err),
@@ -70,13 +77,35 @@ export class Reservas implements OnInit {
 
   cargarMedicos(especialidadId: number): void {
     this.medicos.set([]);
+    this.horasDisponibles.set([]);
     this.medicoService.obtenerPorEspecialidad(especialidadId).subscribe({
       next: (data) => this.medicos.set(data),
       error: (err: unknown) => this.mostrarError(err),
     });
   }
+  cargarHoras(datos: { medicoId: number; fecha: string }): void {
+    this.horasDisponibles.set([]);
+    this.reservaService.obtenerHorasDisponibles(datos.medicoId, datos.fecha).subscribe({
+      next: (horas) => {
+        const lista = horas.map((h) => h.substring(0, 5)); // "07:00:00" -> "07:00"
 
-   guardarReserva(reserva: Reserva): void {
+      
+        const r = this.reservaEditando();
+        if (r && r.medico?.id === datos.medicoId && r.fecha === datos.fecha) {
+          const propia = r.horaInicio.substring(0, 5);
+          if (!lista.includes(propia)) {
+            lista.push(propia);
+            lista.sort();
+          }
+        }
+
+        this.horasDisponibles.set(lista);
+      },
+      error: (err: unknown) => this.mostrarError(err),
+    });
+  }
+
+  guardarReserva(reserva: Reserva): void {
     this.mensaje.set('');
     this.error.set('');
 

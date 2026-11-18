@@ -32,10 +32,5 @@ public class EspecialidadServiceImpl implements EspecialidadService {
         return repo.conteoDeCitasporEspecialidad();
     }
 
-   
-
-   
-
-    
 
 }

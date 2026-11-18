@@ -7,6 +7,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.health.project.entitys.Reserva;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 
 
@@ -29,6 +31,10 @@ public interface ReservaService {
     List<Reserva> reservasDelMedico(Long medicoId);
 
     void cambiarEstado(Long idReserva, Long idEstado);
+
+    List<LocalTime> horasDisponibles(Long medicoId, LocalDate fecha);
+
+
 
 }
 

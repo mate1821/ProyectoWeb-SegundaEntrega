@@ -14,9 +14,10 @@
   </select>
   <br><br>
 
+  <!-- CAMBIO: [(ngModel)] se separa para poder pedir las horas al cambiar el médico -->
   <label for="medico">Seleccione el médico:</label>
   <br>
-  <select id="medico" name="medico" [(ngModel)]="medicoId" required>
+  <select id="medico" name="medico" [ngModel]="medicoId" (ngModelChange)="cambiarMedico($event)" required>
     <option value="" disabled>Seleccione un médico</option>
     @for (m of medicos(); track m.id) {
     <option [value]="m.id">{{ m.nombre }}</option>
@@ -24,12 +25,26 @@
   </select>
   <br><br>
 
+  <!-- CAMBIO: igual que el médico, al cambiar la fecha se piden las horas -->
   <label for="fecha">Fecha de la reserva</label>
-  <input type="date" id="fecha" name="fecha" [(ngModel)]="fecha" [min]="fechaMinima" required>
+  <input type="date" id="fecha" name="fecha" [ngModel]="fecha" (ngModelChange)="cambiarFecha($event)"
+    [min]="fechaMinima" required>
   <br><br>
 
-  <label for="fecha_inicio">Ingrese la hora inicio</label>
-  <input type="time" id="fecha_inicio" name="horaInicio" [(ngModel)]="horaInicio" required>
+  <!-- CAMBIO: antes era <input type="time">, ahora es una lista con los bloques libres -->
+  <label for="horaInicio">Seleccione la hora</label>
+  <br>
+  <select id="horaInicio" name="horaInicio" [(ngModel)]="horaInicio" required>
+    <option value="" disabled>
+      {{ medicoId && fecha ? 'Seleccione una hora' : 'Primero elija médico y fecha' }}
+    </option>
+    @for (h of horasDisponibles(); track h) {
+    <option [value]="h">{{ h }} - {{ horaFin(h) }}</option>
+    }
+  </select>
+  @if (medicoId && fecha && horasDisponibles().length === 0) {
+  <p>No hay horas disponibles para este día.</p>
+  }
   <br><br>
 
   <label for="observaciones">Ingrese observaciones de la cita</label>

@@ -28,7 +28,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         if (usuario.getRol() != null &&
                 "Administrador".equalsIgnoreCase(usuario.getRol().getNombre())) {
-
             rolNombre = "ADMIN";
         }
 
