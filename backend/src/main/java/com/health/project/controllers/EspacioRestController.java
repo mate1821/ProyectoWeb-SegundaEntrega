@@ -13,6 +13,9 @@ import com.health.project.service.EspecialidadService;
 import com.health.project.service.UsuarioService;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import java.util.Map;
 
 
 
@@ -30,5 +33,18 @@ private  EspacioService espacioService;
 @GetMapping()
 public  List<Espacio> consultarEspecialidades () {
     return this.espacioService.buscarTodos();
+}
+@GetMapping("/{id}/foto")
+public ResponseEntity<Map<String, String>> obtenerFoto(@PathVariable Long id) {
+    Espacio espacio = this.espacioService.buscarPorId(id);
+    if (espacio == null || espacio.getImagenUrl() == null || espacio.getImagenUrl().isBlank()) {
+        return ResponseEntity.notFound().build();
+    }
+    String imagen = espacio.getImagenUrl();
+    // Si se guardó solo el Base64, se le agrega el prefijo para que <img> lo entienda
+    if (!imagen.startsWith("data:")) {
+        imagen = "data:image/jpeg;base64," + imagen;
+    }
+    return ResponseEntity.ok(Map.of("url", imagen));
 }
 }
