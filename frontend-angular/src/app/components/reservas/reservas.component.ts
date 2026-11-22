@@ -28,6 +28,8 @@ export class Reservas implements OnInit {
   mensaje = signal('');
   error = signal('');
   reservaEditando = signal<Reserva | null>(null); // la reserva que se edita (ruta /reservas/editar/:id)
+  // Médico elegido desde la búsqueda (issue #24): /reservas/:id?especialidadId=3&medicoId=8
+  preseleccion = signal<{ especialidadId: number; medicoId: number } | null>(null);
 
 
   private idRuta = Number(this.route.snapshot.paramMap.get('id'));
@@ -54,6 +56,14 @@ export class Reservas implements OnInit {
     // En /reservas/editar/:id se busca la reserva para llenar el formulario
     if (this.modoEditar) {
       this.cargarReservaAEditar(this.idRuta);
+    } else {
+      const params = this.route.snapshot.queryParamMap;
+      const especialidadId = Number(params.get('especialidadId'));
+      const medicoId = Number(params.get('medicoId'));
+      if (especialidadId > 0 && medicoId > 0) {
+        this.cargarMedicos(especialidadId);
+        this.preseleccion.set({ especialidadId, medicoId });
+      }
     }
     
   }

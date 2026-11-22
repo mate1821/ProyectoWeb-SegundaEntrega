@@ -1,0 +1,94 @@
+<main class="pagina">
+  <header class="encabezado">
+    <h1>Buscar médico o clínica</h1>
+    <p>Escribe el nombre de un médico o de una clínica y, si quieres, elige una especialidad.</p>
+    <nav class="acciones" aria-label="Navegación de búsqueda">
+      <a class="boton boton-secundario" [routerLink]="['/inicio', usuarioId]">Volver al inicio</a>
+    </nav>
+  </header>
+
+  <section class="tarjeta" aria-label="Filtros de búsqueda">
+    <form class="barra-busqueda" role="search" (submit)="$event.preventDefault()">
+      <div class="campo campo-texto">
+        <label for="busqueda-texto">Médico o clínica</label>
+        <input
+          id="busqueda-texto"
+          type="search"
+          name="texto"
+          placeholder="Ej.: clínica shaio, Laura Gómez"
+          autocomplete="off"
+          [ngModel]="texto()"
+          (ngModelChange)="texto.set($event)"
+        />
+      </div>
+
+      <div class="campo">
+        <label for="busqueda-especialidad">Especialidad</label>
+        <select
+          id="busqueda-especialidad"
+          name="especialidad"
+          [ngModel]="especialidadId()"
+          (ngModelChange)="especialidadId.set($event)"
+        >
+          <option value="">Todas</option>
+          @for (e of especialidades(); track e.id) {
+            <option [value]="e.id">{{ e.nombreEspecialidad }}</option>
+          }
+        </select>
+      </div>
+
+      <button type="button" class="boton-secundario" (click)="limpiar()"
+        [disabled]="!texto() && !especialidadId()">Limpiar</button>
+    </form>
+  </section>
+
+  @if (error()) {
+    <p class="mensaje mensaje-error" role="alert">{{ error() }}</p>
+  } @else if (cargando()) {
+    <p class="mensaje" role="status">Cargando médicos...</p>
+  } @else {
+    <!-- Aquí se aplican los dos pipes en cadena (issue #24) -->
+    @let resultados = medicos() | filtroEspecialidad: especialidadId() | filtroBusqueda: texto();
+
+    <p class="conteo" role="status">
+      {{ resultados.length }} {{ resultados.length === 1 ? 'resultado' : 'resultados' }}
+    </p>
+
+    <section class="tarjeta" aria-label="Resultados de la búsqueda">
+      <div class="tabla-scroll" tabindex="0" role="region" aria-label="Médicos encontrados">
+        <table class="tabla-datos">
+          <thead>
+            <tr>
+              <th scope="col">Médico</th>
+              <th scope="col">Especialidad</th>
+              <th scope="col">Clínica / espacio</th>
+              <th scope="col">Ubicación</th>
+              <th scope="col">Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (m of resultados; track m.id) {
+              <tr>
+                <td>{{ m.nombre }}</td>
+                <td>{{ m.especialidad ?? 'Sin especialidad' }}</td>
+                <td>{{ m.espacio ?? 'Sin espacio asignado' }}</td>
+                <td>{{ m.ubicacion ?? '—' }}</td>
+                <td>
+                  @if (m.especialidadId !== null) {
+                    <a [routerLink]="['/reservas', usuarioId]"
+                      [queryParams]="{ especialidadId: m.especialidadId, medicoId: m.id }"
+                      [attr.aria-label]="'Reservar cita con ' + m.nombre">Reservar</a>
+                  }
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5">No hay médicos que coincidan con la búsqueda.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+</main>
