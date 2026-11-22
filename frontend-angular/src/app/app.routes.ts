@@ -8,6 +8,8 @@ import { MostrarReservas } from './components/mostrar-reservas/mostrar-reservas.
 import { AdminComponent } from './components/admin/admin.component';
 import { InicioMedico } from './components/inicio-medico/inicio-medico.component';
 import { Bienvenida } from './components/bienvenida/bienvenida.component';
+import { DetallesReserva } from './components/detalles-reserva/detalles-reserva.component';
+
 
 export const routes: Routes = [
 
@@ -22,5 +24,6 @@ export const routes: Routes = [
   { path: 'usuarios', component: UsuariosComponent },
   { path: 'registro', component: Registro },
   { path: 'inicio-sesion', component: InicioSesion },
-  { path: 'admin', component: AdminComponent }
+  { path: 'admin', component: AdminComponent },
+  { path: 'detalle-reserva/:id', component: DetallesReserva }, 
 ];

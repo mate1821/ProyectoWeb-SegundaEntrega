@@ -1,0 +1,119 @@
+<main class="pagina pagina-estrecha">
+    <header class="encabezado">
+        <h1>Detalle de la reserva</h1>
+        <nav class="acciones">
+            <button type="button" class="boton-secundario" (click)="volver()">Volver</button>
+        </nav>
+    </header>
+
+    @if (reserva(); as r) {
+    <section class="tarjeta">
+        <h2>Reserva #{{ r.idReserva }}</h2>
+
+        <h3>Cita</h3>
+        <p>Fecha: {{ r.fecha }}</p>
+        <p>Horario: {{ r.horaInicio.substring(0, 5) }} - {{ r.horaFin?.substring(0, 5) }}</p>
+        <p>Estado: {{ r.estado?.nombre }}</p>
+        <p>Observaciones: {{ r.observaciones || 'Sin observaciones' }}</p>
+
+        <h3>Paciente y médico</h3>
+        <p>Paciente: {{ r.usuario?.nombre }}</p>
+        <p>Médico: {{ r.medico?.nombre }}</p>
+        <p>Especialidad: {{ r.medico?.especialidad?.nombreEspecialidad }}</p>
+
+        <h3>Espacio</h3>
+        <p>Nombre: {{ r.medico?.espacio?.nombre }}</p>
+        <p>Dirección: {{ r.medico?.espacio?.ubicacion }}</p>
+
+        <div class="ubicacion">
+            <figure>
+                @if (mapaUrl(); as url) {
+                <iframe [src]="url" class="mapa" loading="lazy"
+                    [title]="'Mapa de ' + r.medico?.espacio?.nombre"></iframe>
+                } @else {
+                <p class="vacio">Este espacio no tiene coordenadas registradas.</p>
+                }
+                <figcaption>Mapa</figcaption>
+            </figure>
+
+            <figure>
+                @if (fotoUrl(); as url) {
+                <img [src]="url" width="1024" height="576" [alt]="'Foto de ' + r.medico?.espacio?.nombre" />
+                } @else if (sinFoto()) {
+                <p class="vacio">Este espacio no tiene foto.</p>
+                } @else {
+                <p class="vacio">Cargando foto...</p>
+                }
+                <figcaption>Foto</figcaption>
+            </figure>
+        </div>
+
+        <h3>Servicios</h3>
+        @for (s of r.servicios; track $index) {
+        <p>{{ s.nombre }}: {{ s.costo | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</p>
+        } @empty {
+        <p>Sin servicios adicionales.</p>
+        }
+        <p><strong>Total: {{ r.total | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</strong></p>
+
+        <h3>Calificar</h3>
+        @if (mensaje()) {
+        <p class="mensaje mensaje-exito" role="status">{{ mensaje() }}</p>
+        }
+        @if (error()) {
+        <p class="mensaje mensaje-error" role="alert">{{ error() }}</p>
+        }
+
+        <div class="acciones">
+            <button type="button" class="boton-secundario boton-pequeno"
+                [disabled]="!citaTerminada() || citaCancelada() || calificaciones().medico" (click)="calificarMedico()">
+                {{ calificaciones().medico ? 'Médico calificado ✓' : 'Calificar médico' }}
+            </button>
+            <button type="button" class="boton-secundario boton-pequeno"
+                [disabled]="!citaTerminada() || citaCancelada() || calificaciones().espacio"
+                (click)="calificarEspacio()">
+                {{ calificaciones().espacio ? 'Espacio calificado ✓' : 'Calificar espacio' }}
+            </button>
+        </div>
+        @if (citaCancelada()) {
+        <p class="nota">Las citas canceladas no se pueden calificar.</p>
+        } @else if (!citaTerminada()) {
+        <p class="nota">Podrás calificar cuando termine la cita ({{ r.fecha }} a las {{ r.horaFin?.substring(0, 5) }}).
+        </p>
+        }
+
+        @if (calificando(); as tipo) {
+        <form class="calificacion" (ngSubmit)="enviarCalificacion()">
+            <h4>{{ tipo === 'medico' ? 'Califica a ' + r.medico?.nombre : 'Califica ' + r.medico?.espacio?.nombre }}
+            </h4>
+
+            <!-- Radios reales (se pueden elegir con el teclado) dibujados como estrellas -->
+            <fieldset class="estrellas">
+                <legend>Puntuación: {{ puntuacion }} de 5</legend>
+                @for (n of [1, 2, 3, 4, 5]; track n) {
+                <label class="estrella" [class.activa]="n <= puntuacion">
+                    <input type="radio" name="puntuacion" [value]="n" [(ngModel)]="puntuacion" class="oculto" />
+                    <span aria-hidden="true">★</span>
+                    <span class="oculto">{{ n }} de 5</span>
+                </label>
+                }
+            </fieldset>
+
+            <label for="comentario">Comentario (opcional)</label>
+            <textarea id="comentario" name="comentario" rows="3" maxlength="255" [(ngModel)]="comentario"></textarea>
+            <p class="nota">{{ comentario.length }}/255</p>
+
+            <div class="acciones">
+                <button type="submit" class="boton-pequeno" [disabled]="enviando()">
+                    {{ enviando() ? 'Enviando...' : 'Enviar calificación' }}
+                </button>
+                <button type="button" class="boton-secundario boton-pequeno"
+                    (click)="cancelarCalificacion()">Cancelar</button>
+            </div>
+        </form>
+        }
+    </section>
+    } @else {
+    <p class="mensaje" role="status">Cargando reserva...</p>
+    }
+</main>

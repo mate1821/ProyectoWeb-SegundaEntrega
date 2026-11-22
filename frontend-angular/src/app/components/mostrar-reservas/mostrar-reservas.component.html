@@ -70,9 +70,12 @@
                   </select>
                 </td>
                 <td>
+                  <a [routerLink]="['/detalle-reserva', reserva.idReserva]">Ver detalles</a>
+                  <br>
                   @if (!esMedico) {
                     <a [routerLink]="['/reservas/editar', reserva.idReserva]">Editar</a>
                   }
+                  <br>
                 </td>
               </tr>
             } @empty {

@@ -9,6 +9,11 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Random;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import org.springframework.core.io.ClassPathResource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.boot.CommandLineRunner;
@@ -69,7 +74,15 @@ public class DataLoader implements CommandLineRunner {
         @Autowired
         private PasswordEncoder passwordEncoder;
 
-        @Override
+        private String foto(String archivo) {
+                try (InputStream in = new ClassPathResource("images/" + archivo).getInputStream()) {
+                        return new String(in.readAllBytes(), StandardCharsets.UTF_8).trim();
+                } catch (IOException e) {
+                        System.err.println("No se encontró la foto " + archivo);
+                        return null;
+                }
+        }
+        
         public void run(String... args) throws Exception {
 
 
@@ -118,15 +131,20 @@ public class DataLoader implements CommandLineRunner {
                 especialidadRepo.save(new Especialidad("PSIQUIATRIA", 90000.0));
                 especialidadRepo.save(new Especialidad("NEUMOLOGIA", 110000.0));
 
-                // Espacio:
-                espacioRepo.save(new Espacio("Hospital1", "Consultorio 101", "Calle 42 # 18-27",
-                                "Consultorio equipado para consulta general", true));
-                espacioRepo.save(new Espacio("Hospital2", "Consultorio 101", "Carrera 67 # 24-15",
-                                "Consultorio equipado para consulta general", true));
-                espacioRepo.save(new Espacio("Hospital3", "Consultorio 101", "Calle 91 # 53-08",
-                                "Consultorio equipado para consulta general", true));
-                espacioRepo.save(new Espacio("Hospital4", "Consultorio 101", "Carrera 15 # 76-42",
-                                "Consultorio equipado para consulta general", true));
+                espacioRepo.save(new Espacio("Hospital Universitario San Ignacio", "Consultorio 204", "Carrera 7 # 40-62",
+                foto("espacio1.txt"), true, 4.6284, -74.0637));
+
+                espacioRepo.save(new Espacio("Hospital de San José", "Sala de urgencias", "Calle 10 # 18-75",
+                foto("espacio2.txt"), true, 4.6054, -74.0886));
+                
+
+                espacioRepo.save(new Espacio("Fundación Santa Fe de Bogotá", "Sala de cirugía", "Calle 119 # 7-75",
+                foto("espacio1.txt"), true, 4.6962, -74.0321));
+                espacioRepo.save(new Espacio("Clínica del Country", "Laboratorio", "Carrera 16 # 82-57",
+                foto("espacio2.txt"), true, 4.6681, -74.0574));
+
+                espacioRepo.save(new Espacio("Hospital Universitario Mayor Méderi", "Consultorio 310", "Calle 24 # 29-45",
+                foto("espacio1.txt"), true, 4.6238, -74.0844));
 
                 // insercion de usuarios
 

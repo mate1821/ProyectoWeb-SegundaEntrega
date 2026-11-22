@@ -37,11 +37,20 @@ public class Espacio {
     @Column(length = 150)
     private String ubicacion;
 
-    @Column(length = 255)
+    // Foto del espacio en Base64 (se pone en el DataLoader).
+    // TEXT porque una foto en Base64 ocupa decenas de miles de caracteres (varchar(255) no alcanza).
+    // @JsonIgnore: Espacio viaja dentro de cada reserva y la foto haría pesado ese JSON;
+    // se pide aparte con GET /api/espacios/{id}/foto
+    @Column(columnDefinition = "TEXT")
+    @JsonIgnore
     private String imagenUrl;
 
     @Column(nullable = false)
     private boolean abierto;
+
+    private Double latitud;
+
+    private Double longitud;
 
     @OneToMany (mappedBy = "espacio")
     @JsonIgnore 
@@ -53,5 +62,12 @@ public class Espacio {
         this.ubicacion=ubicacion;
         this.imagenUrl=imagenUrl;
         this.abierto=abierto;
+    }
+
+    public Espacio(String nombre, String descripcion, String ubicacion, String imagenUrl, boolean abierto,
+            Double latitud, Double longitud){
+        this(nombre, descripcion, ubicacion, imagenUrl, abierto);
+        this.latitud=latitud;
+        this.longitud=longitud;
     }
 }

@@ -6,6 +6,8 @@ import { Reserva } from '../../models/reserva.model';
 import { EstadoReserva } from '../../models/estado.model';
 import { ReservaService } from '../../services/reserva.service';
 import { EstadoService } from '../../services/estado.service';
+import { DetallesReserva } from '../detalles-reserva/detalles-reserva.component';
+
 
 @Component({
   imports: [RouterLink],
@@ -27,6 +29,8 @@ export class MostrarReservas implements OnInit {
   estados = signal<EstadoReserva[]>([]);
   mensaje = signal('');
   error = signal('');
+  reservaSeleccionada = signal<Reserva | null>(null);
+
 
   ngOnInit(): void {
     this.cargarReservas();
@@ -61,6 +65,13 @@ export class MostrarReservas implements OnInit {
       },
       error: (err: unknown) => this.mostrarError(err),
     });
+  }
+  verDetalles(reserva: Reserva): void {
+    this.reservaSeleccionada.set(reserva);
+  }
+
+  cerrarDetalles(): void {
+    this.reservaSeleccionada.set(null);
   }
 
   private mostrarError(err: unknown): void {

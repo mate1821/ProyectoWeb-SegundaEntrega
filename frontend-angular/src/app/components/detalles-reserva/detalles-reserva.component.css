@@ -1,0 +1,111 @@
+.ubicacion {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: var(--espacio-3);
+    margin-block: var(--espacio-3);
+}
+
+.mapa {
+    inline-size: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: var(--radio-control);
+}
+
+.ubicacion figure {
+    margin: 0;
+}
+
+.ubicacion img,
+.vacio {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radio-control);
+    object-fit: cover;
+}
+
+.vacio {
+    display: grid;
+    place-items: center;
+    margin: 0;
+    background: var(--superficie-suave);
+    border: 1px dashed var(--borde-control);
+    color: var(--texto-suave);
+    text-align: center;
+}
+
+.ubicacion figcaption,
+.nota {
+    font-size: 0.85rem;
+    color: var(--texto-suave);
+}
+
+.boton-pequeno {
+    padding: 0.3rem 0.75rem;
+    font-size: 0.85rem;
+}
+
+.boton-pequeno:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ---- Formulario de calificación ---- */
+.calificacion {
+    margin-block-start: var(--espacio-3);
+    padding: var(--espacio-3);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-control);
+    background: var(--superficie-suave);
+}
+
+.calificacion h4 {
+    margin: 0 0 var(--espacio-2);
+}
+
+.calificacion textarea {
+    display: block;
+    inline-size: 100%;
+    margin-block-start: var(--espacio-1);
+}
+
+.estrellas {
+    display: flex;
+    gap: var(--espacio-1);
+    margin: 0 0 var(--espacio-3);
+    padding: 0;
+    border: 0;
+}
+
+.estrellas legend {
+    margin-block-end: var(--espacio-1);
+    font-weight: 650;
+}
+
+.estrella {
+    font-size: 1.8rem;
+    line-height: 1;
+    color: var(--borde-control);
+    cursor: pointer;
+}
+
+.estrella.activa {
+    color: #e0a400;
+}
+
+.estrella:focus-within {
+    outline: 2px solid var(--acento);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+.oculto {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}

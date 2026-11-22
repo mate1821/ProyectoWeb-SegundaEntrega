@@ -11,7 +11,7 @@ export interface ServicioReserva extends Referencia {
 }
 
 export interface MedicoReserva extends Referencia {
-  espacio?: { id: number; nombre: string };
+  espacio?: { id: number; nombre: string; ubicacion?: string; latitud?: number; longitud?: number };
   especialidad?: { id: number; nombreEspecialidad: string };
 }
 
