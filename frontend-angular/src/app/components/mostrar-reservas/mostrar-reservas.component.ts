@@ -1,6 +1,7 @@
 
 import { Component, OnInit, inject, signal, } from '@angular/core';
 import { RouterLink, ActivatedRoute } from '@angular/router';
+import { CurrencyPipe } from '@angular/common';
 import { Reserva } from '../../models/reserva.model';
 import { EstadoReserva } from '../../models/estado.model';
 import { ReservaService } from '../../services/reserva.service';
@@ -10,7 +11,7 @@ import { DetallesReserva } from '../detalles-reserva/detalles-reserva.component'
 
 
 @Component({
-  imports: [RouterLink],
+  imports: [RouterLink, CurrencyPipe],
   selector: 'app-mostrar-reservas',
   styleUrl: './mostrar-reservas.component.css',
   templateUrl: './mostrar-reservas.component.html',

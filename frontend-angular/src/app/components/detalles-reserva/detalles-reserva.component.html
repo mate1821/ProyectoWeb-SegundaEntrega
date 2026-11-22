@@ -1,4 +1,4 @@
-<main class="pagina pagina-estrecha">
+<main class="pagina pagina-detalle">
     <header class="encabezado">
         <h1>Detalle de la reserva</h1>
         <nav class="acciones">
@@ -11,23 +11,53 @@
     }
 
     @if (reserva(); as r) {
-    <section class="tarjeta">
-        <h2>Reserva #{{ r.idReserva }}</h2>
+    <!-- Issue #25: datos agrupados en tarjetas (cita, lugar, costos y calificación) -->
+    <section class="tarjeta" aria-labelledby="titulo-cita">
+        <div class="titulo-reserva">
+            <h2 id="titulo-cita">Reserva #{{ r.idReserva }}</h2>
+            <span class="estado" [attr.data-estado]="r.estado?.nombre">{{ r.estado?.nombre }}</span>
+        </div>
 
-        <h3>Cita</h3>
-        <p>Fecha: {{ r.fecha }}</p>
-        <p>Horario: {{ r.horaInicio.substring(0, 5) }} - {{ r.horaFin?.substring(0, 5) }}</p>
-        <p>Estado: {{ r.estado?.nombre }}</p>
-        <p>Observaciones: {{ r.observaciones || 'Sin observaciones' }}</p>
+        <dl class="datos">
+            <div>
+                <dt>Fecha</dt>
+                <dd>{{ r.fecha }}</dd>
+            </div>
+            <div>
+                <dt>Horario</dt>
+                <dd>{{ r.horaInicio.substring(0, 5) }} – {{ r.horaFin?.substring(0, 5) }}</dd>
+            </div>
+            <div>
+                <dt>Paciente</dt>
+                <dd>{{ r.usuario?.nombre }}</dd>
+            </div>
+            <div>
+                <dt>Médico</dt>
+                <dd>{{ r.medico?.nombre }}</dd>
+            </div>
+            <div>
+                <dt>Especialidad</dt>
+                <dd>{{ r.medico?.especialidad?.nombreEspecialidad }}</dd>
+            </div>
+            <div class="dato-ancho">
+                <dt>Observaciones</dt>
+                <dd>{{ r.observaciones || 'Sin observaciones' }}</dd>
+            </div>
+        </dl>
+    </section>
 
-        <h3>Paciente y médico</h3>
-        <p>Paciente: {{ r.usuario?.nombre }}</p>
-        <p>Médico: {{ r.medico?.nombre }}</p>
-        <p>Especialidad: {{ r.medico?.especialidad?.nombreEspecialidad }}</p>
-
-        <h3>Espacio</h3>
-        <p>Nombre: {{ r.medico?.espacio?.nombre }}</p>
-        <p>Dirección: {{ r.medico?.espacio?.ubicacion }}</p>
+    <section class="tarjeta" aria-labelledby="titulo-lugar">
+        <h2 id="titulo-lugar">Lugar de la cita</h2>
+        <dl class="datos">
+            <div>
+                <dt>Espacio</dt>
+                <dd>{{ r.medico?.espacio?.nombre }}</dd>
+            </div>
+            <div>
+                <dt>Dirección</dt>
+                <dd>{{ r.medico?.espacio?.ubicacion || 'Sin dirección registrada' }}</dd>
+            </div>
+        </dl>
 
         <div class="ubicacion">
             <figure>
@@ -42,7 +72,9 @@
 
             <figure>
                 @if (fotoUrl(); as url) {
-                <img [src]="url" width="1024" height="576" [alt]="'Foto de ' + r.medico?.espacio?.nombre" />
+                <!-- Si la imagen no carga, se muestra el aviso en vez del ícono roto -->
+                <img [src]="url" width="1024" height="576" [alt]="'Foto de ' + r.medico?.espacio?.nombre"
+                    (error)="fotoUrl.set(null); sinFoto.set(true)" />
                 } @else if (sinFoto()) {
                 <p class="vacio">Este espacio no tiene foto.</p>
                 } @else {
@@ -51,16 +83,30 @@
                 <figcaption>Foto</figcaption>
             </figure>
         </div>
+    </section>
 
-        <h3>Servicios</h3>
-        @for (s of r.servicios; track $index) {
-        <p>{{ s.nombre }}: {{ s.costo | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</p>
-        } @empty {
-        <p>Sin servicios adicionales.</p>
-        }
-        <p><strong>Total: {{ r.total | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</strong></p>
+    <section class="tarjeta" aria-labelledby="titulo-costos">
+        <h2 id="titulo-costos">Costos</h2>
+        <ul class="costos">
+            <li>
+                <span>Consulta de {{ r.medico?.especialidad?.nombreEspecialidad | lowercase }}</span>
+                <span>{{ costoConsulta(r) | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
+            </li>
+            @for (s of r.servicios; track $index) {
+            <li>
+                <span>{{ s.nombre }}</span>
+                <span>{{ s.costo | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
+            </li>
+            }
+            <li class="total">
+                <span>Total</span>
+                <span>{{ r.total | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
+            </li>
+        </ul>
+    </section>
 
-        <h3>Calificar</h3>
+    <section class="tarjeta" aria-labelledby="titulo-calificar">
+        <h2 id="titulo-calificar">Calificar</h2>
         @if (mensaje()) {
         <p class="mensaje mensaje-exito" role="status">{{ mensaje() }}</p>
         }
@@ -117,7 +163,7 @@
         </form>
         }
     </section>
-    } @else {
+    } @else if (!error()) {
     <p class="mensaje" role="status">Cargando reserva...</p>
     }
 </main>

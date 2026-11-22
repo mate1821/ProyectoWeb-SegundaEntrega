@@ -1,0 +1,7 @@
+/* Precio de cada servicio adicional (issue #25) */
+.precio {
+  margin-inline-start: var(--espacio-1);
+  font-weight: 400;
+  color: var(--texto-suave);
+  white-space: nowrap;
+}

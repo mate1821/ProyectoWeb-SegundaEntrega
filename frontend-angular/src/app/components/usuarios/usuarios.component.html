@@ -7,6 +7,8 @@
     </nav>
   </header>
 
+  <!-- Issue #25: filtro, tabla y paginación dentro de una tarjeta, como en las demás pantallas -->
+  <section class="tarjeta" aria-label="Lista de usuarios">
   <div class="campo filtro">
     <label for="filtroRol">Filtrar por rol: </label>
     <select id="filtroRol" [formControl]="filtroRol">
@@ -99,4 +101,5 @@
       </button>
     </nav>
   }
+  </section>
 </main>

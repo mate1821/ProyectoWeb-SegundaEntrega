@@ -6,6 +6,7 @@ import {Servicio} from '../../models/servicio.model'
 
 
 import { FormsModule } from '@angular/forms';
+import { CurrencyPipe } from '@angular/common';
 
 
 
@@ -13,7 +14,7 @@ import { FormsModule } from '@angular/forms';
 
 
 @Component({
-  imports: [FormsModule],
+  imports: [FormsModule, CurrencyPipe],
   selector: 'app-reserva-form',
   styleUrl: './reserva-form.component.css',
   templateUrl: './reserva-form.component.html',

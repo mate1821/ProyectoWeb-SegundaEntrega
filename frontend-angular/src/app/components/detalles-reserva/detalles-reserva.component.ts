@@ -1,5 +1,5 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
-import { CurrencyPipe, Location } from '@angular/common';
+import { CurrencyPipe, Location, LowerCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -11,7 +11,7 @@ import { EstadoCalificaciones, TipoCalificacion } from '../../models/calificacio
 import { mensajeError } from '../../utils/mensaje-error';
 
 @Component({
-  imports: [CurrencyPipe, FormsModule],
+  imports: [CurrencyPipe, LowerCasePipe, FormsModule],
   selector: 'app-detalles-reserva',
   styleUrl: './detalles-reserva.component.css',
   templateUrl: './detalles-reserva.component.html',
@@ -46,6 +46,12 @@ export class DetallesReserva implements OnInit {
     const fin = new Date(`${r.fecha}T${r.horaFin}`); // "2026-11-21T08:00:00"
     return Date.now() > fin.getTime();
   });
+
+  // Valor de la consulta = total menos los servicios adicionales
+  costoConsulta(r: Reserva): number {
+    const servicios = (r.servicios ?? []).reduce((suma, s) => suma + (s.costo ?? 0), 0);
+    return (r.total ?? 0) - servicios;
+  }
 
   citaCancelada = computed(() => this.reserva()?.estado?.nombre === 'Cancelada');
 
