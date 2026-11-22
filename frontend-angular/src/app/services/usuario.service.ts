@@ -8,7 +8,7 @@ import { Credenciales } from '../models/credencial.model';
   providedIn: 'root'
 })
 export class UsuarioService {
-  private apiUrl = 'http://localhost:8090/api/usuarios';
+  private apiUrl = 'https://proyectoweb-segundaentrega.onrender.com/api/usuarios';
 
   constructor(private http: HttpClient) { }
 

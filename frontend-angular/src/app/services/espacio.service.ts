@@ -7,7 +7,7 @@ import { FotoEspacio } from '../models/espacio.model';
 @Injectable({ providedIn: 'root' })
 export class EspacioService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8090/api/espacios';
+  private apiUrl = 'https://proyectoweb-segundaentrega.onrender.com/api/espacios';
 
   obtenerEspacios(): Observable<Espacio[]> {
     return this.http.get<Espacio[]>(this.apiUrl,

@@ -5,7 +5,7 @@ import { EstadoReserva } from '../models/estado.model';
 @Injectable({ providedIn: 'root' })
 export class EstadoService {
     private http = inject(HttpClient);
-    private apiUrl = 'http://localhost:8090/api/estados';
+    private apiUrl = 'https://proyectoweb-segundaentrega.onrender.com/api/estados';
 
     obtenerEstados(): Observable<EstadoReserva[]> {
         return this.http.get<EstadoReserva[]>(this.apiUrl, { withCredentials: true });

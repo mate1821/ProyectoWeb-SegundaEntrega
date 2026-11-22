@@ -5,7 +5,7 @@ import { UsuarioService } from './usuario.service';
 import { Usuario } from '../models/usuario.model';
 
 describe('UsuarioService', () => {
-  const url = 'http://localhost:8090/api/usuarios';
+  const url = 'https://proyectoweb-segundaentrega.onrender.com/api/usuarios';
   const usuario: Usuario = {
     id: 3,
     cedula: 123,

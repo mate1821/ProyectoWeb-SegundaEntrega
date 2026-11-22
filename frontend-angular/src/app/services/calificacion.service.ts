@@ -12,7 +12,7 @@ import { CalificacionRequest, EstadoCalificaciones, ListadoResenas, TipoCalifica
 @Injectable({ providedIn: 'root' })
 export class CalificacionService {
     private http = inject(HttpClient);
-    private apiUrl = 'http://localhost:8090/api/reservas';
+    private apiUrl = 'https://proyectoweb-segundaentrega.onrender.com/api/reservas';
 
     obtenerResenas(tipo: TipoCalificacion, id: number): Observable<ListadoResenas> {
         return this.http.get<ListadoResenas>(`http://localhost:8090/api/resenas/${tipo}/${id}`,

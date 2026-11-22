@@ -7,7 +7,7 @@ import { MedicoDirectorio } from '../models/medico-directorio.model';
 @Injectable({ providedIn: 'root' })
 export class MedicoService {
     private http = inject(HttpClient);
-    private apiUrl = 'http://localhost:8090/api/medicos';
+    private apiUrl = 'https://proyectoweb-segundaentrega.onrender.com/api/medicos';
 
     obtenerPorEspecialidad(especialidadId: number): Observable<Medico[]> {
         return this.http.get<Medico[]>(this.apiUrl, { params: { especialidadId }, withCredentials: true  });

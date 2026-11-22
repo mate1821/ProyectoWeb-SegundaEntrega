@@ -7,7 +7,7 @@ import { Usuario } from '../../models/usuario.model';
 
 /** Prueba el borrado desde la lista de usuarios: llama a DELETE /api/usuarios/{id}. */
 describe('UsuariosComponent', () => {
-  const URL_USUARIOS = 'http://localhost:8090/api/usuarios';
+  const URL_USUARIOS = 'https://proyectoweb-segundaentrega.onrender.com/api/usuarios';
 
   const usuarios: Usuario[] = [
     { id: 1, cedula: 1, nombre: 'Ana Torres', fecha_nacimiento: '1990-01-01', correo: 'ana@correo.com', contrasena: 'x', activo: true, rol: { id: 2, nombre: 'Paciente' } },
