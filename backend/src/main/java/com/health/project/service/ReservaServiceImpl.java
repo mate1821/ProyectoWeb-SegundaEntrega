@@ -35,6 +35,9 @@ public class ReservaServiceImpl implements ReservaService {
     @Autowired 
     private EstadoReservaRepository estadoRepo;
 
+    @Autowired
+    private NotificacionService notificacionService;
+
     @Override
     public List<Reserva> buscarReservas() {
         return repo.findAll();
@@ -47,6 +50,7 @@ public class ReservaServiceImpl implements ReservaService {
 
     @Override
     public void guardar(Reserva reserva) {
+        boolean esNueva = reserva.getIdReserva() == null; // guardar() también se usa para editar
         if (reserva.getIdReserva() == null && repo.existsByMedicoAndFechaAndHoraInicio(reserva.getMedico(), reserva.getFecha(), reserva.getHoraInicio()) ) {
         throw new HorarioNoDisponibleException(reserva.getMedico(), reserva.getFecha(), reserva.getHoraInicio());
     }
@@ -65,6 +69,10 @@ public class ReservaServiceImpl implements ReservaService {
         }
     }
         repo.save(reserva);
+
+        if (esNueva) {
+            notificacionService.notificarReservaCreada(reserva);
+        }
     }
 
     @Override
@@ -127,9 +135,3 @@ public class ReservaServiceImpl implements ReservaService {
     }
 
 }
-
-
-
-
-
-
