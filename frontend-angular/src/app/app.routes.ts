@@ -28,4 +28,8 @@ export const routes: Routes = [
   { path: 'admin', component: AdminComponent },
   { path: 'detalle-reserva/:id', component: DetallesReserva }, 
   { path: 'buscar/:id', component: BuscarMedicos },                               // búsqueda (id = usuario)
+  {
+    path: 'buscar/:id/resenas/:tipo/:destinoId',
+    loadComponent: () => import('./components/resenas/resenas.component').then(m => m.Resenas),
+  },
 ];

@@ -19,3 +19,7 @@
   font-size: 0.9rem;
   opacity: 0.8;
 }
+
+.enlaces-resenas {
+  min-inline-size: 7rem;
+}

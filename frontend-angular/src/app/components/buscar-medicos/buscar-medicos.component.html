@@ -64,6 +64,7 @@
               <th scope="col">Clínica / espacio</th>
               <th scope="col">Ubicación</th>
               <th scope="col">Acción</th>
+              <th scope="col">Reseñas</th>
             </tr>
           </thead>
           <tbody>
@@ -80,10 +81,22 @@
                       [attr.aria-label]="'Reservar cita con ' + m.nombre">Reservar</a>
                   }
                 </td>
+                <td>
+                  <div class="acciones enlaces-resenas">
+                    <a [routerLink]="['/buscar', usuarioId, 'resenas', 'medico', m.id]"
+                      [queryParams]="{ texto: texto() || null, especialidadId: especialidadId() || null }"
+                      [attr.aria-label]="'Ver reseñas de ' + m.nombre">Médico</a>
+                    @if (m.espacioId !== null) {
+                      <a [routerLink]="['/buscar', usuarioId, 'resenas', 'espacio', m.espacioId]"
+                        [queryParams]="{ texto: texto() || null, especialidadId: especialidadId() || null }"
+                        [attr.aria-label]="'Ver reseñas de ' + m.espacio">Clínica</a>
+                    }
+                  </div>
+                </td>
               </tr>
             } @empty {
               <tr>
-                <td colspan="5">No hay médicos que coincidan con la búsqueda.</td>
+                <td colspan="6">No hay médicos que coincidan con la búsqueda.</td>
               </tr>
             }
           </tbody>

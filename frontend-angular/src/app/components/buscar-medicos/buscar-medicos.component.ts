@@ -39,8 +39,8 @@ export class BuscarMedicos implements OnInit {
   error = signal('');
 
   // Lo que escribe/elige el usuario (son los argumentos de los pipes)
-  texto = signal('');
-  especialidadId = signal<string>('');
+  texto = signal(this.route.snapshot.queryParamMap.get('texto') ?? '');
+  especialidadId = signal(this.route.snapshot.queryParamMap.get('especialidadId') ?? '');
 
   ngOnInit(): void {
     forkJoin({

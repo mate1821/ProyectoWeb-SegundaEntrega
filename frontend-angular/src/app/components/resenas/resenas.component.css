@@ -1,0 +1,20 @@
+.resena-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--espacio-2);
+}
+
+.resena-meta strong {
+  color: var(--acento-fuerte);
+}
+
+.resena-meta time {
+  color: var(--texto-suave);
+}
+
+.resena-comentario {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
