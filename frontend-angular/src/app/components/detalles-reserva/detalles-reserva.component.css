@@ -1,8 +1,69 @@
+/* ---- Issue #25: estructura de la pantalla de detalle ---- */
+.pagina-detalle {
+    max-inline-size: 56rem;
+}
+
+.titulo-reserva {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espacio-2);
+}
+
+/* Datos en rejilla: etiqueta pequeña arriba y valor debajo */
+.datos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    gap: var(--espacio-3) var(--espacio-4);
+    margin: 0;
+}
+
+.datos dt {
+    font-size: .8rem;
+    font-weight: 650;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+    color: var(--texto-suave);
+}
+
+.datos dd {
+    margin: .15rem 0 0;
+    color: var(--texto);
+    overflow-wrap: anywhere;
+}
+
+.dato-ancho {
+    grid-column: 1 / -1;
+}
+
+/* Lista de costos con el valor alineado a la derecha */
+.costos {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.costos li {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--espacio-3);
+    padding-block: var(--espacio-2);
+    border-block-end: 1px solid var(--borde);
+    font-variant-numeric: tabular-nums;
+}
+
+.costos .total {
+    border-block-end: 0;
+    font-weight: 700;
+    color: var(--acento-fuerte);
+}
+
 .ubicacion {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
     gap: var(--espacio-3);
-    margin-block: var(--espacio-3);
 }
 
 .mapa {

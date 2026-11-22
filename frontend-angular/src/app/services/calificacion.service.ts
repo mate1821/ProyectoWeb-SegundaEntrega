@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { CalificacionRequest, EstadoCalificaciones, TipoCalificacion } from '../models/calificacion.model';
+import { CalificacionRequest, EstadoCalificaciones, ListadoResenas, TipoCalificacion } from '../models/calificacion.model';
 
 /**
  * Consume CalificacionRestController (backend, puerto 8090):
@@ -13,6 +13,11 @@ import { CalificacionRequest, EstadoCalificaciones, TipoCalificacion } from '../
 export class CalificacionService {
     private http = inject(HttpClient);
     private apiUrl = 'http://localhost:8090/api/reservas';
+
+    obtenerResenas(tipo: TipoCalificacion, id: number): Observable<ListadoResenas> {
+        return this.http.get<ListadoResenas>(`http://localhost:8090/api/resenas/${tipo}/${id}`,
+            { withCredentials: true });
+    }
 
     obtenerEstado(reservaId: number): Observable<EstadoCalificaciones> {
         return this.http.get<EstadoCalificaciones>(`${this.apiUrl}/${reservaId}/calificaciones`,

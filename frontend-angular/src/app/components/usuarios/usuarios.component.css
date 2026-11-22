@@ -1,0 +1,8 @@
+/* Issue #25: paginación centrada debajo de la tabla */
+nav:has(> button) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-2);
+}

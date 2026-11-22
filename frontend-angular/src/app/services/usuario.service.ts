@@ -30,11 +30,12 @@ export class UsuarioService {
   }
 
   activar(id: number): Observable<Usuario> {
-    return this.http.put<Usuario>(`${this.apiUrl}/activar/${id}`, {withCredentials: true });
+    // El 2do parámetro es el cuerpo (vacío); las opciones van en el 3ro
+    return this.http.put<Usuario>(`${this.apiUrl}/activar/${id}`, {}, { withCredentials: true });
   }
 
   desactivar(id: number): Observable<Usuario> {
-    return this.http.put<Usuario>(`${this.apiUrl}/desactivar/${id}`, {withCredentials: true });
+    return this.http.put<Usuario>(`${this.apiUrl}/desactivar/${id}`, {}, { withCredentials: true });
   }
 
   // DELETE /api/usuarios/{id}

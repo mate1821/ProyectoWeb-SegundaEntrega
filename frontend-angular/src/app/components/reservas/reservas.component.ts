@@ -1,5 +1,6 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { ReservaService } from '../../services/reserva.service';
+import { mensajeError } from '../../utils/mensaje-error';
 import { MedicoService } from '../../services/medico.service';
 import { ReservaComponent } from '../reserva-form/reserva-form.component';
 import { Especialidad } from '../../models/especialidad.model';
@@ -8,7 +9,6 @@ import { Servicio } from '../../models/servicio.model';
 import { Reserva } from '../../models/reserva.model';
 import { EspecialidadService } from '../../services/especialidades.service';
 import { ServiciosService } from '../../services/servicios.service';
-import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -28,6 +28,8 @@ export class Reservas implements OnInit {
   mensaje = signal('');
   error = signal('');
   reservaEditando = signal<Reserva | null>(null); // la reserva que se edita (ruta /reservas/editar/:id)
+  // Médico elegido desde la búsqueda (issue #24): /reservas/:id?especialidadId=3&medicoId=8
+  preseleccion = signal<{ especialidadId: number; medicoId: number } | null>(null);
 
 
   private idRuta = Number(this.route.snapshot.paramMap.get('id'));
@@ -54,6 +56,14 @@ export class Reservas implements OnInit {
     // En /reservas/editar/:id se busca la reserva para llenar el formulario
     if (this.modoEditar) {
       this.cargarReservaAEditar(this.idRuta);
+    } else {
+      const params = this.route.snapshot.queryParamMap;
+      const especialidadId = Number(params.get('especialidadId'));
+      const medicoId = Number(params.get('medicoId'));
+      if (especialidadId > 0 && medicoId > 0) {
+        this.cargarMedicos(especialidadId);
+        this.preseleccion.set({ especialidadId, medicoId });
+      }
     }
     
   }
@@ -126,13 +136,9 @@ export class Reservas implements OnInit {
 
 
   private mostrarError(err: unknown): void {
-    const cuerpo: unknown = err instanceof HttpErrorResponse ? err.error : null;
-    if (typeof cuerpo === 'object' && cuerpo !== null && 'error' in cuerpo && typeof cuerpo.error === 'string') {
-      this.error.set(cuerpo.error);
-    } else {
-      this.error.set('No se pudo completar la operación. Verifica que el backend esté encendido.');
-    }
+    this.error.set(mensajeError(err, 'No se pudo completar la operación.'));
   }
+
 }
 
 

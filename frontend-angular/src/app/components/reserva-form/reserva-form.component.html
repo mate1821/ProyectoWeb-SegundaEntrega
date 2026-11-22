@@ -82,7 +82,7 @@
           [checked]="servicioIds.includes(s.id)"
           (change)="alternarServicio(s.id)"
         />
-        <label [for]="s.id">{{ s.nombre }} - {{ s.costo }}</label>
+        <label [for]="s.id">{{ s.nombre }} <span class="precio">{{ s.costo | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span></label>
       </div>
     }
   </fieldset>

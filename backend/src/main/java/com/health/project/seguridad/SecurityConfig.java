@@ -18,6 +18,12 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    private final ManejadorErroresSeguridad manejadorErrores;
+
+    public SecurityConfig(ManejadorErroresSeguridad manejadorErrores) {
+        this.manejadorErrores = manejadorErrores;
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -43,6 +49,10 @@ public class SecurityConfig {
                 // Registro público
                 .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()
 
+                // Catálogos que necesita el formulario de registro antes de
+                // iniciar sesión (sin esto el registro de médicos no cargaba nada)
+                .requestMatchers(HttpMethod.GET, "/api/especialidades/**", "/api/espacios/**").permitAll()
+
                 // Consultar un usuario: autenticado; que sea el suyo (o ADMIN)
                 // lo valida @PreAuthorize en el controlador
                 .requestMatchers(HttpMethod.GET, "/api/usuarios/*").authenticated()
@@ -64,7 +74,12 @@ public class SecurityConfig {
                 .requestMatchers("/error").permitAll()
                 .anyRequest().authenticated()
             )
-            .formLogin(form -> form.disable());
+            .formLogin(form -> form.disable())
+            // Errores personalizados en JSON (issue #19): 401 sin sesión, 403 sin permisos.
+            // Antes Spring respondía solo "Forbidden" en ambos casos.
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint(manejadorErrores)
+                .accessDeniedHandler(manejadorErrores));
 
         return http.build();
     }

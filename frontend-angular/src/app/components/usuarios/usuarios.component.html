@@ -7,6 +7,8 @@
     </nav>
   </header>
 
+  <!-- Issue #25: filtro, tabla y paginación dentro de una tarjeta, como en las demás pantallas -->
+  <section class="tarjeta" aria-label="Lista de usuarios">
   <div class="campo filtro">
     <label for="filtroRol">Filtrar por rol: </label>
     <select id="filtroRol" [formControl]="filtroRol">
@@ -17,8 +19,16 @@
     </select>
   </div>
 
-  @if (usuarios.length === 0) {
+  @if (error) {
+    <p class="mensaje mensaje-error" role="alert">{{ error }}</p>
+  }
+
+  @if (cargando) {
     <p class="mensaje" role="status">Cargando usuarios...</p>
+  } @else if (usuarios.length === 0) {
+    @if (!error) {
+      <p class="mensaje" role="status">No hay usuarios para mostrar.</p>
+    }
   } @else {
     <div class="tabla-scroll" tabindex="0" role="region" aria-label="Lista de usuarios">
       <table class="tabla-datos">
@@ -91,4 +101,5 @@
       </button>
     </nav>
   }
+  </section>
 </main>

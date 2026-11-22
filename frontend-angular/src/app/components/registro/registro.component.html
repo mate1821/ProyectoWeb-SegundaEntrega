@@ -1,3 +1,6 @@
 <main class="pagina pagina-estrecha">
+  @if (error()) {
+    <p class="mensaje mensaje-error" role="alert">{{ error() }}</p>
+  }
   <app-usuario-form (usuarioGuardado)="guardarUsuario($event)"></app-usuario-form>
 </main>

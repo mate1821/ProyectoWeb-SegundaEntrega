@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import com.health.project.entitys.Rol;
 import com.health.project.entitys.Usuario;
 import com.health.project.errors.UsuarioConReservasException;
+import com.health.project.errors.RespuestaError;
 import com.health.project.errors.UsuarioDuplicado;
 import com.health.project.service.EspacioService;
 import com.health.project.service.EspecialidadService;
@@ -111,7 +112,7 @@ public class UsuarioRestController {
             usuarioService.activar(id);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error al activar el usuario: " + e.getMessage());
+            return RespuestaError.respuesta(HttpStatus.BAD_REQUEST, "No se pudo activar el usuario: " + e.getMessage());
         }
     }
 
@@ -121,7 +122,7 @@ public class UsuarioRestController {
             usuarioService.desactivar(id);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error al desactivar el usuario: " + e.getMessage());
+            return RespuestaError.respuesta(HttpStatus.BAD_REQUEST, "No se pudo desactivar el usuario: " + e.getMessage());
         }
     }
 

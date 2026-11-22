@@ -6,6 +6,7 @@ import {Servicio} from '../../models/servicio.model'
 
 
 import { FormsModule } from '@angular/forms';
+import { CurrencyPipe } from '@angular/common';
 
 
 
@@ -13,7 +14,7 @@ import { FormsModule } from '@angular/forms';
 
 
 @Component({
-  imports: [FormsModule],
+  imports: [FormsModule, CurrencyPipe],
   selector: 'app-reserva-form',
   styleUrl: './reserva-form.component.css',
   templateUrl: './reserva-form.component.html',
@@ -27,6 +28,7 @@ export class ReservaComponent {
   medicos = input<Medico[]>([]);             
   servicios = input<Servicio[]>([]); 
   reservaEditando = input<Reserva | null>(null); // si viene, el formulario se llena con sus datos
+  preseleccion = input<{ especialidadId: number; medicoId: number } | null>(null); // médico elegido en la búsqueda
   horasDisponibles = input<string[]>([]); 
   mensaje = signal('');
   error = signal('');
@@ -51,6 +53,15 @@ export class ReservaComponent {
       const reserva = this.reservaEditando();
       if (reserva) {
         this.cargarReserva(reserva);
+      }
+    });
+
+    // Viene de la búsqueda de médicos (issue #24): deja elegidos especialidad y médico
+    effect(() => {
+      const elegido = this.preseleccion();
+      if (elegido && !this.reservaEditando()) {
+        this.especialidadId = String(elegido.especialidadId);
+        this.medicoId = String(elegido.medicoId);
       }
     });
   }

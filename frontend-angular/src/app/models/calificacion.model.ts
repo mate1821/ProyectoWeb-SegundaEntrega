@@ -9,3 +9,14 @@ export interface EstadoCalificaciones {
 }
 
 export type TipoCalificacion = 'medico' | 'espacio';
+
+export interface ListadoResenas {
+    nombre: string;
+    resenas: Resena[];
+}
+
+export interface Resena {
+    puntuacion: number;
+    comentario: string | null;
+    fecha: string;
+}

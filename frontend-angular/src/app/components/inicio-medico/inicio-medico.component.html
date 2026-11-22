@@ -1,6 +1,9 @@
 <main class="pagina">
   <header class="encabezado">
     <h1>Bienvenido, Dr(a). <span [textContent]="nombre()"></span></h1>
+    @if (error()) {
+      <p class="mensaje mensaje-error" role="alert">{{ error() }}</p>
+    }
     <p>Consulta tus reservas y sus estados.</p>
 
     <nav class="acciones" aria-label="Opciones del médico">

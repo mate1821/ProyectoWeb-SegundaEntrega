@@ -1,6 +1,6 @@
 <main class="pagina">
   <header class="encabezado">
-    <h1>Mis reservas</h1>
+    <h1>{{ esMedico ? 'Reservas de mis pacientes' : 'Mis reservas' }}</h1>
     <nav class="acciones" aria-label="Navegación de reservas">
       @if (esMedico) {
         <a class="boton boton-secundario" [routerLink]="['/inicio-medico', usuarioId]"
@@ -19,24 +19,26 @@
   @if (error()) {
     <p class="mensaje mensaje-error" role="alert">{{ error() }}</p>
   }
-  @if (reservas().length === 0) {
+  @if (cargando()) {
     <p class="mensaje" role="status">Cargando reservas...</p>
-  } @else {
+  } @else if (!error()) {
     <section class="tarjeta" aria-label="Lista de reservas">
       <div class="tabla-scroll" tabindex="0" role="region" aria-label="Mis reservas">
         <table class="tabla-datos tabla-amplia">
           <thead>
             <tr>
-              <th scope="col">ID</th>
-              <th scope="col">Usuario</th>
+              <th scope="col">#</th>
+              @if (esMedico) {
+                <th scope="col">Paciente</th>
+              } @else {
+                <th scope="col">Médico</th>
+              }
               <th scope="col">Espacio</th>
               <th scope="col">Fecha</th>
-              <th scope="col">Hora Inicio</th>
-              <th scope="col">Hora Fin</th>
-              <th scope="col">Costo $</th>
-              <th scope="col">Medico</th>
+              <th scope="col">Horario</th>
+              <th scope="col" class="numero">Costo</th>
               <th scope="col">Estado</th>
-              <th scope="col">Editar Estado</th>
+              <th scope="col">Cambiar estado</th>
               <th scope="col">Acciones</th>
             </tr>
           </thead>
@@ -44,13 +46,15 @@
             @for (reserva of reservas(); track reserva.idReserva) {
               <tr>
                 <td>{{ reserva.idReserva }}</td>
-                <td>{{ reserva.usuario?.nombre }}</td>
+                @if (esMedico) {
+                  <td>{{ reserva.usuario?.nombre }}</td>
+                } @else {
+                  <td>{{ reserva.medico?.nombre }}</td>
+                }
                 <td>{{ reserva.medico?.espacio?.nombre }}</td>
-              <td class="dato-fecha">{{ reserva.fecha }}</td>
-                <td>{{ reserva.horaInicio?.substring(0, 5) }}</td>
-                <td>{{ reserva.horaFin?.substring(0, 5) }}</td>
-                <td>{{ reserva.total }}</td>
-                <td>{{ reserva.medico?.nombre }}</td>
+                <td class="dato-fecha">{{ reserva.fecha }}</td>
+                <td class="dato-fecha">{{ reserva.horaInicio?.substring(0, 5) }} – {{ reserva.horaFin?.substring(0, 5) }}</td>
+                <td class="numero">{{ reserva.total | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</td>
                 <td>
                   <span class="estado" [attr.data-estado]="reserva.estado?.nombre">{{
                     reserva.estado?.nombre
@@ -70,17 +74,17 @@
                   </select>
                 </td>
                 <td>
-                  <a [routerLink]="['/detalle-reserva', reserva.idReserva]">Ver detalles</a>
-                  <br>
-                  @if (!esMedico) {
-                    <a [routerLink]="['/reservas/editar', reserva.idReserva]">Editar</a>
-                  }
-                  <br>
+                  <div class="acciones-fila">
+                    <a class="enlace-accion" [routerLink]="['/detalle-reserva', reserva.idReserva]">Ver detalles</a>
+                    @if (!esMedico) {
+                      <a class="enlace-accion" [routerLink]="['/reservas/editar', reserva.idReserva]">Editar</a>
+                    }
+                  </div>
                 </td>
               </tr>
             } @empty {
               <tr>
-                <td colspan="11">No tienes reservas registradas.</td>
+                <td colspan="9">No tienes reservas registradas.</td>
               </tr>
             }
           </tbody>

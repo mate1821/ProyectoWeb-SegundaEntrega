@@ -48,7 +48,44 @@ public class MedicoRestController {
                 .toList();
     }
 
+    /**
+     * GET /api/medicos/directorio -> médicos activos con su especialidad y su
+     * espacio (clínica). Lo usa la pantalla de búsqueda de Angular (issue #24),
+     * que filtra la lista con pipes por nombre de médico o clínica y por especialidad.
+     *
+     * Igual que MedicoResumen, no envía cédula, correo ni contraseña.
+     */
+    @GetMapping("/directorio")
+    public List<MedicoDirectorio> directorio() {
+        return medicoService.buscarTodos().stream()
+                .filter(m -> !Boolean.FALSE.equals(m.getActivo()))
+                .map(MedicoDirectorio::desde)
+                .toList();
+    }
+
     /** JSON que recibe Angular: {"id": 8, "nombre": "Laura Gómez"} */
     public record MedicoResumen(Long id, String nombre) {
+    }
+
+    /**
+     * Un médico para la búsqueda:
+     * {"id": 8, "nombre": "Laura Gómez", "especialidadId": 3, "especialidad": "Pediatría",
+     *  "espacioId": 1, "espacio": "Clínica Shaio", "ubicacion": "Diagonal 115A # 70C-75"}
+     */
+    public record MedicoDirectorio(Long id, String nombre, Long especialidadId, String especialidad,
+            Integer espacioId, String espacio, String ubicacion) {
+
+        static MedicoDirectorio desde(Medico m) {
+            var esp = m.getEspecialidad();
+            var lugar = m.getEspacio();
+            return new MedicoDirectorio(
+                    m.getId(),
+                    m.getNombre(),
+                    esp != null ? esp.getId() : null,
+                    esp != null ? esp.getNombreEspecialidad() : null,
+                    lugar != null ? lugar.getId() : null,
+                    lugar != null ? lugar.getNombre() : null,
+                    lugar != null ? lugar.getUbicacion() : null);
+        }
     }
 }

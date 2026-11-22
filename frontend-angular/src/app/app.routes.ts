@@ -9,6 +9,7 @@ import { AdminComponent } from './components/admin/admin.component';
 import { InicioMedico } from './components/inicio-medico/inicio-medico.component';
 import { Bienvenida } from './components/bienvenida/bienvenida.component';
 import { DetallesReserva } from './components/detalles-reserva/detalles-reserva.component';
+import { BuscarMedicos } from './components/buscar-medicos/buscar-medicos.component';
 
 
 export const routes: Routes = [
@@ -26,4 +27,9 @@ export const routes: Routes = [
   { path: 'inicio-sesion', component: InicioSesion },
   { path: 'admin', component: AdminComponent },
   { path: 'detalle-reserva/:id', component: DetallesReserva }, 
+  { path: 'buscar/:id', component: BuscarMedicos },                               // búsqueda (id = usuario)
+  {
+    path: 'buscar/:id/resenas/:tipo/:destinoId',
+    loadComponent: () => import('./components/resenas/resenas.component').then(m => m.Resenas),
+  },
 ];

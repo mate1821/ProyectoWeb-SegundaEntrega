@@ -1,7 +1,6 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
-import { CurrencyPipe, Location } from '@angular/common';
+import { CurrencyPipe, Location, LowerCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ReservaService } from '../../services/reserva.service';
@@ -9,9 +8,10 @@ import { EspacioService } from '../../services/espacio.service';
 import { CalificacionService } from '../../services/calificacion.service';
 import { Reserva } from '../../models/reserva.model';
 import { EstadoCalificaciones, TipoCalificacion } from '../../models/calificacion.model';
+import { mensajeError } from '../../utils/mensaje-error';
 
 @Component({
-  imports: [CurrencyPipe, FormsModule],
+  imports: [CurrencyPipe, LowerCasePipe, FormsModule],
   selector: 'app-detalles-reserva',
   styleUrl: './detalles-reserva.component.css',
   templateUrl: './detalles-reserva.component.html',
@@ -47,6 +47,12 @@ export class DetallesReserva implements OnInit {
     return Date.now() > fin.getTime();
   });
 
+  // Valor de la consulta = total menos los servicios adicionales
+  costoConsulta(r: Reserva): number {
+    const servicios = (r.servicios ?? []).reduce((suma, s) => suma + (s.costo ?? 0), 0);
+    return (r.total ?? 0) - servicios;
+  }
+
   citaCancelada = computed(() => this.reserva()?.estado?.nombre === 'Cancelada');
 
   // Mapa de OpenStreetMap centrado en el espacio (sin librerías ni API key)
@@ -72,6 +78,7 @@ export class DetallesReserva implements OnInit {
           this.cargarFoto(espacioId);
         }
       },
+      error: (err: unknown) => this.error.set(mensajeError(err, 'No se pudo cargar la reserva.')),
     });
   }
 
@@ -134,12 +141,7 @@ export class DetallesReserva implements OnInit {
   }
 
   private mostrarError(err: unknown): void {
-    const cuerpo: unknown = err instanceof HttpErrorResponse ? err.error : null;
-    if (typeof cuerpo === 'object' && cuerpo !== null && 'error' in cuerpo && typeof cuerpo.error === 'string') {
-      this.error.set(cuerpo.error);
-    } else {
-      this.error.set('No se pudo guardar la calificación. Verifica que el backend esté encendido.');
-    }
+    this.error.set(mensajeError(err, 'No se pudo guardar la calificación.'));
   }
 
   // Vuelve a la página anterior (sirve para paciente y médico)
