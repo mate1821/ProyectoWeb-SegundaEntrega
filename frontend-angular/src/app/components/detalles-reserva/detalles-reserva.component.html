@@ -6,6 +6,10 @@
         </nav>
     </header>
 
+    @if (error() && !reserva()) {
+    <p class="mensaje mensaje-error" role="alert">{{ error() }}</p>
+    }
+
     @if (reserva(); as r) {
     <section class="tarjeta">
         <h2>Reserva #{{ r.idReserva }}</h2>

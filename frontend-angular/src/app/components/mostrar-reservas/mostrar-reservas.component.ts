@@ -1,10 +1,10 @@
 
 import { Component, OnInit, inject, signal, } from '@angular/core';
 import { RouterLink, ActivatedRoute } from '@angular/router';
-import { HttpErrorResponse } from '@angular/common/http';
 import { Reserva } from '../../models/reserva.model';
 import { EstadoReserva } from '../../models/estado.model';
 import { ReservaService } from '../../services/reserva.service';
+import { mensajeError } from '../../utils/mensaje-error';
 import { EstadoService } from '../../services/estado.service';
 import { DetallesReserva } from '../detalles-reserva/detalles-reserva.component';
 
@@ -26,6 +26,7 @@ export class MostrarReservas implements OnInit {
   private estadoService = inject(EstadoService);
 
   reservas = signal<Reserva[]>([]);
+  cargando = signal(true);
   estados = signal<EstadoReserva[]>([]);
   mensaje = signal('');
   error = signal('');
@@ -46,8 +47,14 @@ export class MostrarReservas implements OnInit {
       : this.reservaService.obtenerMisReservas(this.usuarioId);
 
     peticion.subscribe({
-      next: (data) => this.reservas.set(data),
-      error: (err: unknown) => this.mostrarError(err),
+      next: (data) => {
+        this.reservas.set(data);
+        this.cargando.set(false);
+      },
+      error: (err: unknown) => {
+        this.cargando.set(false);
+        this.mostrarError(err);
+      },
     });
   }
 
@@ -75,17 +82,9 @@ export class MostrarReservas implements OnInit {
   }
 
   private mostrarError(err: unknown): void {
-    if (err instanceof HttpErrorResponse && err.status === 401) {
-      this.error.set('Debes iniciar sesión para ver tus reservas.');
-      return;
-    }
-    const cuerpo: unknown = err instanceof HttpErrorResponse ? err.error : null;
-    if (typeof cuerpo === 'object' && cuerpo !== null && 'error' in cuerpo && typeof cuerpo.error === 'string') {
-      this.error.set(cuerpo.error);
-    } else {
-      this.error.set('No se pudo completar la operación. Verifica que el backend esté encendido.');
-    }
+    this.error.set(mensajeError(err, 'No se pudo completar la operación.'));
   }
+
 
   
 }

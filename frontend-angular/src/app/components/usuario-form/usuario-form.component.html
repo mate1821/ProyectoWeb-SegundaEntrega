@@ -1,6 +1,9 @@
 <section class="encabezado" aria-labelledby="titulo-registro">
   <h1 id="titulo-registro">Formulario de usuario</h1>
 
+  @if (errorCatalogos()) {
+    <p class="mensaje mensaje-error" role="alert">{{ errorCatalogos() }}</p>
+  }
   <form class="formulario" [formGroup]="formularioUsuario" (ngSubmit)="guardar()">
     <div class="campo">
       <label for="cedula">Cédula</label>

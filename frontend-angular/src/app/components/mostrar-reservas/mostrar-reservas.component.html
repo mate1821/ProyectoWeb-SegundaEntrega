@@ -19,9 +19,9 @@
   @if (error()) {
     <p class="mensaje mensaje-error" role="alert">{{ error() }}</p>
   }
-  @if (reservas().length === 0) {
+  @if (cargando()) {
     <p class="mensaje" role="status">Cargando reservas...</p>
-  } @else {
+  } @else if (!error()) {
     <section class="tarjeta" aria-label="Lista de reservas">
       <div class="tabla-scroll" tabindex="0" role="region" aria-label="Mis reservas">
         <table class="tabla-datos tabla-amplia">

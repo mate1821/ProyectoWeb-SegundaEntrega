@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { AdminService } from '../../services/admin.service';
 import { Reserva } from '../../models/reserva.model';
 import { EstadoReserva } from '../../models/estado.model';
+import { mensajeError } from '../../utils/mensaje-error';
 
 @Component({
   selector: 'app-admin',
@@ -30,14 +31,14 @@ export class AdminComponent implements OnInit {
 
     this.adminService.obtenerEstados().subscribe({
       next: (datos) => this.estados.set(datos),
-      error: () => this.error.set('No se pudieron cargar los estados.')
+      error: (err: unknown) => this.error.set(mensajeError(err, 'No se pudieron cargar los estados.'))
     });
   }
 
   cargarReservas(): void {
     this.adminService.obtenerReservas().subscribe({
       next: (datos) => this.reservas.set(datos),
-      error: () => this.error.set('No se pudieron cargar las reservas. Verifica que el backend esté encendido.')
+      error: (err: unknown) => this.error.set(mensajeError(err, 'No se pudieron cargar las reservas.'))
     });
   }
 
@@ -58,8 +59,8 @@ export class AdminComponent implements OnInit {
         );
         this.mensaje.set(`La reserva #${reserva.idReserva} se modificó correctamente.`);
       },
-      error: () => {
-        this.error.set('No se pudo modificar la reserva.');
+      error: (err: unknown) => {
+        this.error.set(mensajeError(err, 'No se pudo modificar la reserva.'));
         this.cargarReservas(); // devuelve el select a su valor real
       }
     });

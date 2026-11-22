@@ -1,4 +1,5 @@
-import { Component, inject, output } from '@angular/core';
+import { Component, inject, output, signal } from '@angular/core';
+import { mensajeError } from '../../utils/mensaje-error';
 import { Usuario } from '../../models/usuario.model';
 import {FormsModule,ReactiveFormsModule,FormGroup,FormControl,Validators} from '@angular/forms';
 import { Espacio } from '../../models/espacio.model';
@@ -23,16 +24,17 @@ export class UsuarioForm {
 
   listaEspecialidades: Especialidad[] = [];
   listaEspacios: Espacio[] = [];
+  errorCatalogos = signal('');
 
 
    ngOnInit(): void {
     this.especialidadService.obtenerEspecialidades().subscribe({
       next: (d) => this.listaEspecialidades = d,
-      error: (e) => console.error('Error al cargar especialidades', e)
+      error: (err: unknown) => this.errorCatalogos.set(mensajeError(err, 'No se pudieron cargar las especialidades.'))
     });
     this.espacioService.obtenerEspacios().subscribe({
       next: (d) => this.listaEspacios = d,
-      error: (e) => console.error('Error al cargar espacios', e)
+      error: (err: unknown) => this.errorCatalogos.set(mensajeError(err, 'No se pudieron cargar los espacios.'))
     });
   }
 formularioUsuario = new FormGroup({

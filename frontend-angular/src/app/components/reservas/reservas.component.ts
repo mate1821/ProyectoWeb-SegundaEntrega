@@ -1,5 +1,6 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { ReservaService } from '../../services/reserva.service';
+import { mensajeError } from '../../utils/mensaje-error';
 import { MedicoService } from '../../services/medico.service';
 import { ReservaComponent } from '../reserva-form/reserva-form.component';
 import { Especialidad } from '../../models/especialidad.model';
@@ -8,7 +9,6 @@ import { Servicio } from '../../models/servicio.model';
 import { Reserva } from '../../models/reserva.model';
 import { EspecialidadService } from '../../services/especialidades.service';
 import { ServiciosService } from '../../services/servicios.service';
-import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -126,13 +126,9 @@ export class Reservas implements OnInit {
 
 
   private mostrarError(err: unknown): void {
-    const cuerpo: unknown = err instanceof HttpErrorResponse ? err.error : null;
-    if (typeof cuerpo === 'object' && cuerpo !== null && 'error' in cuerpo && typeof cuerpo.error === 'string') {
-      this.error.set(cuerpo.error);
-    } else {
-      this.error.set('No se pudo completar la operación. Verifica que el backend esté encendido.');
-    }
+    this.error.set(mensajeError(err, 'No se pudo completar la operación.'));
   }
+
 }
 
 

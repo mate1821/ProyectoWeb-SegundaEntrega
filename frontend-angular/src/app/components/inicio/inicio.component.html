@@ -7,6 +7,10 @@
       <span class="nombre-usuario" [textContent]="nombreUsuario()"> </span>!
     </h2>
 
+    @if (error()) {
+      <p class="mensaje mensaje-error" role="alert">{{ error() }}</p>
+    }
+
     <p>Nos alegra tenerte aquí.</p>
 
     <p>En nuestro sistema podrás gestionar tus reservas médicas de manera fácil y rápida.</p>

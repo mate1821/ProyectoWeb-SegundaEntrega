@@ -1,4 +1,10 @@
 <main class="pagina pagina-estrecha">
+  @if (aviso()) {
+    <p class="mensaje mensaje-exito" role="status">{{ aviso() }}</p>
+  }
+  @if (error()) {
+    <p class="mensaje mensaje-error" role="alert">{{ error() }}</p>
+  }
   <app-login-form [titulo]="'Ingreso al sistema'" (loginEnviado)="procesarLogin($event)">
   </app-login-form>
 </main>

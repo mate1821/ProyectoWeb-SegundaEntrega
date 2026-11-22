@@ -7,6 +7,7 @@ import { Usuario } from '../../models/usuario.model';
 import { ChangeDetectorRef } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
+import { mensajeError } from '../../utils/mensaje-error';
 
 @Component({
   selector: 'app-usuarios',
@@ -19,6 +20,7 @@ export class UsuariosComponent implements OnInit {
   usuarios: Usuario[] = [];
   idPorEliminar: number | null = null; // usuario que espera confirmación para eliminarse
   error = '';
+  cargando = true;
 
   usuariosOriginales: Usuario[] = [];
 
@@ -30,32 +32,38 @@ export class UsuariosComponent implements OnInit {
   ngOnInit(): void {
     this.cargarUsuarios();
     this.configurarFiltro();
-    console.log("HOLA SE SUPONE QUE CARGUE LOS USUARIOS")
   }
 
   cargarUsuarios(): void {
     this.usuarioService.obtenerUsuarios().subscribe({
-      next: (data) => { console.log("esta llegando esto:", data);
+      next: (data) => {
+        this.cargando = false;
         this.usuarios = data;
         this.usuariosOriginales = data;
       this.cdr.detectChanges();}, // Esta cosa es un parche temporal porque no supe como hacer que refrescara
-      error: (err) => {console.error('Error al cargar usuarios:', err);}
+      error: (err: unknown) => {
+        this.cargando = false;
+        this.error = mensajeError(err, 'No se pudieron cargar los usuarios.');
+        this.cdr.detectChanges();
+      }
     });
   }
 
   activarUsuario(id: number | undefined): void {
     if (!id) return;
+    this.error = '';
     this.usuarioService.activar(id).subscribe({
       next: () => {this.cargarUsuarios()},
-      error: (err) => {console.error('Error al activar:', err)}
+      error: (err: unknown) => this.mostrarError(err, 'No se pudo activar el usuario.')
     });
   }
 
   desactivarUsuario(id: number | undefined): void {
     if (!id) return;
+    this.error = '';
     this.usuarioService.desactivar(id).subscribe({
       next: () => {this.cargarUsuarios()}, 
-      error: (err) => {console.error('Error al desactivar:', err)}
+      error: (err: unknown) => this.mostrarError(err, 'No se pudo desactivar el usuario.')
 
     });
   }
@@ -80,19 +88,15 @@ export class UsuariosComponent implements OnInit {
       },
       error: (err: HttpErrorResponse) => {
         this.idPorEliminar = null;
-        this.error = this.mensajeDeError(err);
+        this.error = mensajeError(err, 'No se pudo eliminar el usuario.');
         this.cdr.detectChanges();
       }
     });
   }
 
-  // El backend responde {"error": "mensaje"}; si no viene, se muestra uno genérico
-  private mensajeDeError(err: HttpErrorResponse): string {
-    const cuerpo: unknown = err.error;
-    if (typeof cuerpo === 'object' && cuerpo !== null && 'error' in cuerpo && typeof cuerpo.error === 'string') {
-      return cuerpo.error;
-    }
-    return 'No se pudo eliminar el usuario.';
+  private mostrarError(err: unknown, porDefecto: string): void {
+    this.error = mensajeError(err, porDefecto);
+    this.cdr.detectChanges();
   }
 
 

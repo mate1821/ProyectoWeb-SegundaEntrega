@@ -3,7 +3,11 @@ package com.health.project.controllers;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.DisabledException;
+
+import com.health.project.errors.RespuestaError;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -49,6 +53,10 @@ public class IndexRestController {
         String correo = credenciales.get("correo");
         String contrasena = credenciales.get("contrasena");
 
+        if (correo == null || correo.isBlank() || contrasena == null || contrasena.isBlank()) {
+            return RespuestaError.respuesta(HttpStatus.BAD_REQUEST, "Debes ingresar el correo y la contraseña.");
+        }
+
         try {
 
             Authentication autenticacion = authenticationManager.authenticate(
@@ -68,9 +76,14 @@ public class IndexRestController {
 
             return ResponseEntity.ok(usuario);
 
+        } catch (DisabledException e) {
+            // El usuario existe pero un administrador lo desactivó
+            SecurityContextHolder.clearContext();
+            return RespuestaError.respuesta(HttpStatus.FORBIDDEN,
+                    "Tu cuenta está desactivada. Comunícate con un administrador.");
         } catch (AuthenticationException e) {
             SecurityContextHolder.clearContext();
-            return ResponseEntity.status(401).body("Correo o contraseña incorrectos");
+            return RespuestaError.respuesta(HttpStatus.UNAUTHORIZED, "Correo o contraseña incorrectos.");
         }
     }
 }
