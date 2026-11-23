@@ -10,6 +10,7 @@ import { InicioMedico } from './components/inicio-medico/inicio-medico.component
 import { Bienvenida } from './components/bienvenida/bienvenida.component';
 import { DetallesReserva } from './components/detalles-reserva/detalles-reserva.component';
 import { BuscarMedicos } from './components/buscar-medicos/buscar-medicos.component';
+import { PagoResultadoComponent } from './pagos/pago-resultado.component';
 
 
 export const routes: Routes = [
@@ -26,6 +27,7 @@ export const routes: Routes = [
   { path: 'registro', component: Registro },
   { path: 'inicio-sesion', component: InicioSesion },
   { path: 'admin', component: AdminComponent },
+  { path: 'pago/resultado', component: PagoResultadoComponent },
   { path: 'detalle-reserva/:id', component: DetallesReserva }, 
   { path: 'buscar/:id', component: BuscarMedicos },                               // búsqueda (id = usuario)
   {

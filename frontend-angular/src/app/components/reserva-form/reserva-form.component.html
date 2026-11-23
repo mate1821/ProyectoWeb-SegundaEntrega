@@ -82,10 +82,19 @@
           [checked]="servicioIds.includes(s.id)"
           (change)="alternarServicio(s.id)"
         />
-        <label [for]="s.id">{{ s.nombre }} <span class="precio">{{ s.costo | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span></label>
+        <label [for]="s.id">
+          {{ s.nombre }}
+          <span class="precio">{{ s.costo | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
+        </label>
       </div>
     }
   </fieldset>
+
+  @if (!reservaEditando()) {
+    <div (click)="prepararPago()">
+      <app-boton-pagar [monto]="totalReserva()"></app-boton-pagar>
+    </div>
+  }
 
   <button type="submit" [disabled]="formulario.invalid">
     {{ reservaEditando() ? 'Guardar cambios' : 'Guardar' }}

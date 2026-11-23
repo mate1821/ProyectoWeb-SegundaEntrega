@@ -18,19 +18,17 @@ import { ActivatedRoute, Router } from '@angular/router';
   templateUrl: './reservas.component.html',
 })
 export class Reservas implements OnInit {
-  router = inject(Router)
-  route = inject(ActivatedRoute)
-  reservaService = inject(ReservaService)
-  medicoService = inject(MedicoService)
-  especialidadService = inject(EspecialidadService)
-  servicioService = inject(ServiciosService)
+  router = inject(Router);
+  route = inject(ActivatedRoute);
+  reservaService = inject(ReservaService);
+  medicoService = inject(MedicoService);
+  especialidadService = inject(EspecialidadService);
+  servicioService = inject(ServiciosService);
 
   mensaje = signal('');
   error = signal('');
-  reservaEditando = signal<Reserva | null>(null); // la reserva que se edita (ruta /reservas/editar/:id)
-  // Médico elegido desde la búsqueda (issue #24): /reservas/:id?especialidadId=3&medicoId=8
+  reservaEditando = signal<Reserva | null>(null);
   preseleccion = signal<{ especialidadId: number; medicoId: number } | null>(null);
-
 
   private idRuta = Number(this.route.snapshot.paramMap.get('id'));
   private modoEditar = this.route.snapshot.data['editar'] === true;
@@ -38,11 +36,13 @@ export class Reservas implements OnInit {
   especialidades = signal<Especialidad[]>([]);
   medicos = signal<Medico[]>([]);
   servicios = signal<Servicio[]>([]);
-  horasDisponibles = signal<string[]>([]);   
-
-
+  horasDisponibles = signal<string[]>([]);
 
   ngOnInit(): void {
+    if (!this.modoEditar && this.idRuta > 0) {
+      sessionStorage.setItem('reservaUsuarioId', String(this.idRuta));
+    }
+
     this.especialidadService.obtenerEspecialidades().subscribe({
       next: (data) => this.especialidades.set(data),
       error: (err: unknown) => this.mostrarError(err),
@@ -53,7 +53,6 @@ export class Reservas implements OnInit {
       error: (err: unknown) => this.mostrarError(err),
     });
 
-    // En /reservas/editar/:id se busca la reserva para llenar el formulario
     if (this.modoEditar) {
       this.cargarReservaAEditar(this.idRuta);
     } else {
@@ -65,9 +64,7 @@ export class Reservas implements OnInit {
         this.preseleccion.set({ especialidadId, medicoId });
       }
     }
-    
   }
-
 
   private cargarReservaAEditar(id: number): void {
     this.reservaService.obtenerReserva(id).subscribe({
@@ -93,13 +90,13 @@ export class Reservas implements OnInit {
       error: (err: unknown) => this.mostrarError(err),
     });
   }
+
   cargarHoras(datos: { medicoId: number; fecha: string }): void {
     this.horasDisponibles.set([]);
     this.reservaService.obtenerHorasDisponibles(datos.medicoId, datos.fecha).subscribe({
       next: (horas) => {
-        const lista = horas.map((h) => h.substring(0, 5)); // "07:00:00" -> "07:00"
+        const lista = horas.map((h) => h.substring(0, 5));
 
-      
         const r = this.reservaEditando();
         if (r && r.medico?.id === datos.medicoId && r.fecha === datos.fecha) {
           const propia = r.horaInicio.substring(0, 5);
@@ -128,21 +125,14 @@ export class Reservas implements OnInit {
       return;
     }
 
-    this.reservaService.crearReserva(this.idRuta, reserva).subscribe({
-      next: () => this.router.navigate(['/inicio', this.idRuta]),
-      error: (err: unknown) => this.mostrarError(err),
-    });
+    // Para reservas nuevas, el flujo pasa primero por el pago con Wompi y la creación se ejecuta al aprobarse el pago.
+    sessionStorage.setItem('reservaPendiente', JSON.stringify(reserva));
+    if (this.idRuta > 0) {
+      sessionStorage.setItem('reservaUsuarioId', String(this.idRuta));
+    }
   }
-
 
   private mostrarError(err: unknown): void {
     this.error.set(mensajeError(err, 'No se pudo completar la operación.'));
   }
-
 }
-
-
-
-
-
-
