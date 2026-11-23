@@ -71,7 +71,7 @@ public class ReservaServiceImpl implements ReservaService {
         repo.save(reserva);
 
         if (esNueva) {
-            notificacionService.notificarReservaCreada(reserva);
+            notificacionService.enviarConfirmacionReserva(reserva);
         }
     }
 
