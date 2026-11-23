@@ -8,6 +8,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/pagos")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class PagoController {
 
     private final WompiService wompi;

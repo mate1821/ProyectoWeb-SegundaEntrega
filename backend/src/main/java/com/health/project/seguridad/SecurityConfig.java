@@ -69,9 +69,11 @@ public class SecurityConfig {
 
                 // Consulta de médicos para usuarios autenticados
                 .requestMatchers("/api/medicos/**").authenticated()
+                .requestMatchers("/api/pagos/webhook").permitAll()
 
                 // Cualquier otra ruta requiere autenticación
                 .requestMatchers("/error").permitAll()
+
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form.disable())

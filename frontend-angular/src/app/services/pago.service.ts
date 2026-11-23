@@ -10,7 +10,7 @@ export class PagoService {
 
   /** Pide al backend el link de Wompi y lleva al usuario a pagar. */
   pagar(montoEnPesos: number) {
-    this.http.post<{ url: string; referencia: string }>(`${this.api}/checkout`, { monto: montoEnPesos })
+    this.http.post<{ url: string; referencia: string }>(`${this.api}/checkout`, { monto: montoEnPesos }, { withCredentials: true })
       .subscribe(r => {
         sessionStorage.setItem('ultimaReferencia', r.referencia);
         window.location.href = r.url;
@@ -19,6 +19,6 @@ export class PagoService {
 
   /** Consulta el estado de la orden en el backend. */
   estado(referencia: string) {
-    return this.http.get<{ referencia: string; estado: string }>(`${this.api}/orden/${referencia}`);
+    return this.http.get<{ referencia: string; estado: string }>(`${this.api}/orden/${referencia}`, { withCredentials: true });
   }
 }
