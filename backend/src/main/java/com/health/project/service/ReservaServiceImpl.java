@@ -21,6 +21,11 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Objects;
+import com.health.project.entitys.Medico;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service("reservaService")
 public class ReservaServiceImpl implements ReservaService {
@@ -29,16 +34,22 @@ public class ReservaServiceImpl implements ReservaService {
     private static final Long ID_CONFIRMADA = 1L;
 
     private static final LocalTime HORA_APERTURA = LocalTime.of(7, 0);
-    private static final LocalTime HORA_CIERRE   = LocalTime.of(18, 0);
-    
+    private static final LocalTime HORA_CIERRE = LocalTime.of(18, 0);
+
     @Autowired
     private ReservaRepository repo;
 
-    @Autowired 
+    @Autowired
     private EstadoReservaRepository estadoRepo;
 
     @Autowired
     private NotificacionService notificacionService;
+
+    @Autowired
+    private ServicioService servicioService;
+
+    @Autowired
+    private MedicoService medicoService;
 
     @Override
     public List<Reserva> buscarReservas() {
@@ -53,23 +64,25 @@ public class ReservaServiceImpl implements ReservaService {
     @Override
     public void guardar(Reserva reserva) {
         boolean esNueva = reserva.getIdReserva() == null; // guardar() también se usa para editar
-        if (reserva.getIdReserva() == null && repo.existsByMedicoAndFechaAndHoraInicio(reserva.getMedico(), reserva.getFecha(), reserva.getHoraInicio()) ) {
-        throw new HorarioNoDisponibleException(reserva.getMedico(), reserva.getFecha(), reserva.getHoraInicio());
-    }
-    List<Reserva> reservasExistentes = repo.findByMedicoAndFecha(
-        reserva.getMedico(), 
-        reserva.getFecha()
-    );
-
-    for (Reserva existente : reservasExistentes) {
-        if (reserva.getIdReserva() != null && reserva.getIdReserva().equals(existente.getIdReserva())) {
-            continue;
-        }
-        boolean seCruzan = reserva.getHoraInicio().isBefore(existente.getHoraFin()) && reserva.getHoraFin().isAfter(existente.getHoraInicio());
-        if (seCruzan) {
+        if (reserva.getIdReserva() == null && repo.existsByMedicoAndFechaAndHoraInicio(reserva.getMedico(),
+                reserva.getFecha(), reserva.getHoraInicio())) {
             throw new HorarioNoDisponibleException(reserva.getMedico(), reserva.getFecha(), reserva.getHoraInicio());
         }
-    }
+        List<Reserva> reservasExistentes = repo.findByMedicoAndFecha(
+                reserva.getMedico(),
+                reserva.getFecha());
+
+        for (Reserva existente : reservasExistentes) {
+            if (reserva.getIdReserva() != null && reserva.getIdReserva().equals(existente.getIdReserva())) {
+                continue;
+            }
+            boolean seCruzan = reserva.getHoraInicio().isBefore(existente.getHoraFin())
+                    && reserva.getHoraFin().isAfter(existente.getHoraInicio());
+            if (seCruzan) {
+                throw new HorarioNoDisponibleException(reserva.getMedico(), reserva.getFecha(),
+                        reserva.getHoraInicio());
+            }
+        }
         repo.save(reserva);
 
         if (esNueva) {
@@ -92,33 +105,34 @@ public class ReservaServiceImpl implements ReservaService {
         Reserva reserva = buscarPorId(id);
         if (reserva != null) {
             EstadoReserva estado = estadoRepo.findById(ID_CONFIRMADA).orElse(null);
-            reserva.setEstado(estado);;
+            reserva.setEstado(estado);
+            ;
             repo.save(reserva);
         }
     }
 
     @Override
     public void cambiarEstado(Long idReserva, Long idEstado) {
-    Reserva reserva = buscarPorId(idReserva);
-    if (reserva == null) {
-        throw new ReservaNoEncontradaException(idReserva);
+        Reserva reserva = buscarPorId(idReserva);
+        if (reserva == null) {
+            throw new ReservaNoEncontradaException(idReserva);
+        }
+        reserva.setEstado(estadoRepo.findById(idEstado).orElse(null));
+        repo.save(reserva);
     }
-    reserva.setEstado(estadoRepo.findById(idEstado).orElse(null));
-    repo.save(reserva);
-}
 
     @Override
     public List<Reserva> misReservas(Long id) {
         return repo.findMisReservas(id);
-    
-}
+
+    }
 
     @Override
     public List<Reserva> reservasDelMedico(Long medicoId) {
-    return repo.findByMedicoId(medicoId);
-}
+        return repo.findByMedicoId(medicoId);
+    }
 
-@Override
+    @Override
     public List<LocalTime> horasDisponibles(Long medicoId, LocalDate fecha) {
 
         Set<LocalTime> ocupadas = new HashSet<>(repo.findHorasInicioOcupadas(medicoId, fecha));
@@ -126,18 +140,17 @@ public class ReservaServiceImpl implements ReservaService {
         List<LocalTime> disponibles = new ArrayList<>();
         LocalTime hora = HORA_APERTURA;
 
-        while (hora.isBefore(HORA_CIERRE)) {       
-            if (!ocupadas.contains(hora)) {         
+        while (hora.isBefore(HORA_CIERRE)) {
+            if (!ocupadas.contains(hora)) {
                 disponibles.add(hora);
             }
-            hora = hora.plusHours(1);               
+            hora = hora.plusHours(1);
         }
 
         return disponibles;
     }
 
-
- public void completarReserva( Reserva reserva,ReservaRequest datos, List<Servicio> serviciosPorDefecto) {
+    public void completarReserva(Reserva reserva, ReservaRequest datos, List<Servicio> serviciosPorDefecto) {
 
         if (datos.fecha() == null || datos.horaInicio() == null) {
             throw new ResponseStatusException(
@@ -203,4 +216,3 @@ public class ReservaServiceImpl implements ReservaService {
         reserva.setTotal(total);
     }
 }
-
