@@ -18,9 +18,14 @@ export class PagoService {
     );
   }
 
-  /** Consulta el estado de una orden en el backend. */
+  /** Consulta el estado de la orden y la creación de la reserva. */
   estado(referencia: string) {
-    return this.http.get<{ referencia: string; estado: string }>(
+    return this.http.get<{
+      referencia: string;
+      estado: string;
+      reservaCreada: boolean;
+      pacienteId: number;
+    }>(
       `${this.api}/orden/${referencia}`,
       { withCredentials: true }
     );

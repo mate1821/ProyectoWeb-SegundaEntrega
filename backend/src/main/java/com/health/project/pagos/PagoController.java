@@ -96,10 +96,23 @@ public class PagoController {
     /**
      * Consulta el estado de una orden (la usa la pagina de resultado de Angular).
      */
+
     @GetMapping("/orden/{referencia}")
-    public ResponseEntity<Map<String, String>> estado(@PathVariable String referencia) {
+    public ResponseEntity<Map<String, Object>> estado(
+            @PathVariable String referencia) {
+
         return ordenes.findByReferencia(referencia)
-                .map(o -> ResponseEntity.ok(Map.of("referencia", o.getReferencia(), "estado", o.getEstado())))
+                .map(o -> {
+                    Map<String, Object> respuesta = new java.util.HashMap<>();
+
+                    respuesta.put("referencia", o.getReferencia());
+                    respuesta.put("estado", o.getEstado());
+                    respuesta.put("reservaCreada", o.isReservaCreada());
+                    respuesta.put("pacienteId", o.getPacienteId());
+
+                    return ResponseEntity.ok(respuesta);
+                })
                 .orElse(ResponseEntity.notFound().build());
     }
+
 }
