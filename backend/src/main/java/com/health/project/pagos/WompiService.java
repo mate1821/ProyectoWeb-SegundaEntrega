@@ -20,18 +20,21 @@ public class WompiService {
 
     /** Arma el link a la pagina de pago de Wompi (Web Checkout) con la firma de integridad. */
     public String crearUrlCheckout(String referencia, long montoEnCentavos) {
-        String moneda = "COP";
-        String firma = sha256(referencia + montoEnCentavos + moneda + integrityKey);
-        String redirect = frontendUrl + "/pago/resultado";
+    String moneda = "COP";
 
-        return "https://checkout.wompi.co/p/"
-            + "?public-key=" + enc(publicKey)
-            + "&currency=" + moneda
-            + "&amount-in-cents=" + montoEnCentavos
-            + "&reference=" + enc(referencia)
-            + "&signature:integrity=" + firma
-            + "&redirect-url=" + enc(redirect);
-    }
+    String firma = sha256(
+        referencia + montoEnCentavos + moneda + integrityKey
+    );
+
+    String url = "https://checkout.wompi.co/p/"
+        + "?public-key=" + enc(publicKey)
+        + "&currency=" + moneda
+        + "&amount-in-cents=" + montoEnCentavos
+        + "&reference=" + enc(referencia)
+        + "&signature:integrity=" + firma;
+
+    return url;
+}
 
     /** Verifica que un evento (webhook) viene de verdad de Wompi. */
     public boolean firmaEventoValida(JsonNode evento) {
