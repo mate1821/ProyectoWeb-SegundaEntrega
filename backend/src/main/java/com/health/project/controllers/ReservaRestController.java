@@ -135,7 +135,7 @@ public class ReservaRestController {
         reserva.setFechaSolicitud(LocalDateTime.now());
         reserva.setEstado(estadoService.buscarPorId(ID_CONFIRMADA));
         reserva.setUsuario(paciente);
-        completarReserva(reserva, datos, new ArrayList<>());
+        reservaService.completarReserva(reserva, datos, new ArrayList<>());
         reservaService.guardar(reserva);
         return reserva;
     }
@@ -167,7 +167,7 @@ public class ReservaRestController {
                 ? new ArrayList<>()
                 : new ArrayList<>(existente.getServicios());
 
-        completarReserva(reserva, datos, serviciosActuales);
+        reservaService.completarReserva(reserva, datos, serviciosActuales);
         reserva.setUsuario(existente.getUsuario());
         reservaService.guardar(reserva);
         return reserva;
@@ -194,55 +194,6 @@ public class ReservaRestController {
      * @param serviciosPorDefecto servicios que se usan si el JSON no trae la lista
      *                            "servicios"
      */
-    private void completarReserva(Reserva reserva, ReservaRequest datos, List<Servicio> serviciosPorDefecto) {
-        if (datos.fecha() == null || datos.horaInicio() == null) {
-            throw error(HttpStatus.BAD_REQUEST, "La fecha y la hora de inicio son obligatorias");
-        }
-
-        if (datos.medico() == null || datos.medico().id() == null) {
-            throw error(HttpStatus.BAD_REQUEST, "Debe indicar el médico (medico.id)");
-        }
-
-        Medico medico = medicoService.buscarPorId(datos.medico().id());
-        if (medico == null) {
-            throw error(HttpStatus.NOT_FOUND, "No existe el médico con id " + datos.medico().id());
-        }
-        if (medico.getEspecialidad() == null) {
-            throw error(HttpStatus.BAD_REQUEST, "El médico seleccionado no tiene una especialidad asignada");
-        }
-
-        // Los servicios llegan como [{"id": 1}, ...]: se cambian por los servicios
-        // reales de la base de datos
-        List<Servicio> servicios;
-        if (datos.servicios() == null) {
-            servicios = serviciosPorDefecto;
-        } else {
-            List<Long> idsServicios = datos.servicios().stream()
-                    .map(ReservaRequest.Referencia::id)
-                    .filter(Objects::nonNull)
-                    .distinct()
-                    .toList();
-            servicios = new ArrayList<>(servicioService.buscarPorIds(idsServicios));
-            if (servicios.size() != idsServicios.size()) {
-                throw error(HttpStatus.BAD_REQUEST, "Alguno de los servicios indicados no existe");
-            }
-        }
-
-        double total = medico.getEspecialidad().getCosto();
-        for (Servicio s : servicios) {
-            if (s.getCosto() != null) {
-                total += s.getCosto();
-            }
-        }
-
-        reserva.setMedico(medico);
-        reserva.setFecha(datos.fecha());
-        reserva.setHoraInicio(datos.horaInicio());
-        reserva.setHoraFin(datos.horaInicio().plusHours(1));
-        reserva.setObservaciones(datos.observaciones());
-        reserva.setServicios(servicios);
-        reserva.setTotal(total);
-    }
 
     private ResponseStatusException error(HttpStatus status, String mensaje) {
         return new ResponseStatusException(status, mensaje);
@@ -287,4 +238,5 @@ public class ReservaRestController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
         return reservaService.horasDisponibles(medicoId, fecha);
     }
+
 }

@@ -1,8 +1,19 @@
+
 package com.health.project.pagos;
+
+import com.health.project.controllers.ReservaRequest;
+import com.health.project.entitys.Reserva;
+import com.health.project.service.ReservaService;
+import com.health.project.service.UsuarioService;
+
+import tools.jackson.databind.ObjectMapper;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 
@@ -13,35 +24,82 @@ public class PagoController {
 
     private final WompiService wompi;
     private final OrdenRepository ordenes;
+    private final ReservaService reservaService;
+    private final UsuarioService usuarioService;
+    private final ObjectMapper objectMapper;
 
-    public PagoController(WompiService wompi, OrdenRepository ordenes) {
+    public PagoController(
+            WompiService wompi,
+            OrdenRepository ordenes,
+            ReservaService reservaService,
+            UsuarioService usuarioService,
+            ObjectMapper objectMapper) {
+
         this.wompi = wompi;
         this.ordenes = ordenes;
+        this.reservaService = reservaService;
+        this.usuarioService = usuarioService;
+        this.objectMapper = objectMapper;
     }
 
     /**
      * Crea la orden en PENDING y devuelve el link de pago de Wompi.
-     * Body: { "monto": 15000 }  (en pesos)
+     * El monto se calcula en el backend usando los datos de la reserva.
      */
-    @PostMapping("/checkout")
-    public Map<String, String> checkout(@RequestBody Map<String, Long> body) {
-        long pesos = body.get("monto");
+    @PostMapping("/checkout/{pacienteId}")
+    public Map<String, String> checkout(
+            @PathVariable Long pacienteId,
+            @RequestBody ReservaRequest datos) {
+
+        if (usuarioService.buscarPorId(pacienteId) == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "No existe el paciente con id " + pacienteId);
+        }
+
+        // Se reutiliza el cálculo original sin guardar la reserva.
+        Reserva reservaTemporal = new Reserva();
+
+        reservaService.completarReserva(
+                reservaTemporal,
+                datos,
+                new ArrayList<>());
+
+        long montoEnCentavos = Math.round(reservaTemporal.getTotal() * 100);
 
         Orden orden = new Orden();
         orden.setReferencia("ORD-" + UUID.randomUUID());
-        orden.setMontoEnCentavos(pesos * 100);
+        orden.setMontoEnCentavos(montoEnCentavos);
         orden.setEstado("PENDING");
+        orden.setPacienteId(pacienteId);
+
+        try {
+            orden.setReservaJson(
+                    objectMapper.writeValueAsString(datos));
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "No fue posible guardar los datos de la reserva");
+        }
+
         ordenes.save(orden);
 
-        String url = wompi.crearUrlCheckout(orden.getReferencia(), orden.getMontoEnCentavos());
-        return Map.of("url", url, "referencia", orden.getReferencia());
+        String url = wompi.crearUrlCheckout(
+                orden.getReferencia(),
+                orden.getMontoEnCentavos());
+
+        return Map.of(
+                "url", url,
+                "referencia", orden.getReferencia());
     }
 
-    /** Consulta el estado de una orden (la usa la pagina de resultado de Angular). */
+    /**
+     * Consulta el estado de una orden (la usa la pagina de resultado de Angular).
+     */
     @GetMapping("/orden/{referencia}")
     public ResponseEntity<Map<String, String>> estado(@PathVariable String referencia) {
         return ordenes.findByReferencia(referencia)
-            .map(o -> ResponseEntity.ok(Map.of("referencia", o.getReferencia(), "estado", o.getEstado())))
-            .orElse(ResponseEntity.notFound().build());
+                .map(o -> ResponseEntity.ok(Map.of("referencia", o.getReferencia(), "estado", o.getEstado())))
+                .orElse(ResponseEntity.notFound().build());
     }
 }

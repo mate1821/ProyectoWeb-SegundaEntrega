@@ -102,6 +102,15 @@ export class ReservaComponent {
     const suma = seleccionados.reduce((acc, s) => acc + (s.costo ?? 0), 0);
     return suma > 0 ? suma : 15000;
   }
+  reservaParaPago(): Reserva {
+  return {
+    medico: { id: Number(this.medicoId) },
+    fecha: this.fecha,
+    horaInicio: this.horaInicio,
+    observaciones: this.observaciones,
+    servicios: this.servicioIds.map((id) => ({ id })),
+  };
+}
 
   prepararPago(): void {
     const borradorReserva: Reserva = {

@@ -32,7 +32,7 @@ public interface ReservaService {
 
     void cambiarEstado(Long idReserva, Long idEstado);
 
-    List<LocalTime> horasDisponibles(Long medicoId, LocalDate fecha);
+    void completarReserva(Reserva reserva,ReservaRequest datos,List<Servicio> serviciosPorDefecto);
 
 
 

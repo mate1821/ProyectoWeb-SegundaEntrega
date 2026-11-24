@@ -91,10 +91,8 @@
   </fieldset>
 
   @if (!reservaEditando()) {
-    <div (click)="prepararPago()">
-      <app-boton-pagar [monto]="totalReserva()"></app-boton-pagar>
-    </div>
-  }
+  <app-boton-pagar [reserva]="reservaParaPago()"></app-boton-pagar>
+}
 
   <button type="submit" [disabled]="formulario.invalid">
     {{ reservaEditando() ? 'Guardar cambios' : 'Guardar' }}
