@@ -13,6 +13,8 @@ import java.util.List;
 
 import com.health.project.errors.HorarioNoDisponibleException;
 import com.health.project.errors.ReservaNoEncontradaException;
+import com.health.project.controllers.ReservaRequest;
+import com.health.project.entitys.Servicio;
 import com.health.project.errors.UsuarioDuplicado;
 import java.time.LocalDate;
 import java.time.LocalTime;
