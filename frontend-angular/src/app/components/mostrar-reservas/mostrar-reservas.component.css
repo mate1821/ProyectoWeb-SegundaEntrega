@@ -13,7 +13,9 @@
 
 /* Enlaces de la tabla con forma de botón pequeño, sin partirse en dos líneas */
 .enlace-accion {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 2.75rem;
   padding: .3rem .65rem;
   border: 1px solid var(--borde);
   border-radius: var(--radio-control);

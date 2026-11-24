@@ -16,7 +16,7 @@ import { Reserva } from '../models/reserva.model';
     </button>
 
     @if (mensaje) {
-      <p>{{ mensaje }}</p>
+      <p class="mensaje" role="status">{{ mensaje }}</p>
     }
   `
 })

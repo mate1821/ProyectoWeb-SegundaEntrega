@@ -1,0 +1,9 @@
+.tarjeta-acceso {
+  padding: clamp(1.35rem, 4vw, 3.25rem);
+  border-block-start: 1px solid var(--borde);
+  border-radius: clamp(1.3rem, 3vw, 2rem);
+  box-shadow: 0 16px 52px rgb(15 57 57 / 13%);
+}
+
+.tarjeta-acceso h1 { font-size: clamp(1.9rem, 3.6vw, 2.75rem); }
+.tarjeta-acceso button { inline-size: 100%; }

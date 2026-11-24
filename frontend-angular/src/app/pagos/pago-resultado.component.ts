@@ -13,12 +13,19 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <h2>Resultado del pago</h2>
-    <p *ngIf="estado === 'PENDING'">Estamos confirmando tu pago...</p>
-    <p *ngIf="estado === 'APPROVED'">¡Pago aprobado! Registrando tu reserva...</p>
-    <p *ngIf="estado === 'DECLINED' || estado === 'ERROR'">El pago no se pudo completar ({{ estado }}).</p>
-    <p *ngIf="!estado">No encontramos tu orden.</p>
-    <p *ngIf="errorReserva">{{ errorReserva }}</p>
+    <main class="pagina pagina-estrecha">
+      <section class="tarjeta tarjeta-formulario" aria-labelledby="titulo-pago">
+        <h1 id="titulo-pago">Resultado del pago</h1>
+        <p class="mensaje mensaje-cargando" role="status"
+          *ngIf="estado === 'PENDING'">Estamos confirmando tu pago...</p>
+        <p class="mensaje mensaje-exito" role="status"
+          *ngIf="estado === 'APPROVED'">¡Pago aprobado! Registrando tu reserva...</p>
+        <p class="mensaje mensaje-error" role="alert"
+          *ngIf="estado === 'DECLINED' || estado === 'ERROR'">El pago no se pudo completar ({{ estado }}).</p>
+        <p class="mensaje mensaje-aviso" *ngIf="!estado">No encontramos tu orden.</p>
+        <p class="mensaje mensaje-error" role="alert" *ngIf="errorReserva">{{ errorReserva }}</p>
+      </section>
+    </main>
   `
 })
 export class PagoResultadoComponent implements OnInit, OnDestroy {

@@ -1,0 +1,69 @@
+:host { display: block; min-inline-size: 0; }
+
+.calendario {
+  padding: clamp(.5rem, 2vw, 1.125rem);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: var(--superficie-suave);
+}
+
+.calendario-cabecera {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr) 2.5rem;
+  align-items: center;
+  gap: .375rem;
+  margin-block-end: .75rem;
+  text-align: center;
+}
+
+.calendario-cabecera strong { text-transform: capitalize; }
+
+.calendario .calendario-flecha {
+  min-block-size: 2.5rem;
+  padding: 0;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.calendario-dias {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: .2rem;
+}
+
+.calendario-semana,
+.calendario-otro-mes {
+  display: grid;
+  place-items: center;
+  min-block-size: 1.75rem;
+  font-size: .75rem;
+  color: var(--texto-suave);
+}
+
+.calendario-semana { font-weight: 650; }
+.calendario-otro-mes { opacity: .6; }
+
+.calendario .calendario-dia {
+  min-block-size: 2.375rem;
+  padding: 0;
+  border-radius: var(--radio-control);
+  background: var(--superficie);
+  color: var(--texto);
+  font-size: .875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.calendario .calendario-dia:disabled {
+  background: transparent;
+  color: var(--texto-suave);
+  opacity: .65;
+}
+
+.calendario .calendario-dia[aria-current='date']:not([aria-pressed='true']) {
+  border-color: var(--acento);
+}
+
+.calendario .calendario-dia[aria-pressed='true'] {
+  background: var(--acento-fuerte);
+  color: white;
+}

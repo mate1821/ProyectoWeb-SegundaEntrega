@@ -17,9 +17,12 @@
 .conteo {
   margin: 0;
   font-size: 0.9rem;
-  opacity: 0.8;
+  font-weight: 650;
 }
 
 .enlaces-resenas {
-  min-inline-size: 7rem;
+  gap: .375rem .75rem;
+  min-inline-size: 8rem;
 }
+
+.pagina-busqueda tbody td:first-child { font-weight: 700; }

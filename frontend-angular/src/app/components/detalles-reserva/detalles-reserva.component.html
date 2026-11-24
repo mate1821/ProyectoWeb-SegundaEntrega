@@ -12,7 +12,7 @@
 
     @if (reserva(); as r) {
     <!-- Issue #25: datos agrupados en tarjetas (cita, lugar, costos y calificación) -->
-    <section class="tarjeta" aria-labelledby="titulo-cita">
+    <section class="tarjeta detalle-cita" aria-labelledby="titulo-cita">
         <div class="titulo-reserva">
             <h2 id="titulo-cita">Reserva #{{ r.idReserva }}</h2>
             <span class="estado" [attr.data-estado]="r.estado?.nombre">{{ r.estado?.nombre }}</span>
@@ -46,7 +46,7 @@
         </dl>
     </section>
 
-    <section class="tarjeta" aria-labelledby="titulo-lugar">
+    <section class="tarjeta detalle-lugar" aria-labelledby="titulo-lugar">
         <h2 id="titulo-lugar">Lugar de la cita</h2>
         <dl class="datos">
             <div>
@@ -164,6 +164,6 @@
         }
     </section>
     } @else if (!error()) {
-    <p class="mensaje" role="status">Cargando reserva...</p>
+    <p class="mensaje mensaje-cargando" role="status">Cargando reserva...</p>
     }
 </main>

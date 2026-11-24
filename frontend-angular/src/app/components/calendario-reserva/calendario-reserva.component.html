@@ -1,0 +1,27 @@
+<section class="calendario" aria-label="Calendario de la reserva">
+  <div class="calendario-cabecera">
+    <button type="button" class="boton-secundario calendario-flecha"
+      aria-label="Mes anterior" [disabled]="!puedeRetroceder()" (click)="desplazarMes(-1)">‹</button>
+    <strong aria-live="polite">{{ titulo() }}</strong>
+    <button type="button" class="boton-secundario calendario-flecha"
+      aria-label="Mes siguiente" (click)="desplazarMes(1)">›</button>
+  </div>
+
+  <div class="calendario-dias">
+    @for (dia of semana; track dia) {
+      <span class="calendario-semana" aria-hidden="true">{{ dia }}</span>
+    }
+    @for (dia of dias(); track dia.iso) {
+      @if (dia.delMes) {
+        <button type="button" class="calendario-dia"
+          [attr.aria-label]="dia.etiqueta"
+          [attr.aria-pressed]="dia.iso === fecha()"
+          [attr.aria-current]="dia.iso === minima() ? 'date' : null"
+          [disabled]="dia.iso < minima()"
+          (click)="fechaElegida.emit(dia.iso)">{{ dia.numero }}</button>
+      } @else {
+        <span class="calendario-otro-mes" aria-hidden="true">{{ dia.numero }}</span>
+      }
+    }
+  </div>
+</section>

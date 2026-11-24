@@ -8,6 +8,9 @@
 
 .resena-meta strong {
   color: var(--acento-fuerte);
+  background: var(--fondo-acento);
+  border-radius: var(--radio-control);
+  padding: .3rem .65rem;
 }
 
 .resena-meta time {
@@ -17,4 +20,15 @@
 .resena-comentario {
   overflow-wrap: anywhere;
   white-space: pre-wrap;
+}
+.lista-resenas {
+  display: grid;
+  align-items: start;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 23rem), 1fr));
+  gap: var(--espacio-3);
+}
+
+.lista-resenas article {
+  box-shadow: none;
+  border-inline-start: .2rem solid var(--acento);
 }

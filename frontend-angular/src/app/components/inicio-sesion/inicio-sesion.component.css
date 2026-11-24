@@ -1,0 +1,38 @@
+.pagina-ingreso {
+  align-items: center;
+  grid-template-columns: minmax(0, 1.18fr) minmax(0, 1fr);
+  gap: 0;
+  max-inline-size: 68rem;
+  min-block-size: calc(100svh - 4rem);
+}
+
+.arte-ingreso {
+  min-block-size: clamp(27rem, 45vw, 37rem);
+  border-radius: 2.25rem 44% 36% 2.25rem / 2.25rem 27% 27% 2.25rem;
+}
+
+.contenido-ingreso {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: var(--espacio-2);
+  margin-inline-start: clamp(-3rem, -3vw, -1rem);
+}
+
+@media (max-width: 42rem) {
+  .pagina-ingreso {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    max-inline-size: 31rem;
+    min-block-size: 0;
+  }
+
+  .arte-ingreso {
+    min-block-size: 11rem;
+    border-radius: 1.5rem 1.5rem 40% 24% / 1.5rem 1.5rem 28% 21%;
+  }
+
+  .contenido-ingreso {
+    margin: -1.75rem .5rem 0;
+  }
+}

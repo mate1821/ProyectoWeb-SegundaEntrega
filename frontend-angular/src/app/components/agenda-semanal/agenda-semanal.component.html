@@ -1,0 +1,76 @@
+@let vista = semana();
+<div class="cal-semanal">
+  <div class="cal-barra">
+    <div>
+      <h3 aria-live="polite">
+        {{ vista.dias[0].fecha | date:'d MMM y' }} – {{ vista.dias[6].fecha | date:'d MMM y' }}
+      </h3>
+      <p>{{ vista.total }} {{ vista.total === 1 ? 'reserva' : 'reservas' }} en esta semana</p>
+    </div>
+    <nav class="acciones cal-navegacion" aria-label="Navegación del calendario">
+      <label class="cal-salto">
+        <span>Ir a fecha</span>
+        <input type="date" #fechaDestino (change)="irAFecha(fechaDestino.value)" />
+      </label>
+      <button type="button" class="boton-secundario" (click)="volverAHoy()">Hoy</button>
+      <button type="button" class="boton-secundario" aria-label="Semana anterior" (click)="moverSemana(-1)">‹</button>
+      <button type="button" class="boton-secundario" aria-label="Semana siguiente" (click)="moverSemana(1)">›</button>
+    </nav>
+  </div>
+
+  <div class="cal-scroll" tabindex="0" role="region" aria-label="Cuadrícula semanal, hora de Bogotá">
+    <div class="cal-cuadricula">
+      <div class="cal-horas" aria-hidden="true">
+        <span class="cal-encabezado">Hora</span>
+        @for (hora of vista.horas; track hora) { <span class="cal-hora">{{ hora }}</span> }
+      </div>
+      @for (dia of vista.dias; track dia.fecha) {
+        <section class="cal-dia" [class.cal-hoy]="dia.fecha === hoy" [attr.aria-label]="dia.fecha | date:'EEEE d MMMM'">
+          <header class="cal-encabezado" [attr.aria-current]="dia.fecha === hoy ? 'date' : null">
+            <span>{{ dia.fecha | date:'EEE' }}</span>
+            <strong>{{ dia.fecha | date:'d' }}</strong>
+          </header>
+          <div class="cal-franjas" [style.--horas]="vista.horas.length">
+            @for (bloque of dia.bloques; track bloque.cita.idReserva ?? $index) {
+              <button class="cal-cita" type="button" aria-haspopup="dialog"
+                [attr.data-estado]="bloque.cita.estado?.nombre"
+                [style.--minutos-inicio]="bloque.inicio - vista.inicio"
+                [style.--duracion]="bloque.fin - bloque.inicio"
+                [style.--carril]="bloque.carril"
+                [style.--carriles]="dia.carriles"
+                [attr.aria-label]="'Ver cita de ' + (bloque.cita.usuario?.nombre || 'Paciente') + ', ' + bloque.cita.horaInicio.slice(0, 5)"
+                (click)="abrirCita(bloque.cita, detalleCita)">
+                <strong>{{ bloque.cita.usuario?.nombre || 'Paciente' }}</strong>
+                <span>{{ bloque.cita.horaInicio.slice(0, 5) }}@if (bloque.cita.horaFin) { – {{ bloque.cita.horaFin.slice(0, 5) }}}</span>
+                @if (bloque.cita.estado?.nombre; as estado) { <span>{{ estado }}</span> }
+              </button>
+            }
+          </div>
+        </section>
+      }
+    </div>
+  </div>
+</div>
+
+<dialog class="cal-detalle" #detalleCita aria-labelledby="cal-detalle-titulo">
+  <header class="cal-detalle-cabecera">
+    <h2 id="cal-detalle-titulo">Detalle de la cita</h2>
+    @if (citaSeleccionada()?.estado?.nombre; as estado) {
+      <span class="estado" [attr.data-estado]="estado">{{ estado }}</span>
+    }
+  </header>
+  @if (citaSeleccionada(); as cita) {
+    <dl class="cal-detalle-datos">
+      <div><dt>Paciente</dt><dd>{{ cita.usuario?.nombre || 'Sin nombre registrado' }}</dd></div>
+      <div><dt>Fecha</dt><dd>{{ cita.fecha | date:'EEEE d MMMM y' }}</dd></div>
+      <div><dt>Horario</dt><dd>{{ cita.horaInicio.slice(0, 5) }}@if (cita.horaFin) { – {{ cita.horaFin.slice(0, 5) }}}</dd></div>
+      @if (cita.medico?.espacio?.nombre; as lugar) {
+        <div><dt>Lugar</dt><dd>{{ lugar }}</dd></div>
+      }
+      @if (cita.medico?.especialidad?.nombreEspecialidad; as especialidad) {
+        <div><dt>Especialidad</dt><dd>{{ especialidad }}</dd></div>
+      }
+    </dl>
+  }
+  <button type="button" class="boton-secundario" autofocus (click)="detalleCita.close()">Cerrar</button>
+</dialog>

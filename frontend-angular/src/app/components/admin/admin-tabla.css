@@ -1,0 +1,101 @@
+.admin-tabla-cabecera, .admin-filtros { display: flex; flex-wrap: wrap; align-items: center; gap: var(--espacio-2); }
+.admin-tabla-cabecera { justify-content: space-between; }
+.admin-tabla-cabecera .contador-sesion {
+  color: var(--acento-fuerte);
+  background: var(--fondo-acento);
+  border-radius: 2rem;
+  padding: .3rem .8rem;
+  font-size: .875rem;
+}
+.admin-filtros { align-items: end; }
+.admin-filtros label:first-child { flex: 1 1 16rem; }
+.admin-filtros label:nth-child(2) { flex: 0 1 14rem; }
+.admin-tabla .tabla-scroll { max-block-size: 34rem; }
+.admin-tabla thead th { position: sticky; inset-block-start: 0; z-index: 1; }
+.admin-tabla .separador-mes th { background: var(--fondo-acento); text-transform: capitalize; }
+.paciente-celda { white-space: nowrap; }
+.paciente-avatar {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 2.2rem;
+  aspect-ratio: 1;
+  margin-inline-end: .55rem;
+  border-radius: 50%;
+  background: var(--fondo-acento);
+  color: var(--acento-fuerte);
+  font-size: .75rem;
+  font-weight: 750;
+}
+.admin-tabla select { max-inline-size: 15rem; min-block-size: 2.5rem; padding-block: .3rem; }
+
+@supports (appearance: base-select) {
+  .admin-tabla .selector-estado,
+  .admin-tabla .selector-estado::picker(select) {
+    appearance: base-select;
+  }
+
+  .selector-estado::picker-icon { color: var(--acento-fuerte); }
+  .selector-estado:open::picker-icon { transform: rotate(180deg); }
+
+  .admin-tabla .selector-estado::picker(select) {
+    margin-block-start: .35rem;
+    padding: .3rem;
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-control);
+    background: var(--superficie);
+    color: var(--texto);
+    box-shadow: 0 10px 28px rgb(40 27 62 / 14%);
+  }
+
+  .selector-estado option {
+    --color-opcion: #687583;
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .45rem .6rem;
+    min-block-size: 2.4rem;
+    border-radius: .6rem;
+  }
+
+  .selector-estado option[data-estado='Confirmada'] { --color-opcion: #624499; }
+  .selector-estado option[data-estado='Completada'] { --color-opcion: #287958; }
+  .selector-estado option[data-estado='Cancelada'] { --color-opcion: #b45363; }
+
+  .selector-estado option::before {
+    content: '';
+    flex: 0 0 .55rem;
+    block-size: .55rem;
+    border-radius: 50%;
+    background: var(--color-opcion);
+  }
+
+  .selector-estado option:checked { background: var(--fondo-acento); font-weight: 650; }
+  .selector-estado option:is(:hover, :focus-visible) { background: var(--superficie-suave); }
+  .selector-estado option::checkmark { order: 1; margin-inline-start: auto; color: var(--acento-fuerte); }
+}
+
+@media (max-width: 42rem) {
+  .admin-portada { grid-template-columns: minmax(0, 1fr); }
+  .admin-saludo { padding-block-start: 4rem; }
+  .admin-arte { display: none; }
+  .admin-tabla .tabla-scroll { max-block-size: none; overflow: visible; border: 0; }
+  .admin-tabla :is(table, tbody, tr, td, tbody th) { display: block; min-inline-size: 0; }
+  .admin-tabla thead { position: absolute; clip-path: inset(50%); inline-size: 1px; block-size: 1px; overflow: hidden; }
+  .admin-tabla tbody tr { margin-block-end: .65rem; }
+  .admin-tabla .fila-reserva {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: var(--espacio-2);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+  }
+  .admin-tabla .fila-reserva td { padding: .45rem; border-block-start: 0; white-space: normal; }
+  .admin-tabla .fila-reserva td:is(:first-child, :nth-child(2), :last-child) { grid-column: 1 / -1; }
+  .admin-tabla .fila-reserva td[data-etiqueta]::before {
+    display: block;
+    content: attr(data-etiqueta);
+    color: var(--texto-suave);
+    font-size: .75rem;
+  }
+  .admin-tabla select { max-inline-size: none; }
+}

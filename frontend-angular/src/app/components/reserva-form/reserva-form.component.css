@@ -5,3 +5,51 @@
   color: var(--texto-suave);
   white-space: nowrap;
 }
+
+.formulario-reserva .opciones {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  padding: var(--espacio-3);
+  background: var(--superficie-suave);
+}
+
+.formulario-reserva .opcion {
+  min-inline-size: 0;
+  padding: var(--espacio-2);
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-control);
+}
+
+.formulario-reserva .opcion:has(input:checked) {
+  border-color: var(--acento);
+  background: var(--fondo-acento);
+}
+
+.formulario-reserva .opcion label {
+  display: grid;
+  gap: .125rem;
+  overflow-wrap: anywhere;
+}
+
+.formulario-reserva .precio { margin-inline-start: 0; }
+
+.config-reserva {
+  display: grid;
+  align-content: start;
+  gap: var(--espacio-4);
+}
+
+.campo-horario {
+  align-self: start;
+  padding: var(--espacio-3);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: var(--fondo-acento);
+}
+
+@media (min-width: 42.01rem) {
+  .formulario-reserva {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  }
+}

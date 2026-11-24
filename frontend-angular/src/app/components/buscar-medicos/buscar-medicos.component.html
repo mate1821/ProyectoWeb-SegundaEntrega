@@ -1,4 +1,4 @@
-<main class="pagina">
+<main class="pagina pagina-busqueda">
   <header class="encabezado">
     <h1>Buscar médico o clínica</h1>
     <p>Escribe el nombre de un médico o de una clínica y, si quieres, elige una especialidad.</p>
@@ -7,7 +7,7 @@
     </nav>
   </header>
 
-  <section class="tarjeta" aria-label="Filtros de búsqueda">
+  <section class="tarjeta panel-filtros" aria-label="Filtros de búsqueda">
     <form class="barra-busqueda" role="search" (submit)="$event.preventDefault()">
       <div class="campo campo-texto">
         <label for="busqueda-texto">Médico o clínica</label>
@@ -45,7 +45,7 @@
   @if (error()) {
     <p class="mensaje mensaje-error" role="alert">{{ error() }}</p>
   } @else if (cargando()) {
-    <p class="mensaje" role="status">Cargando médicos...</p>
+    <p class="mensaje mensaje-cargando" role="status">Cargando médicos...</p>
   } @else {
     <!-- Aquí se aplican los dos pipes en cadena (issue #24) -->
     @let resultados = medicos() | filtroEspecialidad: especialidadId() | filtroBusqueda: texto();
@@ -54,7 +54,7 @@
       {{ resultados.length }} {{ resultados.length === 1 ? 'resultado' : 'resultados' }}
     </p>
 
-    <section class="tarjeta" aria-label="Resultados de la búsqueda">
+    <section class="tarjeta panel-tabla" aria-label="Resultados de la búsqueda">
       <div class="tabla-scroll" tabindex="0" role="region" aria-label="Médicos encontrados">
         <table class="tabla-datos">
           <thead>

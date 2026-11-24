@@ -1,5 +1,5 @@
 
-import { Component, OnInit, inject, signal, } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { CurrencyPipe } from '@angular/common';
 import { Reserva } from '../../models/reserva.model';
@@ -29,6 +29,7 @@ export class MostrarReservas implements OnInit {
   reservas = signal<Reserva[]>([]);
   cargando = signal(true);
   estados = signal<EstadoReserva[]>([]);
+  idCompletada = computed(() => this.estados().find((estado) => estado.nombre === 'Completada')?.id);
   mensaje = signal('');
   error = signal('');
   reservaSeleccionada = signal<Reserva | null>(null);
@@ -57,6 +58,19 @@ export class MostrarReservas implements OnInit {
         this.mostrarError(err);
       },
     });
+  }
+
+  puedeCompletar(reserva: Reserva): boolean {
+    return reserva.estado?.nombre === 'Confirmada'
+      && !!reserva.horaFin
+      && Date.parse(`${reserva.fecha}T${reserva.horaFin}-05:00`) <= Date.now();
+  }
+
+  completarCita(reserva: Reserva): void {
+    const idEstado = this.idCompletada();
+    if (this.esMedico && idEstado !== undefined && this.puedeCompletar(reserva)) {
+      this.cambiarEstado(reserva, String(idEstado));
+    }
   }
 
   cambiarEstado(reserva: Reserva, idEstado: string): void {

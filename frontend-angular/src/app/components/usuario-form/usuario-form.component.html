@@ -1,10 +1,10 @@
-<section class="encabezado" aria-labelledby="titulo-registro">
+<section class="tarjeta tarjeta-formulario" aria-labelledby="titulo-registro">
   <h1 id="titulo-registro">Formulario de usuario</h1>
 
   @if (errorCatalogos()) {
     <p class="mensaje mensaje-error" role="alert">{{ errorCatalogos() }}</p>
   }
-  <form class="formulario" [formGroup]="formularioUsuario" (ngSubmit)="guardar()">
+  <form class="formulario formulario-columnas" [formGroup]="formularioUsuario" (ngSubmit)="guardar()">
     <div class="campo">
       <label for="cedula">Cédula</label>
       <input type="text" inputmode="numeric" id="cedula" formControlName="cedula" required />
@@ -90,7 +90,7 @@
 
     @switch (formularioUsuario.controls.rolId.value) {
       @case (1) {
-        <div class="campo">
+        <div class="campo campo-completo">
           <p>Has seleccionado el rol de Médico.</p>
 
           <label for="especialidadId">Especialidad:</label>
@@ -111,7 +111,7 @@
         </div>
       }
       @case (2) {
-        <div class="campo">
+        <div class="campo campo-completo">
           <p>Has seleccionado el rol de Paciente.</p>
 
           <label for="antecedentes">Antecedentes:</label>
@@ -122,7 +122,7 @@
       }
 
       @case (3) {
-        <div class="campo">
+        <div class="campo campo-completo">
           <p>Has seleccionado el rol de Administrador.</p>
         </div>
       }

@@ -1,7 +1,15 @@
 /* ---- Issue #25: estructura de la pantalla de detalle ---- */
 .pagina-detalle {
-    max-inline-size: 56rem;
+    max-inline-size: 68rem;
 }
+
+.detalle-cita .datos > div {
+    background: var(--superficie-suave);
+    padding: var(--espacio-2) var(--espacio-3);
+    border-radius: var(--radio-control);
+}
+
+.detalle-lugar { gap: var(--espacio-4); }
 
 .titulo-reserva {
     display: flex;
@@ -146,6 +154,10 @@
 }
 
 .estrella {
+    display: inline-grid;
+    place-items: center;
+    inline-size: clamp(2rem, 10vw, 2.75rem);
+    block-size: 2.75rem;
     font-size: 1.8rem;
     line-height: 1;
     color: var(--borde-control);
@@ -153,7 +165,7 @@
 }
 
 .estrella.activa {
-    color: #e0a400;
+    color: #916100;
 }
 
 .estrella:focus-within {

@@ -1,4 +1,4 @@
-<main class="pagina">
+<main class="pagina pagina-resenas">
   @let vista = estado();
 
   <header class="encabezado">
@@ -14,25 +14,27 @@
 
   @switch (vista.tipo) {
     @case ('cargando') {
-      <p class="mensaje" role="status">Cargando reseñas…</p>
+      <p class="mensaje mensaje-cargando" role="status">Cargando reseñas…</p>
     }
     @case ('error') {
       <p class="mensaje mensaje-error" role="alert">{{ vista.mensaje }}</p>
     }
     @case ('listado') {
-      @for (resena of vista.listado.resenas; track $index) {
-        <article class="tarjeta">
-          <div class="resena-meta">
-            <strong>{{ resena.puntuacion }} de 5 estrellas</strong>
-            <time [attr.datetime]="resena.fecha">{{ resena.fecha | date:'dd/MM/yyyy' }}</time>
-          </div>
-          @if (resena.comentario) {
-            <p class="resena-comentario">{{ resena.comentario }}</p>
-          }
-        </article>
-      } @empty {
-        <p class="mensaje" role="status">Todavía no hay reseñas.</p>
-      }
+      <div class="lista-resenas">
+        @for (resena of vista.listado.resenas; track $index) {
+          <article class="tarjeta">
+            <div class="resena-meta">
+              <strong>{{ resena.puntuacion }} de 5 estrellas</strong>
+              <time [attr.datetime]="resena.fecha">{{ resena.fecha | date:'dd/MM/yyyy' }}</time>
+            </div>
+            @if (resena.comentario) {
+              <p class="resena-comentario">{{ resena.comentario }}</p>
+            }
+          </article>
+        } @empty {
+          <p class="mensaje" role="status">Todavía no hay reseñas.</p>
+        }
+      </div>
     }
   }
 </main>

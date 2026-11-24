@@ -6,9 +6,10 @@ import { Servicio } from '../../models/servicio.model';
 import { BotonPagarComponent } from '../../pagos/boton-pagar.component';
 import { FormsModule } from '@angular/forms';
 import { CurrencyPipe } from '@angular/common';
+import { CalendarioReserva } from '../calendario-reserva/calendario-reserva.component';
 
 @Component({
-  imports: [FormsModule, CurrencyPipe, BotonPagarComponent],
+  imports: [FormsModule, CurrencyPipe, BotonPagarComponent, CalendarioReserva],
   selector: 'app-reserva-form',
   styleUrl: './reserva-form.component.css',
   templateUrl: './reserva-form.component.html',

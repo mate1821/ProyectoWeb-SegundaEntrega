@@ -1,34 +1,87 @@
-<main class="pagina">
-  <header class="encabezado">
-    <h1>Bienvenido al sistema de reservas médicas</h1>
-
-    <h2>
-      ¡Hola,
-      <span class="nombre-usuario" [textContent]="nombreUsuario()"> </span>!
-    </h2>
-
-    @if (error()) {
-      <p class="mensaje mensaje-error" role="alert">{{ error() }}</p>
-    }
-
-    <p>Nos alegra tenerte aquí.</p>
-
-    <p>En nuestro sistema podrás gestionar tus reservas médicas de manera fácil y rápida.</p>
-
-    <h3>¿Qué deseas hacer hoy?</h3>
-
-    <nav class="acciones" aria-label="Opciones del usuario">
-      <a [routerLink]="['/reservas', usuarioId]" class="boton"> Crear cita </a>
-
-      <a [routerLink]="['/mostrar-reservas', usuarioId]" class="boton boton-secundario">
-        Mis reservas
-      </a>
-
-      <a [routerLink]="['/buscar', usuarioId]" class="boton boton-secundario">
-        Buscar médico o clínica
-      </a>
-
-      <a routerLink="/inicio-sesion" class="boton boton-secundario">Cerrar sesión</a>
-    </nav>
+<main class="pagina inicio-paciente">
+  <header class="saludo">
+    <div class="saludo-contenido">
+      <h1>¡Hola, <span class="nombre-usuario" [textContent]="nombreUsuario()"></span>!</h1>
+      <p>Gestiona tus citas médicas y encuentra el profesional que necesitas.</p>
+    </div>
+    <div class="saludo-arte arte-medico" aria-hidden="true"><span></span></div>
+    <a routerLink="/inicio-sesion" class="salir">Cerrar sesión</a>
   </header>
+
+  @if (error()) {
+    <p class="mensaje mensaje-error" role="alert">{{ error() }}</p>
+  }
+
+  <div class="panel-paciente">
+    <section class="atajos" aria-labelledby="titulo-atajos">
+      <h2 id="titulo-atajos">¿Qué deseas hacer hoy?</h2>
+      <nav class="atajos-grid" aria-label="Opciones del usuario">
+        <a [routerLink]="['/reservas', usuarioId]" class="atajo atajo-principal">
+          <span class="atajo-icono icono-cita" aria-hidden="true"></span>
+          <span class="atajo-texto">
+            <strong>Crear cita</strong>
+            <span>Elige la especialidad, el médico y el horario.</span>
+          </span>
+          <span class="atajo-flecha" aria-hidden="true">↗</span>
+        </a>
+
+        <a [routerLink]="['/mostrar-reservas', usuarioId]" class="atajo">
+          <span class="atajo-icono icono-reservas" aria-hidden="true"></span>
+          <span class="atajo-texto">
+            <strong>Mis reservas</strong>
+            <span>Consulta tus citas y sus detalles.</span>
+          </span>
+          <span class="atajo-flecha" aria-hidden="true">↗</span>
+        </a>
+
+        <a [routerLink]="['/buscar', usuarioId]" class="atajo">
+          <span class="atajo-icono icono-buscar" aria-hidden="true"></span>
+          <span class="atajo-texto">
+            <strong>Buscar médico o clínica</strong>
+            <span>Explora por nombre o especialidad y consulta las reseñas.</span>
+          </span>
+          <span class="atajo-flecha" aria-hidden="true">↗</span>
+        </a>
+      </nav>
+    </section>
+
+    <section class="agenda" aria-labelledby="titulo-agenda">
+      <h2 id="titulo-agenda">Próxima cita</h2>
+      <div class="tarjeta agenda-cuerpo">
+        @if (cargandoCita()) {
+          <p class="mensaje mensaje-cargando" role="status">Cargando próxima cita…</p>
+        } @else if (errorCita()) {
+          <p class="mensaje mensaje-error" role="alert">{{ errorCita() }}</p>
+        } @else if (proximaCita(); as cita) {
+          <div class="agenda-fecha">
+            <time class="agenda-dia" [attr.datetime]="cita.fecha">
+              <strong>{{ cita.fecha | date:'d' }}</strong>
+              <span>{{ cita.fecha | date:'MMM' }}</span>
+            </time>
+            <div>
+              <p class="agenda-dia-largo">{{ cita.fecha | date:'EEEE d MMMM' }}</p>
+              <p>{{ cita.horaInicio.slice(0, 5) }}@if (cita.horaFin) { – {{ cita.horaFin.slice(0, 5) }}}</p>
+            </div>
+          </div>
+          <div class="agenda-info">
+            @if (cita.medico?.nombre; as medico) { <h3>{{ medico }}</h3> }
+            @if (cita.medico?.especialidad?.nombreEspecialidad; as especialidad) {
+              <p>{{ especialidad }}</p>
+            }
+            @if (cita.medico?.espacio?.nombre; as lugar) { <p>{{ lugar }}</p> }
+            <span class="estado" [attr.data-estado]="cita.estado?.nombre">{{ cita.estado?.nombre }}</span>
+          </div>
+          @if (cita.idReserva) {
+            <a class="boton boton-secundario" [routerLink]="['/detalle-reserva', cita.idReserva]">Ver detalles</a>
+          }
+        } @else {
+          <div class="agenda-vacia">
+            <span class="atajo-icono icono-reservas" aria-hidden="true"></span>
+            <h3>No tienes citas próximas</h3>
+            <p>Tu siguiente cita confirmada aparecerá aquí.</p>
+          </div>
+        }
+      </div>
+    </section>
+  </div>
 </main>

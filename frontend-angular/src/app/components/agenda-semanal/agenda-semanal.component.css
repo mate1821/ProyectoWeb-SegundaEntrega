@@ -1,0 +1,121 @@
+.cal-semanal {
+  --alto-hora: 5.5rem;
+  overflow: hidden;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: var(--superficie);
+  box-shadow: var(--sombra);
+}
+
+.cal-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-2);
+  padding: var(--espacio-3) var(--espacio-4);
+}
+
+.cal-barra p { margin-block-start: .2rem; font-size: .875rem; }
+.cal-navegacion button { min-inline-size: 2.75rem; padding-inline: .8rem; }
+.cal-salto { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem; }
+.cal-salto input[type='date'] { inline-size: auto; }
+.cal-scroll { overflow: auto; max-block-size: min(44rem, 80vh); border-block-start: 1px solid var(--borde); }
+.cal-scroll:focus-visible { outline-offset: -3px; }
+
+.cal-cuadricula {
+  display: grid;
+  grid-template-columns: 3.75rem repeat(7, minmax(7.5rem, 1fr));
+  min-inline-size: max-content;
+}
+
+.cal-dia { min-inline-size: 0; border-inline-start: 1px solid var(--borde); }
+.cal-horas { position: sticky; inset-inline-start: 0; z-index: 3; background: var(--superficie); }
+
+.cal-encabezado {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  block-size: 2.9rem;
+  border-block-end: 1px solid var(--borde);
+  color: var(--texto-suave);
+  background: var(--superficie-suave);
+  font-size: .8rem;
+  text-transform: capitalize;
+}
+
+.cal-encabezado strong { color: var(--texto); font-size: 1rem; }
+.cal-hoy .cal-encabezado { background: var(--fondo-acento); }
+
+.cal-hora {
+  display: block;
+  block-size: var(--alto-hora);
+  padding: .25rem .5rem;
+  border-block-end: 1px solid var(--borde);
+  color: var(--texto-suave);
+  font-size: .75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.cal-franjas {
+  position: relative;
+  block-size: calc(var(--horas) * var(--alto-hora));
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 calc(var(--alto-hora) - 1px),
+    var(--borde) calc(var(--alto-hora) - 1px) var(--alto-hora)
+  );
+}
+
+.cal-cita {
+  position: absolute;
+  inset-block-start: calc(var(--minutos-inicio) * var(--alto-hora) / 60 + 2px);
+  block-size: calc(var(--duracion) * var(--alto-hora) / 60 - 3px);
+  min-block-size: 0;
+  inset-inline-start: calc(var(--carril) * 100% / var(--carriles) + 3px);
+  inline-size: calc(100% / var(--carriles) - 6px);
+  display: grid;
+  align-content: start;
+  justify-content: stretch;
+  gap: .1rem;
+  overflow: hidden;
+  border: 1px solid #acc6e4;
+  border-inline-start: .2rem solid var(--acento);
+  border-radius: .55rem;
+  padding: .25rem .375rem;
+  background: var(--fondo-acento);
+  color: var(--texto);
+  font-size: .75rem;
+  line-height: 1.25;
+  font-weight: 400;
+  text-align: start;
+}
+
+.cal-cita strong, .cal-cita span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cal-cita:focus-visible { z-index: 1; outline-offset: -2px; }
+.cal-cita[data-estado='Completada'] { background: var(--fondo-exito); border-color: #83ae96; }
+.cal-cita[data-estado='Cancelada'] { background: var(--fondo-error); border-color: #c98f95; }
+.cal-cita[data-estado='Desactivada'] { background: var(--superficie-suave); border-color: var(--borde-control); }
+
+.cal-detalle {
+  inline-size: min(28rem, calc(100% - 2rem));
+  max-block-size: calc(100% - 2rem);
+  padding: var(--espacio-4);
+  color: var(--texto);
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: 0 20px 55px rgb(15 48 69 / 25%);
+}
+
+.cal-detalle::backdrop { background: rgb(14 36 54 / 52%); }
+.cal-detalle-cabecera { display: flex; flex-wrap: wrap; align-items: center; gap: var(--espacio-2); }
+.cal-detalle-datos { display: grid; gap: var(--espacio-2); margin-block: var(--espacio-3); }
+.cal-detalle-datos > div { padding: .6rem .8rem; background: var(--superficie-suave); border-radius: var(--radio-control); }
+.cal-detalle-datos dt { color: var(--texto-suave); font-size: .8rem; font-weight: 650; }
+.cal-detalle-datos dd { margin: 0; overflow-wrap: anywhere; }
+:host { display: block; min-inline-size: 0; }
