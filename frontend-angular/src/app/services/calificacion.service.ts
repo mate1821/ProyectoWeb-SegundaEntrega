@@ -11,14 +11,16 @@ import { CalificacionRequest, EstadoCalificaciones, ListadoResenas, TipoCalifica
  */
 @Injectable({ providedIn: 'root' })
 export class CalificacionService {
+
     private http = inject(HttpClient);
     private apiUrl = 'https://proyectoweb-segundaentrega.onrender.com/api/reservas';
+    private resenasUrl = 'https://proyectoweb-segundaentrega.onrender.com/api/resenas';
 
     obtenerResenas(tipo: TipoCalificacion, id: number): Observable<ListadoResenas> {
-        return this.http.get<ListadoResenas>(`${this.apiUrl}/${tipo}/${id}`,
+        return this.http.get<ListadoResenas>(`${this.resenasUrl}/${tipo}/${id}`,
             { withCredentials: true });
     }
-
+    
     obtenerEstado(reservaId: number): Observable<EstadoCalificaciones> {
         return this.http.get<EstadoCalificaciones>(`${this.apiUrl}/${reservaId}/calificaciones`,
             { withCredentials: true });
