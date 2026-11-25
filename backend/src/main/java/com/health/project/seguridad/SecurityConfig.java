@@ -49,6 +49,9 @@ public class SecurityConfig {
                 // Registro público
                 .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()
 
+
+                .requestMatchers(HttpMethod.POST, "/api/resenas/**").permitAll()
+
                 // Catálogos que necesita el formulario de registro antes de
                 // iniciar sesión (sin esto el registro de médicos no cargaba nada)
                 .requestMatchers(HttpMethod.GET, "/api/especialidades/**", "/api/espacios/**").permitAll()

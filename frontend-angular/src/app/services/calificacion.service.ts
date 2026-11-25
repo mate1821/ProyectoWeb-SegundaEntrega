@@ -15,7 +15,7 @@ export class CalificacionService {
     private apiUrl = 'https://proyectoweb-segundaentrega.onrender.com/api/reservas';
 
     obtenerResenas(tipo: TipoCalificacion, id: number): Observable<ListadoResenas> {
-        return this.http.get<ListadoResenas>(`http://localhost:8090/api/resenas/${tipo}/${id}`,
+        return this.http.get<ListadoResenas>(`${this.apiUrl}/${tipo}/${id}`,
             { withCredentials: true });
     }
 
