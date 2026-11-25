@@ -1,0 +1,28 @@
+/* Barra de búsqueda: el texto ocupa el espacio libre y la especialidad va al lado */
+.barra-busqueda {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 1rem;
+}
+
+.barra-busqueda .campo {
+  flex: 1 1 12rem;
+}
+
+.barra-busqueda .campo-texto {
+  flex: 2 1 18rem;
+}
+
+.conteo {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+.enlaces-resenas {
+  gap: .375rem .75rem;
+  min-inline-size: 8rem;
+}
+
+.pagina-busqueda tbody td:first-child { font-weight: 700; }

@@ -1,0 +1,242 @@
+package com.health.project.controllers;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.health.project.entitys.Medico;
+import com.health.project.entitys.Reserva;
+import com.health.project.entitys.Servicio;
+import com.health.project.entitys.Usuario;
+import com.health.project.errors.HorarioNoDisponibleException;
+import com.health.project.errors.ReservaNoEncontradaException;
+import com.health.project.service.EstadoResService;
+import com.health.project.service.MedicoService;
+import com.health.project.service.ReservaService;
+import com.health.project.service.ServicioService;
+import com.health.project.service.UsuarioService;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import jakarta.servlet.http.HttpSession;
+
+@RestController
+@RequestMapping("/api/reservas")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
+public class ReservaRestController {
+
+    // Mismo id de estado "Confirmada" que usa ReservaController al crear una
+    // reserva
+    private static final Long ID_CONFIRMADA = 1L;
+
+    // ---- Reglas de acceso (SpEL) ----
+    // El usuario autenticado es el del path ({usuarioId})
+    private static final String ADMIN_O_MISMO_USUARIO = "hasRole('ADMIN') or "
+            + "@usuarioService.buscarPorId(#usuarioId)?.correo == authentication.name";
+
+    // El usuario autenticado es el paciente del path ({pacienteId})
+    private static final String ADMIN_O_MISMO_PACIENTE = "hasRole('ADMIN') or "
+            + "@usuarioService.buscarPorId(#pacienteId)?.correo == authentication.name";
+
+    // La reserva {id} pertenece al usuario autenticado
+    private static final String ADMIN_O_DUENO_RESERVA = "hasRole('ADMIN') or "
+            + "@reservaService.buscarPorId(#id)?.usuario?.correo == authentication.name";
+
+    @Autowired
+    private ReservaService reservaService;
+    @Autowired
+    private UsuarioService usuarioService;
+    @Autowired
+    private MedicoService medicoService;
+    @Autowired
+    private EstadoResService estadoService;
+    @Autowired
+    private ServicioService servicioService;
+
+    // 1. GET /api/reservas -> lista todas las reservas
+    @GetMapping
+    public List<Reserva> listar() {
+        return reservaService.buscarReservas();
+    }
+
+    /*
+     * @GetMapping("/mias")
+     * public List<Reserva> misReservas(HttpSession session) {
+     * Long usuarioId = (Long) session.getAttribute("usuarioId");
+     * if (usuarioId == null) {
+     * throw error(HttpStatus.UNAUTHORIZED, "Debe primero iniciar sesión");
+     * }
+     * return reservaService.misReservas(usuarioId);
+     * }
+     */
+
+    @GetMapping("/usuario/{usuarioId}")
+    @PreAuthorize(ADMIN_O_MISMO_USUARIO)
+    public List<Reserva> misReservas(@PathVariable Long usuarioId) {
+        return reservaService.misReservas(usuarioId);
+    }
+
+    // Se valida sobre el resultado para no consultar la reserva dos veces
+    @GetMapping("/{id}")
+    @PostAuthorize("hasRole('ADMIN') or returnObject.usuario?.correo == authentication.name")
+    public Reserva buscar(@PathVariable Long id) {
+        Reserva r = reservaService.buscarPorId(id);
+        if (r == null)
+            throw new ReservaNoEncontradaException(id);
+        return r;
+    }
+
+    @PutMapping("/{id}/estado")
+    @PreAuthorize(ADMIN_O_DUENO_RESERVA + " or @reservaService.buscarPorId(#id)?.medico?.correo == authentication.name")
+    public Reserva cambiarEstado(@PathVariable Long id, @RequestBody ReservaRequest.Referencia estado) {
+        if (estado == null || estado.id() == null) {
+            throw error(HttpStatus.BAD_REQUEST, "Debe indicar el estado (id)");
+        }
+        if (estadoService.buscarPorId(estado.id()) == null) {
+            throw error(HttpStatus.BAD_REQUEST, "No existe el estado con id " + estado.id());
+        }
+        reservaService.cambiarEstado(id, estado.id());
+        return reservaService.buscarPorId(id);
+    }
+
+    // 2. POST /api/reservas -> crea una reserva (siempre queda "Confirmada")
+    @PostMapping("/usuario/{pacienteId}")
+    @PreAuthorize(ADMIN_O_MISMO_PACIENTE)
+    @ResponseStatus(HttpStatus.CREATED)
+    public Reserva crear(@PathVariable Long pacienteId, @RequestBody ReservaRequest datos) {
+        Usuario paciente = usuarioService.buscarPorId(pacienteId);
+        if (paciente == null) {
+            throw error(HttpStatus.NOT_FOUND, "No existe el usuario con id " + pacienteId);
+        }
+        Reserva reserva = new Reserva();
+        reserva.setFechaSolicitud(LocalDateTime.now());
+        reserva.setEstado(estadoService.buscarPorId(ID_CONFIRMADA));
+        reserva.setUsuario(paciente);
+        reservaService.completarReserva(reserva, datos, new ArrayList<>());
+        reservaService.guardar(reserva);
+        return reserva;
+    }
+
+    // 3. PUT /api/reservas/{id} -> actualiza una reserva existente
+    @PutMapping("/{id}")
+    @PreAuthorize(ADMIN_O_DUENO_RESERVA)
+    public Reserva actualizar(@PathVariable Long id, @RequestBody ReservaRequest datos) {
+        Reserva existente = reservaService.buscarPorId(id);
+        if (existente == null) {
+            throw new ReservaNoEncontradaException(id);
+        }
+        Reserva reserva = new Reserva();
+        reserva.setIdReserva(id);
+        reserva.setFechaSolicitud(existente.getFechaSolicitud());
+
+        // Si el JSON no trae estado o servicios, se conservan los que ya tenía la
+        // reserva
+        if (datos.estado() == null || datos.estado().id() == null) {
+            reserva.setEstado(existente.getEstado());
+        } else {
+            var estado = estadoService.buscarPorId(datos.estado().id());
+            if (estado == null) {
+                throw error(HttpStatus.BAD_REQUEST, "No existe el estado con id " + datos.estado().id());
+            }
+            reserva.setEstado(estado);
+        }
+        List<Servicio> serviciosActuales = existente.getServicios() == null
+                ? new ArrayList<>()
+                : new ArrayList<>(existente.getServicios());
+
+        reservaService.completarReserva(reserva, datos, serviciosActuales);
+        reserva.setUsuario(existente.getUsuario());
+        reservaService.guardar(reserva);
+        return reserva;
+    }
+
+    // 4. DELETE /api/reservas/{id} -> cancela la reserva (no se borra: pasa al
+    // estado "Cancelada")
+    @DeleteMapping("/{id}")
+    @PreAuthorize(ADMIN_O_DUENO_RESERVA)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void cancelar(@PathVariable Long id) {
+        if (reservaService.buscarPorId(id) == null) {
+            throw new ReservaNoEncontradaException(id);
+        }
+        reservaService.cancelar(id);
+    }
+
+    /**
+     * Valida el JSON recibido y completa la reserva igual que
+     * ReservaController.guardarReserva:
+     * paciente y médico reales, servicios reales, hora fin (+1 hora) y total
+     * (costo de la especialidad + servicios).
+     *
+     * @param serviciosPorDefecto servicios que se usan si el JSON no trae la lista
+     *                            "servicios"
+     */
+
+    private ResponseStatusException error(HttpStatus status, String mensaje) {
+        return new ResponseStatusException(status, mensaje);
+    }
+
+    // Solo un administrador o el médico asignado puede consultar este listado.
+    @GetMapping("/medico/{medicoId}")
+    @PreAuthorize("hasRole('ADMIN') or @medicoServiceImpl.buscarPorId(#medicoId)?.correo == authentication.name")
+    public List<Reserva> reservasDelMedico(@PathVariable Long medicoId) {
+        return reservaService.reservasDelMedico(medicoId);
+    }
+
+    // ---- Manejo de errores en JSON (tienen prioridad sobre el
+    // GlobalHandlerException) ----
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<Map<String, String>> manejarError(ResponseStatusException ex) {
+        return ResponseEntity.status(ex.getStatusCode()).body(Map.of("error", String.valueOf(ex.getReason())));
+    }
+
+    @ExceptionHandler(HorarioNoDisponibleException.class)
+    public ResponseEntity<Map<String, String>> manejarHorarioNoDisponible(HorarioNoDisponibleException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", ex.getMessage()));
+    }
+
+    // JSON ilegible (formato de fecha/hora incorrecto, cuerpo vacío, etc.): se
+    // responde 400 en JSON
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, String>> manejarJsonInvalido(HttpMessageNotReadableException ex) {
+        return ResponseEntity.badRequest().body(Map.of("error",
+                "El cuerpo de la petición no es válido (revise el JSON, la fecha yyyy-MM-dd y la hora HH:mm)"));
+    }
+
+    @ExceptionHandler(ReservaNoEncontradaException.class)
+    public ResponseEntity<Map<String, String>> manejarReservaNoEncontrada(ReservaNoEncontradaException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
+    }
+
+    @GetMapping("/disponibles")
+    public List<LocalTime> horasDisponibles(
+            @RequestParam Long medicoId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
+        return reservaService.horasDisponibles(medicoId, fecha);
+    }
+
+}

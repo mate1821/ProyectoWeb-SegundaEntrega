@@ -1,0 +1,144 @@
+.inicio-paciente {
+  max-inline-size: 69rem;
+  gap: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+.saludo {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  min-block-size: 16rem;
+  overflow: hidden;
+  color: #effbf6;
+  background: #102f39;
+  border-radius: 1.75rem 4rem 1.75rem 1.75rem;
+  box-shadow: var(--sombra);
+}
+
+.saludo-contenido {
+  z-index: 1;
+  display: grid;
+  align-content: center;
+  gap: var(--espacio-2);
+  padding: clamp(1.25rem, 4vw, 3.5rem);
+}
+
+.saludo h1 { font-size: clamp(2.1rem, 5vw, 4.4rem); }
+.saludo .nombre-usuario { color: #b9ede0; }
+.saludo p { color: #d4e9e8; max-inline-size: 34ch; }
+
+.saludo-arte {
+  box-shadow: none;
+  border-radius: 45% 0 0 28% / 74% 0 0 42%;
+}
+
+.saludo-arte span { inline-size: clamp(6rem, 13vw, 10rem); --brazo: clamp(1.4rem, 3vw, 2.5rem); }
+
+.saludo .salir {
+  position: absolute;
+  z-index: 2;
+  inset: 1rem 1.5rem auto auto;
+  color: #effbf6;
+  font-size: .875rem;
+  font-weight: 650;
+  padding: .625rem .875rem;
+  border: 1px solid #789d9b;
+  border-radius: 2rem;
+  background: #183e45;
+  text-decoration: none;
+}
+
+.saludo .salir:hover { background: #24545a; }
+.saludo .salir:focus-visible { outline-color: #b9ede0; }
+.atajos { display: grid; gap: var(--espacio-3); }
+
+.panel-paciente {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(16rem, 1fr);
+  align-items: start;
+  gap: var(--espacio-4);
+}
+
+.atajos-grid {
+  display: grid;
+  gap: var(--espacio-2);
+}
+
+.atajos-grid .atajo {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(.65rem, 2vw, 1.25rem);
+  padding: clamp(.9rem, 2vw, 1.35rem);
+  color: var(--texto);
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  text-decoration: none;
+  transition: transform var(--transicion), border-color var(--transicion);
+}
+
+.atajos-grid .atajo:hover {
+  transform: translateY(-3px);
+  border-color: var(--acento);
+}
+
+.atajos-grid .atajo-principal {
+  min-block-size: 7rem;
+  background: radial-gradient(ellipse at 100% 0%, #dff6eb, transparent 70%), #e8f6f1;
+  border-color: #a5cfc3;
+  border-radius: var(--radio) 2.625rem var(--radio) var(--radio);
+}
+
+.atajo-texto { display: grid; gap: .3rem; }
+.atajo-texto strong { font-size: 1.125rem; line-height: 1.2; }
+.atajo-principal strong { font-size: clamp(1.5rem, 3vw, 2.25rem); }
+.atajo-texto span { color: var(--texto-suave); font-size: .9375rem; }
+.atajo-flecha { color: var(--acento-fuerte); font-size: 1.25rem; }
+
+.agenda { display: grid; gap: var(--espacio-3); }
+
+.agenda-cuerpo { border-radius: 1.375rem 2.625rem 1.375rem 1.375rem; }
+.agenda-cuerpo > .boton { justify-self: start; }
+
+.agenda-fecha {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  padding-block-end: var(--espacio-3);
+  border-block-end: 1px solid var(--borde);
+}
+
+.agenda-dia {
+  display: grid;
+  place-items: center;
+  flex: 0 0 3.75rem;
+  padding: .625rem .25rem;
+  color: var(--acento-fuerte);
+  background: var(--fondo-acento);
+  border-radius: var(--radio-control);
+  line-height: 1;
+}
+
+.agenda-dia strong { font-size: 1.75rem; font-variant-numeric: tabular-nums; }
+.agenda-dia span { margin-block-start: .25rem; font-size: .75rem; text-transform: uppercase; }
+.agenda-fecha .agenda-dia-largo { color: var(--texto); font-weight: 650; text-transform: capitalize; }
+.agenda-info { display: grid; gap: .25rem; }
+.agenda-info .estado { justify-self: start; margin-block-start: .375rem; }
+.agenda-vacia { display: grid; justify-items: start; gap: var(--espacio-2); }
+
+@media (max-width: 42rem) {
+  .saludo, .panel-paciente { grid-template-columns: minmax(0, 1fr); }
+  .saludo { min-block-size: 13rem; border-radius: 1.4rem 2.25rem 1.4rem 1.4rem; }
+  .saludo-contenido { padding-block-start: 4rem; }
+  .saludo .salir { inset: .65rem .85rem auto auto; }
+  .saludo-arte { position: absolute; inset: 0 0 0 36%; z-index: -1; opacity: .45; }
+  .saludo-arte span { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atajos-grid .atajo { transition: none; }
+  .atajos-grid .atajo:hover { transform: none; }
+}

@@ -16,7 +16,7 @@ describe('AdminService', () => {
   let service: AdminService;
   let http: HttpTestingController;
 
-  const url = 'http://localhost:8090/api/reservas';
+  const url = 'https://proyectoweb-segundaentrega.onrender.com/api/reservas';
 
   const reserva: Reserva = {
     idReserva: 15,

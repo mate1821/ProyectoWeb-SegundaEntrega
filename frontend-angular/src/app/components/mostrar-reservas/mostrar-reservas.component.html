@@ -1,71 +1,109 @@
-<div class="container">
-    <h1>Mostrar reservas</h1>
+<main class="pagina">
+  <header class="encabezado">
+    <h1>{{ esMedico ? 'Reservas de mis pacientes' : 'Mis reservas' }}</h1>
+    <nav class="acciones" aria-label="Navegación de reservas">
+      @if (esMedico) {
+        <a class="boton boton-secundario" [routerLink]="['/inicio-medico', usuarioId]"
+          >Volver al inicio</a
+        >
+      } @else {
+        <a class="boton boton-secundario" [routerLink]="['/inicio', usuarioId]">Volver al inicio</a>
+      }
+    </nav>
+  </header>
+  <!-- Mensajes de éxito o error -->
+  @if (mensaje()) {
+    <p class="mensaje mensaje-exito" role="status">{{ mensaje() }}</p>
+  }
 
-    @if (esMedico) {
-    <a [routerLink]="['/inicio-medico', usuarioId]"> Volver al inicio</a>
-    } @else {
-    <a [routerLink]="['/inicio', usuarioId]"> Volver al inicio</a>
-    }
-    <!-- Mensajes de éxito o error -->
-    @if (mensaje()) {
-    <p class="mensaje-ok">{{ mensaje() }}</p>
-    }
-
-    @if (error()) {
-    <p class="mensaje-error" role="alert">{{ error() }}</p>
-    }
-    @if (reservas().length === 0) {
-    <p>Cargando reservas...</p>
-    } @else {
-    <table border="1">
-        <thead>
+  @if (error()) {
+    <p class="mensaje mensaje-error" role="alert">{{ error() }}</p>
+  }
+  @if (cargando()) {
+    <p class="mensaje mensaje-cargando" role="status">Cargando reservas...</p>
+  } @else if (!error()) {
+    <section class="tarjeta panel-tabla" aria-label="Lista de reservas">
+      <div class="tabla-scroll" tabindex="0" role="region" aria-label="Mis reservas">
+        <table class="tabla-datos tabla-amplia">
+          <thead>
             <tr>
-                <th>ID</th>
-                <th>Usuario</th>
-                <th>Espacio</th>
-                <th>Fecha</th>
-                <th>Hora Inicio</th>
-                <th>Hora Fin</th>
-                <th>Costo $</th>
-                <th>Medico</th>
-                <th>Estado</th>
-                <th>Editar Estado</th>
-                <th>Acciones</th>
+              <th scope="col">#</th>
+              @if (esMedico) {
+                <th scope="col">Paciente</th>
+              } @else {
+                <th scope="col">Médico</th>
+              }
+              <th scope="col">Espacio</th>
+              <th scope="col">Fecha</th>
+              <th scope="col">Horario</th>
+              <th scope="col" class="numero">Costo</th>
+              <th scope="col">Estado</th>
+              <th scope="col">{{ esMedico ? 'Completar cita' : 'Cambiar estado' }}</th>
+              @if (!esMedico) {
+                <th scope="col">Acciones</th>
+              }
             </tr>
-        </thead>
-        <tbody>
+          </thead>
+          <tbody>
             @for (reserva of reservas(); track reserva.idReserva) {
-            <tr>
+              <tr>
                 <td>{{ reserva.idReserva }}</td>
-                <td>{{ reserva.usuario?.nombre }}</td>
+                @if (esMedico) {
+                  <td>{{ reserva.usuario?.nombre }}</td>
+                } @else {
+                  <td>{{ reserva.medico?.nombre }}</td>
+                }
                 <td>{{ reserva.medico?.espacio?.nombre }}</td>
-                <td>{{ reserva.fecha }}</td>
-                <td>{{ reserva.horaInicio?.substring(0, 5) }}</td>
-                <td>{{ reserva.horaFin?.substring(0, 5) }}</td>
-                <td>{{ reserva.total }}</td>
-                <td>{{ reserva.medico?.nombre }}</td>
+                <td class="dato-fecha">{{ reserva.fecha }}</td>
+                <td class="dato-fecha">{{ reserva.horaInicio?.substring(0, 5) }} – {{ reserva.horaFin?.substring(0, 5) }}</td>
+                <td class="numero">{{ reserva.total | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</td>
                 <td>
-                    <span class="estado">{{ reserva.estado?.nombre }}</span>
+                  @let enEspera = esMedico && reserva.estado?.nombre === 'Confirmada';
+                  <span class="estado" [attr.data-estado]="enEspera ? 'Pendiente' : reserva.estado?.nombre">{{
+                    enEspera ? 'En espera' : reserva.estado?.nombre
+                  }}</span>
                 </td>
                 <td>
-                    <select #selectEstado (change)="cambiarEstado(reserva, selectEstado.value)">
-                        @for (e of estados(); track e.id) {
-                        <option [value]="e.id" [selected]="e.id === reserva.estado?.id">{{ e.nombre }}</option>
-                        }
-                    </select>
-                </td>
-                <td>
-                    @if (!esMedico) {
-                    <a [routerLink]="['/reservas/editar', reserva.idReserva]">Editar</a>
+                  @if (esMedico) {
+                    @if (puedeCompletar(reserva)) {
+                      <button type="button" class="boton-secundario"
+                        [disabled]="idCompletada() === undefined"
+                        [attr.aria-label]="'Marcar como completada la reserva ' + reserva.idReserva"
+                        (click)="completarCita(reserva)">Marcar como completada</button>
+                    } @else {
+                      <span aria-hidden="true">—</span>
                     }
+                  } @else {
+                    <select
+                    [attr.aria-label]="'Editar estado de la reserva ' + reserva.idReserva"
+                    #selectEstado
+                    (change)="cambiarEstado(reserva, selectEstado.value)"
+                  >
+                    @for (e of estados(); track e.id) {
+                      <option [value]="e.id" [selected]="e.id === reserva.estado?.id">
+                        {{ e.nombre }}
+                      </option>
+                    }
+                    </select>
+                  }
                 </td>
-            </tr>
+                @if (!esMedico) {
+                  <td>
+                    <div class="acciones-fila">
+                      <a class="enlace-accion" [routerLink]="['/detalle-reserva', reserva.idReserva]">Ver detalles</a>
+                      <a class="enlace-accion" [routerLink]="['/reservas/editar', reserva.idReserva]">Editar</a>
+                    </div>
+                  </td>
+                }
+              </tr>
             } @empty {
-            <tr>
-                <td colspan="11">No tienes reservas registradas.</td>
-            </tr>
+              <tr>
+                <td [attr.colspan]="esMedico ? 8 : 9">No tienes reservas registradas.</td>
+              </tr>
             }
-        </tbody>
-    </table>
-    }
-</div>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+</main>

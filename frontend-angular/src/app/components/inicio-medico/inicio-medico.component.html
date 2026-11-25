@@ -1,8 +1,55 @@
-<h1>Bienvenido, Dr(a). <span [textContent]="nombre()"></span></h1>
-<p>¿Qué deseas hacer?</p>
+<main class="pagina inicio-paciente inicio-medico">
+  <header class="saludo">
+    <div class="saludo-contenido">
+      <h1>Bienvenido, Dr(a). <span class="nombre-usuario" [textContent]="nombre()"></span></h1>
+      <p>Consulta las citas de tus pacientes y el estado de cada reserva.</p>
+    </div>
+    <div class="saludo-arte arte-medico" aria-hidden="true"><span></span></div>
+    <a routerLink="/inicio-sesion" class="salir">Cerrar sesión</a>
+  </header>
 
-<a [routerLink]="['/reservas-medico', medicoId]">
-  <button type="button">Ver mis reservas</button>
-</a>
+  @if (error()) {
+    <p class="mensaje mensaje-error" role="alert">{{ error() }}</p>
+  }
 
-<a routerLink="/inicio-sesion">Cerrar sesión</a>
+  @let resumen = agenda();
+  <div class="panel-paciente">
+    <section class="atajos" aria-labelledby="titulo-reservas-medico">
+      <h2 id="titulo-reservas-medico">Mis reservas</h2>
+      <nav class="atajos-grid" aria-label="Opciones del médico">
+        <a [routerLink]="['/reservas-medico', medicoId]" class="atajo atajo-principal">
+          <span class="atajo-icono icono-reservas" aria-hidden="true"></span>
+          <span class="atajo-texto">
+            <strong>Ver mis reservas</strong>
+            <span>Consulta tu listado y actualiza el estado de tus citas.</span>
+          </span>
+          <span class="atajo-flecha" aria-hidden="true">↗</span>
+        </a>
+      </nav>
+      @if (resumen) {
+        <dl class="resumen-medico">
+          <div>
+            <dt>Reservas asignadas</dt>
+            <dd>{{ resumen.reservas.length }}</dd>
+          </div>
+          <div>
+            <dt>Próximas confirmadas</dt>
+            <dd>{{ resumen.proximas }}</dd>
+          </div>
+        </dl>
+      }
+    </section>
+
+  </div>
+
+  <section class="agenda" aria-labelledby="titulo-agenda-medico">
+    <h2 id="titulo-agenda-medico">Calendario de consultas</h2>
+    @if (errorAgenda()) {
+      <p class="mensaje mensaje-error" role="alert">{{ errorAgenda() }}</p>
+    } @else if (!resumen) {
+      <p class="mensaje mensaje-cargando" role="status">Cargando agenda…</p>
+    } @else {
+      <app-agenda-semanal [reservas]="resumen.reservas" />
+    }
+  </section>
+</main>

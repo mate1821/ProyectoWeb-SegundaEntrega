@@ -5,7 +5,7 @@ import { ReservaService } from './reserva.service';
 import { Reserva } from '../models/reserva.model';
 
 describe('ReservaService', () => {
-  const url = 'http://localhost:8090/api/reservas';
+  const url = 'https://proyectoweb-segundaentrega.onrender.com/api/reservas';
   const reserva: Reserva = {
     usuario: { id: 2 },
     medico: { id: 8 },

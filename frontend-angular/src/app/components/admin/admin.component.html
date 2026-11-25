@@ -1,64 +1,150 @@
-<section class="admin-panel">
-
-  <header class="admin-header">
-    <h1>Panel de administración</h1>
-    <h2>Bienvenido, <span [textContent]="nombreAdmin()"></span></h2>
-    <p>Desde aquí puedes consultar y modificar el estado de las reservas.</p>
-
-    <nav class="acciones" aria-label="Opciones del administrador">
-      <a routerLink="/usuarios" class="boton-accion">Ver usuarios</a>
-      <br>
-      <a routerLink="/inicio-sesion">Cerrar sesión</a>
-    </nav>
+<main class="pagina pagina-admin">
+  <header class="admin-portada">
+    <div class="admin-saludo">
+      <h1>Panel de administración</h1>
+      <h2>Bienvenido, <span [textContent]="nombreAdmin()"></span></h2>
+      <p>Consulta y gestiona las reservas del sistema.</p>
+      <a routerLink="/usuarios" class="boton">Ver usuarios <span aria-hidden="true">↗</span></a>
+    </div>
+    <div class="admin-arte arte-medico" aria-hidden="true"><span></span></div>
+    <a routerLink="/inicio-sesion" class="admin-salir">Cerrar sesión</a>
   </header>
 
-  <div class="contador-card">
-    <h3>Reservas modificadas en esta sesión</h3>
-    <p class="contador-numero">{{ contadorModificaciones() }}</p>
-  </div>
-
   @if (mensaje()) {
-    <div class="mensaje-exito" role="status">{{ mensaje() }}</div>
+    <div class="mensaje mensaje-exito" role="status">{{ mensaje() }}</div>
   }
   @if (error()) {
-    <div class="mensaje-error" role="alert">{{ error() }}</div>
+    <div class="mensaje mensaje-error" role="alert">{{ error() }}</div>
   }
 
-  <div class="consultas-section">
-    <h3>Reservas disponibles</h3>
-
-    <table class="consultas-tabla">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Paciente</th>
-          <th>Fecha</th>
-          <th>Estado actual</th>
-          <th>Modificar estado</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (reserva of reservas(); track reserva.idReserva) {
-          <tr>
-            <td>#{{ reserva.idReserva }}</td>
-            <td>{{ reserva.usuario?.nombre || 'Sin nombre' }}</td>
-            <td>{{ reserva.fecha }}</td>
-            <td>{{ reserva.estado?.nombre || 'Sin estado' }}</td>
-            <td>
-              <select #selector (change)="cambiarEstado(reserva, selector.value)">
-                @for (e of estados(); track e.id) {
-                  <option [value]="e.id" [selected]="e.id === reserva.estado?.id">{{ e.nombre }}</option>
-                }
-              </select>
-            </td>
-          </tr>
-        } @empty {
-          <tr>
-            <td colspan="5">No hay reservas disponibles.</td>
-          </tr>
+  @if (cargando()) {
+    <p class="mensaje mensaje-cargando" role="status">Cargando reservas…</p>
+  } @else {
+    @if (reservas().length) {
+      <section class="admin-indicadores" aria-label="Resumen de reservas">
+        <article class="admin-indicador indicador-total">
+          <span>Total de reservas</span>
+          <strong>{{ reservas().length }}</strong>
+        </article>
+        @for (indicador of indicadores(); track indicador.estado) {
+          <article class="admin-indicador" [attr.data-estado]="indicador.estado">
+            <span>{{ indicador.estado }}s</span>
+            <strong>{{ indicador.cantidad }}</strong>
+          </article>
         }
-      </tbody>
-    </table>
-  </div>
+        <article class="admin-indicador">
+          <span>Reservas de hoy</span>
+          <strong>{{ deHoy() }}</strong>
+          <button type="button" class="boton-secundario filtro-hoy"
+            [attr.aria-pressed]="soloHoy()" (click)="soloHoy.set(!soloHoy())">
+            {{ soloHoy() ? 'Quitar filtro' : 'Ver las de hoy' }}
+          </button>
+        </article>
+      </section>
 
-</section>
+      <div class="admin-graficos">
+        <section class="tarjeta" aria-labelledby="admin-distribucion">
+          <h2 id="admin-distribucion">Distribución por estado</h2>
+          <div class="barra-estado" aria-hidden="true">
+            @for (dato of distribucion(); track dato.estado) {
+              <span [attr.data-estado]="dato.estado" [style.flex-grow]="dato.cantidad"></span>
+            }
+          </div>
+          <ul class="leyenda-estado">
+            @for (dato of distribucion(); track dato.estado) {
+              <li [attr.data-estado]="dato.estado"><span>{{ dato.estado }}</span><strong>{{ dato.cantidad }}</strong></li>
+            }
+          </ul>
+        </section>
+
+        <section class="tarjeta" aria-labelledby="admin-meses">
+          <h2 id="admin-meses">Reservas por mes</h2>
+          <ol class="grafico-meses">
+            @for (dato of meses(); track dato.mes) {
+              <li>
+                <div class="mes-pista">
+                  <div class="mes-barra" [style.height.%]="100 * dato.cantidad / maxMes()" aria-hidden="true"></div>
+                  <strong>{{ dato.cantidad }}</strong>
+                </div>
+                <span>{{ (dato.mes + '-01') | date:'MMM yy' }}</span>
+              </li>
+            }
+          </ol>
+        </section>
+      </div>
+    }
+
+    <section class="tarjeta panel-tabla admin-tabla" aria-labelledby="admin-tabla-titulo">
+      <div class="admin-tabla-cabecera">
+        <h2 id="admin-tabla-titulo">Reservas disponibles</h2>
+        <p class="contador-sesion" aria-live="polite"><strong>{{ contadorModificaciones() }}</strong> modificadas en esta sesión</p>
+      </div>
+      <div class="admin-filtros">
+        <label class="campo">
+          <span>Buscar reserva</span>
+          <input type="search" placeholder="Nombre del paciente o número" #buscar
+            [value]="busqueda()" (input)="busqueda.set(buscar.value)" />
+        </label>
+        <label class="campo">
+          <span>Estado</span>
+          <select class="selector-estado" #filtro [value]="filtroEstado()" (change)="filtroEstado.set(filtro.value)">
+            <option value="">Todos los estados</option>
+            @for (dato of distribucion(); track dato.estado) {
+              <option [value]="dato.estado" [attr.data-estado]="dato.estado">{{ dato.estado }}</option>
+            }
+          </select>
+        </label>
+        @if (soloHoy()) {
+          <button class="boton-secundario" type="button" (click)="soloHoy.set(false)">Quitar filtro de hoy</button>
+        }
+      </div>
+
+      <div class="tabla-scroll" tabindex="0" role="region" aria-label="Reservas disponibles">
+        <table class="tabla-datos" role="table">
+          <thead role="rowgroup">
+            <tr role="row">
+              <th scope="col">ID</th>
+              <th scope="col">Paciente</th>
+              <th scope="col">Fecha</th>
+              <th scope="col">Estado actual</th>
+              <th scope="col">Modificar estado</th>
+            </tr>
+          </thead>
+          @for (grupo of grupos(); track grupo.mes) {
+            <tbody role="rowgroup">
+              <tr class="separador-mes" role="row">
+                <th colspan="5" scope="rowgroup">{{ (grupo.mes + '-01') | date:'MMMM y' }}</th>
+              </tr>
+              @for (reserva of grupo.reservas; track reserva.idReserva) {
+                <tr class="fila-reserva" role="row">
+                  <td role="cell" data-etiqueta="Reserva">#{{ reserva.idReserva }}</td>
+                  <td role="cell" class="paciente-celda">
+                    <span class="paciente-avatar" aria-hidden="true">{{ iniciales(reserva.usuario?.nombre || 'Sin nombre') }}</span>
+                    <span>{{ reserva.usuario?.nombre || 'Sin nombre' }}</span>
+                  </td>
+                  <td role="cell" class="dato-fecha" data-etiqueta="Fecha">{{ reserva.fecha | date:'d MMM y' }}</td>
+                  <td role="cell" data-etiqueta="Estado actual">
+                    <span class="estado" [attr.data-estado]="reserva.estado?.nombre">{{ reserva.estado?.nombre || 'Sin estado' }}</span>
+                  </td>
+                  <td role="cell" data-etiqueta="Modificar estado">
+                    <select class="selector-estado" [attr.aria-label]="'Modificar estado de la reserva ' + reserva.idReserva"
+                      #selector (change)="cambiarEstado(reserva, selector.value)">
+                      @for (e of estados(); track e.id) {
+                        <option [value]="e.id" [selected]="e.id === reserva.estado?.id"
+                          [attr.data-estado]="e.nombre">{{ e.nombre }}</option>
+                      }
+                    </select>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          } @empty {
+            <tbody role="rowgroup">
+              <tr role="row"><td colspan="5">{{ reservas().length ? 'No hay reservas que coincidan con los filtros.' : 'No hay reservas disponibles.' }}</td></tr>
+            </tbody>
+          }
+        </table>
+      </div>
+    </section>
+  }
+</main>

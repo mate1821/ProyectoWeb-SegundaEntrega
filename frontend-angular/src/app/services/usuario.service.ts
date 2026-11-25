@@ -8,16 +8,17 @@ import { Credenciales } from '../models/credencial.model';
   providedIn: 'root'
 })
 export class UsuarioService {
-  private apiUrl = 'http://localhost:8090/api/usuarios';
+  private apiUrl = 'https://proyectoweb-segundaentrega.onrender.com/api/usuarios';
 
   constructor(private http: HttpClient) { }
 
   obtenerUsuarios(): Observable<Usuario[]> {
-    return this.http.get<Usuario[]>(this.apiUrl);
+    return this.http.get<Usuario[]>(this.apiUrl,
+        { withCredentials: true });
   }
 
   buscarPorId(id: number): Observable<Usuario> {
-    return this.http.get<Usuario>(`${this.apiUrl}/${id}`);
+    return this.http.get<Usuario>(`${this.apiUrl}/${id}`, {withCredentials: true} );
   }
 
   agregarUsuario(usuario: Usuario): Observable<void> {
@@ -25,20 +26,21 @@ export class UsuarioService {
     let params = new HttpParams(); //Se usa para mandar los parámetros especiales de médico, fuente: https://angular.dev/api/common/http/HttpParams
     if (especialidadId != null) params = params.set('especialidadId', especialidadId);
     if (espacioId != null) params = params.set('espacioId', espacioId);
-    return this.http.post<void>(this.apiUrl, datos, { params });
+    return this.http.post<void>(this.apiUrl, datos, { params, withCredentials: true  });
   }
 
   activar(id: number): Observable<Usuario> {
-    return this.http.put<Usuario>(`${this.apiUrl}/activar/${id}`, {});
+    // El 2do parámetro es el cuerpo (vacío); las opciones van en el 3ro
+    return this.http.put<Usuario>(`${this.apiUrl}/activar/${id}`, {}, { withCredentials: true });
   }
 
   desactivar(id: number): Observable<Usuario> {
-    return this.http.put<Usuario>(`${this.apiUrl}/desactivar/${id}`, {});
+    return this.http.put<Usuario>(`${this.apiUrl}/desactivar/${id}`, {}, { withCredentials: true });
   }
 
   // DELETE /api/usuarios/{id}
   eliminarUsuario(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`,{withCredentials: true });
   }
 
   login(credenciales: Credenciales): Observable<any> {

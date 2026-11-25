@@ -4,3 +4,7 @@ export interface Espacio {
     nombre: string;
     ubicacion?: string;
 }
+
+export interface FotoEspacio {
+    url: string;
+}

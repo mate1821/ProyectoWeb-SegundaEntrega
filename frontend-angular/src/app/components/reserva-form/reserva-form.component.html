@@ -1,51 +1,107 @@
-<h1>Reservas</h1>
-
-
-<form #formulario="ngForm" (ngSubmit)="guardar()">
-
-  <label for="especialidad">Seleccione la especialidad:</label>
-  <br>
-  <select id="especialidad" name="especialidad" [ngModel]="especialidadId" (ngModelChange)="cambiarEspecialidad($event)"
-    required>
-    <option value="" disabled>Seleccione una especialidad</option>
-    @for (e of especialidades(); track e.id) {
-    <option [value]="e.id">{{ e.nombreEspecialidad }}</option>
-    }
-  </select>
-  <br><br>
-
-  <label for="medico">Seleccione el médico:</label>
-  <br>
-  <select id="medico" name="medico" [(ngModel)]="medicoId" required>
-    <option value="" disabled>Seleccione un médico</option>
-    @for (m of medicos(); track m.id) {
-    <option [value]="m.id">{{ m.nombre }}</option>
-    }
-  </select>
-  <br><br>
-
-  <label for="fecha">Fecha de la reserva</label>
-  <input type="date" id="fecha" name="fecha" [(ngModel)]="fecha" [min]="fechaMinima" required>
-  <br><br>
-
-  <label for="fecha_inicio">Ingrese la hora inicio</label>
-  <input type="time" id="fecha_inicio" name="horaInicio" [(ngModel)]="horaInicio" required>
-  <br><br>
-
-  <label for="observaciones">Ingrese observaciones de la cita</label>
-  <input type="text" id="observaciones" name="observaciones" [(ngModel)]="observaciones" required minlength="5"
-    maxlength="255">
-  <br><br>
-
-  @for (s of servicios(); track s.id) {
-  <div>
-    <input type="checkbox" [id]="s.id" [checked]="servicioIds.includes(s.id)" (change)="alternarServicio(s.id)">
-    <label [for]="s.id">{{ s.nombre }} - {{ s.costo }}</label>
+<form class="formulario tarjeta formulario-columnas formulario-reserva" #formulario="ngForm" (ngSubmit)="guardar()">
+  <div class="campo">
+    <label for="especialidad">Seleccione la especialidad:</label>
+    <select
+      id="especialidad"
+      name="especialidad"
+      [ngModel]="especialidadId"
+      (ngModelChange)="cambiarEspecialidad($event)"
+      required
+    >
+      <option value="" disabled>Seleccione una especialidad</option>
+      @for (e of especialidades(); track e.id) {
+        <option [value]="e.id">{{ e.nombreEspecialidad }}</option>
+      }
+    </select>
   </div>
-  }
-  <br>
 
-  <button type="submit" [disabled]="formulario.invalid">{{ reservaEditando() ? 'Guardar cambios' : 'Guardar' }}</button>
+  <div class="campo">
+    <label for="medico">Seleccione el médico:</label>
+    <select
+      id="medico"
+      name="medico"
+      [ngModel]="medicoId"
+      (ngModelChange)="cambiarMedico($event)"
+      required
+    >
+      <option value="" disabled>Seleccione un médico</option>
+      @for (m of medicos(); track m.id) {
+        <option [value]="m.id">{{ m.nombre }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="campo">
+    <label for="fecha">Fecha de la reserva</label>
+    <input
+      type="date"
+      id="fecha"
+      name="fecha"
+      [ngModel]="fecha"
+      (ngModelChange)="cambiarFecha($event)"
+      [min]="fechaMinima"
+      required
+    />
+    <app-calendario-reserva
+      [fecha]="fecha"
+      [minima]="fechaMinima"
+      (fechaElegida)="cambiarFecha($event)"
+    />
+  </div>
+
+  <div class="config-reserva">
+    <div class="campo campo-horario">
+      <label for="horaInicio">Seleccione la hora</label>
+      <select id="horaInicio" name="horaInicio" [(ngModel)]="horaInicio" required>
+        <option value="" disabled>
+          {{ medicoId && fecha ? 'Seleccione una hora' : 'Primero elija médico y fecha' }}
+        </option>
+        @for (h of horasDisponibles(); track h) {
+          <option [value]="h">{{ h }} - {{ horaFin(h) }}</option>
+        }
+      </select>
+      @if (medicoId && fecha && horasDisponibles().length === 0) {
+        <p class="mensaje mensaje-aviso" role="status">No hay horas disponibles para este día.</p>
+      }
+    </div>
+
+    <div class="campo campo-completo">
+      <label for="observaciones">Ingrese observaciones de la cita</label>
+      <input
+        type="text"
+        id="observaciones"
+        name="observaciones"
+        [(ngModel)]="observaciones"
+        required
+        minlength="5"
+        maxlength="255"
+      />
+    </div>
+
+    <fieldset class="opciones">
+      <legend>Servicios</legend>
+      @for (s of servicios(); track s.id) {
+        <div class="opcion">
+          <input
+            type="checkbox"
+            [id]="s.id"
+            [checked]="servicioIds.includes(s.id)"
+            (change)="alternarServicio(s.id)"
+          />
+          <label [for]="s.id">
+            {{ s.nombre }}
+            <span class="precio">{{ s.costo | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
+          </label>
+        </div>
+      }
+    </fieldset>
+  </div>
+
+  @if (reservaEditando()) {
+  <button type="submit" [disabled]="formulario.invalid">
+    Guardar cambios
+  </button>
+} @else {
+  <app-boton-pagar [reserva]="reservaParaPago()"></app-boton-pagar>
+}
 </form>
-
-<br>

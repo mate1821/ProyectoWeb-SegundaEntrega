@@ -23,9 +23,9 @@ describe('AdminComponent', () => {
 
   let http: HttpTestingController;
 
-  const urlReservas = 'http://localhost:8090/api/reservas';
+  const urlReservas = 'https://proyectoweb-segundaentrega.onrender.com/api/reservas';
 
-  const urlEstados = 'http://localhost:8090/api/estados';
+  const urlEstados = 'https://proyectoweb-segundaentrega.onrender.com/api/estados';
 
   const reserva: Reserva = {
     idReserva: 15,

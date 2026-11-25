@@ -1,0 +1,40 @@
+<main class="pagina pagina-resenas">
+  @let vista = estado();
+
+  <header class="encabezado">
+    <h1>{{ vista.tipo === 'listado' ? vista.titulo : 'Reseñas' }}</h1>
+    @if (vista.tipo === 'listado') {
+      <p>{{ vista.listado.nombre }}</p>
+    }
+    <nav class="acciones" aria-label="Navegación de reseñas">
+      <a class="boton boton-secundario" [routerLink]="['/buscar', usuarioId()]"
+        queryParamsHandling="preserve">Volver a la búsqueda</a>
+    </nav>
+  </header>
+
+  @switch (vista.tipo) {
+    @case ('cargando') {
+      <p class="mensaje mensaje-cargando" role="status">Cargando reseñas…</p>
+    }
+    @case ('error') {
+      <p class="mensaje mensaje-error" role="alert">{{ vista.mensaje }}</p>
+    }
+    @case ('listado') {
+      <div class="lista-resenas">
+        @for (resena of vista.listado.resenas; track $index) {
+          <article class="tarjeta">
+            <div class="resena-meta">
+              <strong>{{ resena.puntuacion }} de 5 estrellas</strong>
+              <time [attr.datetime]="resena.fecha">{{ resena.fecha | date:'dd/MM/yyyy' }}</time>
+            </div>
+            @if (resena.comentario) {
+              <p class="resena-comentario">{{ resena.comentario }}</p>
+            }
+          </article>
+        } @empty {
+          <p class="mensaje" role="status">Todavía no hay reseñas.</p>
+        }
+      </div>
+    }
+  }
+</main>

@@ -6,9 +6,10 @@ import { Especialidad } from '../models/especialidad.model';
 @Injectable({ providedIn: 'root' })
 export class EspecialidadService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8090/api/especialidades';
+  private apiUrl = 'https://proyectoweb-segundaentrega.onrender.com/api/especialidades';
 
   obtenerEspecialidades(): Observable<Especialidad[]> {
-    return this.http.get<Especialidad[]>(this.apiUrl);
+    return this.http.get<Especialidad[]>(this.apiUrl,
+        { withCredentials: true });
   }
 }

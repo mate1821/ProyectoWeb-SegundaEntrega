@@ -15,7 +15,7 @@ import { Reserva } from '../models/reserva.model';
 
 export class ReservaService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8090/api/reservas';
+  private apiUrl = 'https://proyectoweb-segundaentrega.onrender.com/api/reservas';
 
   obtenerReservas(): Observable<Reserva[]> {
     return this.http.get<Reserva[]>(this.apiUrl, { withCredentials: true });
@@ -48,6 +48,12 @@ export class ReservaService {
   
   obtenerReserva(id: number): Observable<Reserva> {
     return this.http.get<Reserva>(`${this.apiUrl}/${id}`, { withCredentials: true });
+  }
+  obtenerHorasDisponibles(medicoId: number, fecha: string): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/disponibles`, {
+      params: { medicoId, fecha },
+      withCredentials: true,
+    });
   }
 
 

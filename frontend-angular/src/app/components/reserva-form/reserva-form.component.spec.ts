@@ -9,8 +9,8 @@ import { Reserva } from '../../models/reserva.model';
  * que se llaman los 4 enlaces del backend: GET, POST, PUT y DELETE.
  */
 describe('ReservaComponent', () => {
-  const URL_RESERVAS = 'http://localhost:8090/api/reservas';
-  const URL_USUARIOS = 'http://localhost:8090/api/usuarios';
+  const URL_RESERVAS = 'https://proyectoweb-segundaentrega.onrender.com/api/reservas';
+  const URL_USUARIOS = 'https://proyectoweb-segundaentrega.onrender.com/api/usuarios';
 
   const usuarios = [
     { id: 2, nombre: 'Ana Torres', rol: { id: 2, nombre: 'Paciente' } },

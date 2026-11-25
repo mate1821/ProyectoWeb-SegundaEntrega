@@ -7,7 +7,7 @@ import { Reserva } from '../../models/reserva.model';
 
 /** Página de reserva: sin id crea (POST) y en /reservas/editar/:id carga la reserva y la actualiza (PUT). */
 describe('Reservas', () => {
-  const API = 'http://localhost:8090/api';
+  const API = 'https://proyectoweb-segundaentrega.onrender.com/api';
 
   const especialidades = [
     { id: 1, nombreEspecialidad: 'PEDIATRIA', costo: 70000 },
