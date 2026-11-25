@@ -97,11 +97,11 @@
     </fieldset>
   </div>
 
-  @if (!reservaEditando()) {
+  @if (reservaEditando()) {
+  <button type="submit" [disabled]="formulario.invalid">
+    Guardar cambios
+  </button>
+} @else {
   <app-boton-pagar [reserva]="reservaParaPago()"></app-boton-pagar>
 }
-
-  <button type="submit" [disabled]="formulario.invalid">
-    {{ reservaEditando() ? 'Guardar cambios' : 'Guardar' }}
-  </button>
 </form>
